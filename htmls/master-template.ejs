@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vocab Auto Builder</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&amp;subset=latin-ext" rel="stylesheet">
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+
+    <header class="site-header">
+  <!-- <nav>
+    <a href="/"> Home </a>
+    <br>
+
+    <% if (currentUser) { %>
+      <a href="/my-rooms"> My Rooms </a>
+      <br>
+      <a href="/rooms/new"> Add a Room </a>
+      <br>
+      <a href="/logout"> Log Out </a>
+      <br>
+      <h2> <%= currentUser.email %> </h2>
+      <% if (currentUser.role === 'admin') { %>
+        <div>
+          <h2> Admin Zone </h2>
+          <a href="/admin/rooms"> All Rooms </a>
+          <br>
+          <a href="/admin/users"> All Users </a>
+          <br>
+        </div>
+      <% } %>
+    <% } else { %>
+      <a href="/signup"> Sign Up </a>
+      <br>
+      <a href="/login"> Log In </a>
+      <br>
+    <% } %>
+  </nav> -->
+    </header>
+
+    <!-- 🚨🚨🚨 DON'T FORGET THIS -->
+    <%- body -%>
+    <!-- 🚨🚨🚨 IMPORTANT-->
+
+    <footer class="site-footer">
+    </footer>
+
+
+    <!-- jQuery before Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <!-- Bootstrap js should go before your JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!-- Your Javascript -->
+    <script src="/javascripts/api.js"></script>
+</body>
+</html>

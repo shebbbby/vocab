@@ -1,0 +1,127 @@
+<div class="container">
+<br>
+<br>
+<p>
+ Current List: <span id="numberInList"></span>
+</p>
+  <p id="demo"></p>
+  <span style="float:left;" id="speed"></span><span> </span><span style="float:left; margin-left:5px;" onclick="showSpeedInput()" class="fa fa-pencil edit-speed-on"> </span> </span><span onclick="hideSpeedInput()" style="display: none; float:left; margin-left:5px;" class="fa fa-pencil edit-speed-off"> </span>
+  <br>
+  <input style="display:none;" id="speed-input" name="speed" type="text" onchange="changeSpeed()" placeholder="Seconds Per Word...">
+  <br>
+  <input  id="random-number-input" name="randomNumber" type="text" placeholder="Select Random Words">
+  <p id="select-random-words" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="addRandomWordsButton()">Select</p>
+  <br>
+  <p id="begin-cycle-button" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle()">Begin</p>
+  <br>
+
+  <p id="display-words-list" style="border:1px solid black; display: none; width:80px;" class="btn btn-sm" onclick="displayWordsList()">Add Words</p>
+<br>
+<p style="display:none; color: green; border:1px solid green; width: 15%;" id="word-search-success">Word Added!</p>
+<p style="display:none; color: red; border:1px solid red; width: 15%;" id="word-search-error">Sorry, Word not found!</p>
+<p style="display:none; color: red; border:1px solid red; width: 15%;" id="repeat-word-error">You Already Have this word!</p>
+<p style="display:none; color: red; border:1px solid red; width: 30%;" id="begin-error">You have to add at least 1 word to begin!</p>
+
+<div id="hideUponBegin">
+  New Word:<br>
+  <input id="age" type="text" name="firstname" value="">
+  <br>
+    <br>
+  <!-- <input id="age" type="text" name="firstname" value="" onchange="addWordUsingInput()"> -->
+  <p style="border:1px solid black;" class="btn btn-sm" onclick="inputFiller()">Submit</p>
+<form style="display: none;" method="post" action="/">
+
+  <label for="word-input"> Word </label>
+  <input  id="word-input" name="word" type="text">
+  <br>
+  <label for="definition-input"> Definition </label>
+  <input  id="definition-input" name="definition" type="text" step="0.10">
+  <br>
+  <label for="speech-input"> Speech </label>
+  <input  id="speech-input" name="speech" type="text">
+  <br>
+  <label for="sentence-input"> Sentence </label>
+  <input  id="sentence-input" name="sentence" type="text">
+  <br>
+  <label for="synonyms-input"> synonyms </label>
+  <input  id="synonyms-input" name="synonyms" type="text">
+  <br>
+  <label for="relatedwords-input"> relatedwords </label>
+  <input  id="relatedwords-input" name="relatedwords" type="text">
+  <br>
+
+  <label   for="antonyms-input"> antonyms </label>
+  <input id="antonyms-input" name="antonyms" type="text">
+  <br>
+
+  <button id="word-submitter"> Save This Word </button>
+
+</form>
+
+<h2> All Words </h2>
+
+<ul>
+  <% listOfWords.forEach((oneWord) => { %>
+    <li style="list-style: none;" class="word-list">
+      <h3 style="display: inline;"> <a style="float:left;" href="/<%= oneWord._id %>"> <%= oneWord.word %> </a></h3>
+      <!-- use a form with a button for delete instead of an anchor tag
+           so that it can be a (semantically correct) POST route -->
+      <form style="float:left; margin-left: 10px; class="delete-button" method="post" action="/<%= oneWord._id %>/delete">
+        <button> X </button>
+      </form>
+        <button style="float:left;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
+        <button onclick="removeWordFromStudyArray('<%= oneWord.word %>')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-<%= oneWord.word %>" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
+    </li>
+
+  <% }) %>
+</ul>
+</div>
+
+<script>
+// THis is the array of actual database words.
+  databaseArray = [];
+  <% listOfWords.forEach((oneWord) => { %>
+    databaseArray.push('<%= oneWord.word %>');
+      <% }) %>
+      console.log(databaseArray);
+
+  function getTenRandomWords(arr, n) {
+        var result = new Array(n),
+            len = arr.length,
+            taken = new Array(len);
+        if (n > len)
+            throw new RangeError("getRandom: more elements taken than available");
+        while (n--) {
+            var x = Math.floor(Math.random() * len);
+            result[n] = arr[x in taken ? taken[x] : x];
+            taken[x] = --len;
+        }
+        return result;
+  }
+  function addRandomWordsToLearningList(number){
+  var tenRandomWordsArray = getTenRandomWords(databaseArray, number);
+  for(var i = 0; i <= tenRandomWordsArray.length-1; i++){
+    document.getElementById('plus-'+ tenRandomWordsArray[i]).click()
+  }
+}
+function addRandomWordsButton(){
+var chosenNumber = document.querySelector('#random-number-input').value;
+  addRandomWordsToLearningList(chosenNumber)
+}
+</script>
+
+
+
+
+
+
+<div>
+  <ul style="display: none;" class="flashcard" id="wordslist">
+
+  </ul>
+  <br>
+  <br>
+  <br>
+  <br>
+</div>
+</div>

@@ -1,0 +1,20 @@
+<div class="container">
+<a href="/"> Back </a>
+
+<h2> Word Details </h2>
+
+<h3> <%= wordInfo.word %><span>(<%= wordInfo.speech %>) </span> </h3>
+
+<p><%= wordInfo.definition %></p>
+
+<p><%= wordInfo.sentence %></p>
+
+<p> <%= wordInfo.synonyms %> </p>
+<p> <%= wordInfo.relatedwords %> </p>
+<p> <%= wordInfo.antonyms %> </p>
+
+
+<form method="post" action="/<%= wordInfo._id %>/delete">
+  <button> Delete </button>
+</form>
+</div>
