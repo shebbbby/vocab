@@ -83,7 +83,8 @@
   <% listOfWords.forEach((oneWord) => { %>
     databaseArray.push('<%= oneWord.word %>');
       <% }) %>
-      console.log(databaseArray);
+      // Log all words in alphabetical order
+      console.log(databaseArray.sort());
 
   function getTenRandomWords(arr, n) {
         var result = new Array(n),
