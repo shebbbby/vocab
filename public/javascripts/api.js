@@ -95,7 +95,7 @@ function displayWordsList(){
 function inputFiller() {
   var newWord = document.querySelector('#age').value;
 $.ajax({
-  url: 'http://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+newWord+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+  url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+newWord+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
   method: "GET",
   success: function (response) {
 // If database already has that word then display error message
@@ -148,7 +148,7 @@ else{
 var appendThis;
 function thesaurus(word) {
 $.ajax({
-  url: 'http://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+  url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
   method: "GET",
   success: function (response) {
     console.log(response);
@@ -194,7 +194,7 @@ $.ajax({
 //
 function getDefinition(word) {
 $.ajax({
-  url: 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/'+word+'?key=633f95e2-e228-4685-993c-466be1bb78cf',
+  url: 'https://www.dictionaryapi.com/api/v1/references/collegiate/xml/'+word+'?key=633f95e2-e228-4685-993c-466be1bb78cf',
   method: "GET",
   success: function (response) {
     console.log(response);
@@ -210,7 +210,7 @@ $.ajax({
 
 // function getSynonyms(word) {
 // $.ajax({
-//   url: 'http://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+//   url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
 //   method: "GET",
 //   success: function (response) {
 //     console.log(response);
