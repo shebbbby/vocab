@@ -9,11 +9,12 @@ const mongoose     = require('mongoose');
 const session      = require('express-session');
 const passport     = require('passport');
 const flash        = require('connect-flash');
+require("dotenv").config();
 
 const WordModel = require('./models/vocab-model.js');
 const UserModel = require('./models/user-model.js');
 
-mongoose.connect('mongodb://localhost/vocab');
+mongoose.connect(process.env.MONGODB_URI);
 // Create an Express app object
 const app = express();
 
