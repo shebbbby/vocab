@@ -70,6 +70,7 @@ function nextWord(){
 function startCycle(){
   if(wordsArray.length > 0){
   document.querySelector('.flashcard').style.display = 'block';
+  document.querySelector('#next-previous-buttons').style.display = 'block';
   document.querySelector('#display-words-list').style.display = 'block';
   document.querySelector('#begin-cycle-button').style.display = 'none';
   document.querySelector('#hideUponBegin').style.display = 'none';
