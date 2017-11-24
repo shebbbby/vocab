@@ -49,13 +49,21 @@ function addWordUsingInput(){
   document.getElementById("demo").innerHTML = wordsArray;
 }
 
-
-function cycleWordsArray(){
+function cycleWordsArray(num){
+  if(num >= 0){
+    wordCount = num;
+  }
   thesaurus(wordsArray[wordCount]);
   wordCount ++;
   if(wordCount === wordsArray.length){
     wordCount = 0;
   }
+}
+function previousWord(){
+  cycleWordsArray(wordCount-2)
+}
+function nextWord(){
+  cycleWordsArray(wordCount)
 }
 
 // Starts cycling with wordsArray and cycleSpeed
@@ -66,6 +74,7 @@ function startCycle(){
   document.querySelector('#begin-cycle-button').style.display = 'none';
   document.querySelector('#hideUponBegin').style.display = 'none';
   document.getElementById('begin-error').style.display = 'none';
+  nextWord();
   setInterval(function(){
     cycleWordsArray();
   }, cycleSpeed);

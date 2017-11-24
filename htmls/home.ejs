@@ -86,6 +86,7 @@
       // Log all words in alphabetical order
       console.log(databaseArray.sort());
 
+
   function getTenRandomWords(arr, n) {
         var result = new Array(n),
             len = arr.length,
@@ -117,6 +118,10 @@ var chosenNumber = document.querySelector('#random-number-input').value;
 
 
 <div>
+  <div style="position: relative; top:50px; left:300px;">
+    <button id="previousWordButton" onclick="previousWord()"><</button>
+    <button id="nextWordButton" onclick="nextWord()">></button>
+  </div>
   <ul style="display: none;" class="flashcard" id="wordslist">
 
   </ul>
