@@ -166,6 +166,7 @@ app.post('/', (req, res, next) => {
         // STEP #3 redirect
         // ALWAYS redirect after a successful to POST to avoid resubmitting
         res.redirect('/');
+        // res.render('home', {req: req.body});
           // You can only redirect to a URL
     });
 }); // close POST /products

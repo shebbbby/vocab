@@ -1,29 +1,43 @@
 <div class="container">
 <br>
 <br>
+  <p>
+    <strong>Current List: </strong><span id="demo"></span>
+  </p>
+  <p>
+   <strong># Words:</strong>  <span id="numberInList"></span>
+  </p>
 <p>
- Current List:  <span id="numberInList"></span>
+ <strong>Cycle Duration:</strong>  <span id="cycleTime"></span>
 </p>
-  <p id="demo"></p>
-  <span style="float:left;" id="speed"></span><span> </span><span style="float:left; margin-left:5px;" onclick="showSpeedInput()" class="fa fa-pencil edit-speed-on"> </span> </span><span onclick="hideSpeedInput()" style="display: none; float:left; margin-left:5px;" class="fa fa-pencil edit-speed-off"> </span>
+<p>
+ <strong>Cycle Speed<span id="defaultSpeed"> (Default)</span>:</strong> <span id="cycleSpeed"></span>
+</p>
+  <!-- <span style="float:left;" id="speed"></span><span> </span> -->
+  <!-- <span style="float:left; margin-left:5px;" onclick="showSpeedInput()" class="fa fa-pencil edit-speed-on"> </span> </span>
+  <span onclick="hideSpeedInput()" style="display: none; float:left; margin-left:5px;" class="fa fa-pencil edit-speed-off"> </span> -->
+  <label for="speed-input">Seconds per word?</label>
   <br>
-  <input style="display:none;" id="speed-input" name="speed" type="text" onchange="changeSpeed()" placeholder="Seconds Per Word...">
+  <input id="speed-input" name="speed" type="number" onchange="changeSpeed()" placeholder="Seconds Per Word...">
   <br>
-  <input  id="random-number-input" name="randomNumber" type="text" placeholder="Select Random Words">
-  <p id="select-random-words" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="addRandomWordsButton()">Select</p>
-  <br>
-  <p id="begin-cycle-button" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle()">Begin</p>
+  <label for="random-number-input">Add How many words?</label>
   <br>
 
+  <input  id="random-number-input" name="randomNumber" type="number" placeholder="# Words" onchange="addRandomWordsButton()">
+  <!-- <p id="select-random-words" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="addRandomWordsButton()">Select</p> -->
+  <br>
+  <br>
+  <p id="begin-cycle-button" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle()">Begin</p>
+  <hr>
+
   <p id="display-words-list" style="border:1px solid black; display: none; width:80px;" class="btn btn-sm" onclick="displayWordsList()">Add Words</p>
-<br>
 <p style="display:none; color: green; border:1px solid green; width: 15%;" id="word-search-success">Word Added!</p>
 <p style="display:none; color: red; border:1px solid red; width: 15%;" id="word-search-error">Sorry, Word not found!</p>
 <p style="display:none; color: red; border:1px solid red; width: 15%;" id="repeat-word-error">You Already Have this word!</p>
 <p style="display:none; color: red; border:1px solid red; width: 30%;" id="begin-error">You have to add at least 1 word to begin!</p>
 
 <div id="hideUponBegin">
-  New Word:<br>
+  <strong>Add New Word:</strong><br>
   <input id="age" type="text" name="firstname" value="">
   <br>
     <br>
@@ -58,7 +72,7 @@
 
 </form>
 
-<h2> All Words </h2>
+<h2> All Words <span style="font-size: 20px;">(<span id="numberOfDatabaseWords"></span>)</span> </h2>
 
 <ul>
   <% listOfWords.forEach((oneWord) => { %>
@@ -69,7 +83,7 @@
       <form style="float:left; margin-left: 10px; class="delete-button" method="post" action="/<%= oneWord._id %>/delete">
         <button> X </button>
       </form>
-        <button style="float:left;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
+        <button style="float:left; display:block;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
         <button onclick="removeWordFromStudyArray('<%= oneWord.word %>')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-<%= oneWord.word %>" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
     </li>
 
@@ -85,9 +99,10 @@
       <% }) %>
       // Log all words in alphabetical order
       console.log(databaseArray.sort());
+      document.getElementById('numberOfDatabaseWords').innerHTML = databaseArray.length;
 
 
-  function getTenRandomWords(arr, n) {
+  function getRandomWords(arr, n) {
         var result = new Array(n),
             len = arr.length,
             taken = new Array(len);
@@ -101,13 +116,15 @@
         return result;
   }
   function addRandomWordsToLearningList(number){
-  var tenRandomWordsArray = getTenRandomWords(databaseArray, number);
-  for(var i = 0; i <= tenRandomWordsArray.length-1; i++){
-    document.getElementById('plus-'+ tenRandomWordsArray[i]).click()
+  var RandomWordsArray = getRandomWords(databaseArray, number);
+  for(var i = 0; i <= RandomWordsArray.length-1; i++){
+    document.getElementById('plus-'+ RandomWordsArray[i]).click()
   }
 }
 function addRandomWordsButton(){
 var chosenNumber = document.querySelector('#random-number-input').value;
+document.querySelector('#random-number-input').value = '';
+
   addRandomWordsToLearningList(chosenNumber)
 }
 </script>
