@@ -89,7 +89,7 @@
       <!-- use a form with a button for delete instead of an anchor tag
            so that it can be a (semantically correct) POST route -->
       <form style="float:left; margin-left: 10px; class="delete-button" method="post" action="/<%= oneWord._id %>/delete">
-        <button> X </button>
+        <button id="remove-<%= oneWord.word %>"> X </button>
       </form>
         <button style="float:left; display:block;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
         <button onclick="removeWordFromStudyArray('<%= oneWord.word %>')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-<%= oneWord.word %>" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
@@ -167,7 +167,8 @@ function squash(arr){
 var duplicateWordsOnce = squash(duplicateWords);
 // Alert if a duplicate word exists
 if(duplicateWordsOnce[0]){
-  alert('The following words are duplicated: ' + duplicateWordsOnce);
+  alert('The following word is duplicated and will be deleted: ' + duplicateWordsOnce);
+  document.getElementById('remove-'+ duplicateWordsOnce[0]).click()
 }
 </script>
 
@@ -177,7 +178,7 @@ if(duplicateWordsOnce[0]){
 
 
 <div>
-  <p>
+  <p id="colorLabelInforation" style="display:none;">
     <span style="color:blue;">In Learning List</span> -
     <span style="color:green;">In Database</span> -
     <span style="color:red;">Not In Either</span>

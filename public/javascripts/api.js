@@ -135,6 +135,7 @@ var intervalCycle = function(){ setInterval(function(){
 function startCycle(){
   if(wordsArray.length > 0){
   document.querySelector('.flashcard').style.display = 'block';
+  document.getElementById('colorLabelInforation').style.display = 'block';
   document.querySelector('#next-previous-buttons').style.display = 'block';
   document.querySelector('#display-words-list').style.display = 'block';
   document.querySelector('#begin-cycle-button').style.display = 'none';
@@ -404,29 +405,3 @@ $.ajax({
   }
 });
 }
-
-// function getSynonyms(word) {
-// $.ajax({
-//   url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
-//   method: "GET",
-//   success: function (response) {
-//     console.log(response);
-//     document.querySelector('#synonyms').innerHTML += response.querySelector('syn').innerHTML;
-//     document.querySelector('#relatedwords').innerHTML += response.querySelector('rel').innerHTML;
-//
-//     var countVi = 0;
-//     for(var i = 0; i<= 5; i++){
-//       if(response.getElementsByTagName('vi')[i]){
-//         countVi++
-//       }
-//     }
-//     for(var i = 0; i <= countVi-1; i++){
-//     document.querySelector('#sentence').innerHTML += ', '+response.getElementsByTagName('vi')[i].innerHTML;
-//   }
-//     document.querySelector('#antonyms').innerHTML += response.querySelector('ant').innerHTML;
-//   },
-//   error: function (err) {
-//     console.log(err);
-//   }
-// });
-// }
