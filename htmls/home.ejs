@@ -168,6 +168,7 @@ var duplicateWordsOnce = squash(duplicateWords);
 // Alert if a duplicate word exists
 if(duplicateWordsOnce[0]){
   alert('The following word is duplicated and will be deleted: ' + duplicateWordsOnce);
+  // Click remove button
   document.getElementById('remove-'+ duplicateWordsOnce[0]).click()
 }
 </script>
@@ -183,11 +184,11 @@ if(duplicateWordsOnce[0]){
     <span style="color:green;">In Database</span> -
     <span style="color:red;">Not In Either</span>
   </p>
-  <div id="next-previous-buttons" style="position: relative; top:50px; left:300px; display: none;">
+  <div id="next-previous-buttons" style="position: relative; top:50px; left:280px; display: none;">
     <button id="previousWordButton" onclick="previousWord()"><</button>
     <button id="nextWordButton" onclick="nextWord()">></button>
     <!-- Meant to allow you to remove word from array. Doesnt work yet. -->
-    <!-- <button id="removeWordButton" onclick="removeWordButton()">X</button> -->
+    <button id="removeWordButton" onclick="removeWordButton(currentFlashcardWord)">X</button>
   </div>
   <ul style="display: none;" class="flashcard" id="wordslist">
 

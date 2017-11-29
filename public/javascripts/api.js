@@ -112,21 +112,35 @@ else{
 function nextWord(){
   cycleWordsArray(wordCount)
 }
-// Meant to allow you to remove word from learning array.
-// function removeWordButton(){
-//   var word = wordsArray[wordCount-1];
-//   var indexOfWord = wordsArray.indexOf(word);
-//   wordsArray.splice(indexOfWord,1);
-//   document.getElementById("demo").innerHTML = wordsArray;
-//   document.getElementById("numberInList").innerHTML = wordsArray.length;
-//   document.querySelector("#plus-"+word).style.display = 'block';
-//   document.querySelector("#checkmark-"+word).style.display = 'none';
-//   var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-//   var cycleDurationMinutes = cycleDurationSeconds / 60;
-//   document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
-//   nextWord();
-// }
+// Meant to allow you to remove word from learning array when cycle has already started.
+function removeWordButton(word){
+  var indexOfWord = wordsArray.indexOf(word);
+  wordsArray.splice(indexOfWord,1);
+  document.getElementById("demo").innerHTML = wordsArray;
+  document.getElementById("numberInList").innerHTML = wordsArray.length;
+  document.querySelector("#plus-"+word).style.display = 'block';
+  document.querySelector("#checkmark-"+word).style.display = 'none';
+  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+  var cycleDurationMinutes = cycleDurationSeconds / 60;
+  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  cycleWordsArray(currentFlashcardWordIndexInStudyArray);
+}
+
+var cycleTimer = cycleSpeed;
 var intervalCycle = function(){ setInterval(function(){
+
+// Meant to add timer next to v.1 on word flashcard
+  // var cycleTimerInterval = setInterval(function(){
+  //   cycleTimer -= 1000;
+  //   if(cycleTimer > -1000){
+  //   document.getElementById('timer').innerHTML = ' ' + cycleTimer/1000;
+  // }
+  //   if(cycleTimer < 0){
+  //     cycleTimer = cycleSpeed;
+  //     clearInterval(cycleTimerInterval);
+  //   }
+  // }, 1000);
+
   cycleWordsArray();
 }, cycleSpeed);
 }
@@ -303,20 +317,26 @@ if($.inArray(word, databaseArray) === -1){
 }
 
 var appendThis;
+var currentFlashcardWord;
+var currentFlashcardWordIndexInStudyArray;
 function thesaurus(word) {
 $.ajax({
   url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
   method: "GET",
   success: function (response) {
     if(response.querySelector('hw')){
-    console.log(response);
-    var countSens = 0;
-    for(var i = 0; i <= 5; i++){
-      if(response.getElementsByTagName('sens')[i]){
-        countSens++
+      currentFlashcardWord = response.querySelector('hw').innerHTML;
+      currentFlashcardWordIndexInStudyArray = wordsArray.indexOf(currentFlashcardWord);
+      console.log(response);
+      console.log(currentFlashcardWord);
+      console.log('Word# '+currentFlashcardWordIndexInStudyArray);
+      var countSens = 0;
+      for(var i = 0; i <= 5; i++){
+        if(response.getElementsByTagName('sens')[i]){
+          countSens++
+        }
       }
-    }
-    var randomNumber = Math.floor(Math.random() * countSens);
+      var randomNumber = Math.floor(Math.random() * countSens);
 
 // CODE THAT HAS TO DO WITH SYNONYMS--------------------------------------------------
     var synonyms = response.getElementsByTagName('syn')[randomNumber].innerHTML;
@@ -355,7 +375,7 @@ $.ajax({
 // -----------------------------------------------------------------------------------------------------------------------
 
     appendThis = `<li class="word">`+  response.querySelector('hw').innerHTML + `<span style='font-size:12px; color: black;'> (`+response.querySelector('fl').innerHTML+`)</span>
-    <span style='font-size:12px; color: black;'>(V.`+ (randomNumber+1)+`)</li>`
+    <span style='font-size:12px; color: black;'>(V.`+ (randomNumber+1)+`)</span><span id="timer" style='font-size:12px; color: black;'></span></li>`
     console.log('random definition number: ' + randomNumber);
     // appendThis += `<li> Version ` + (randomNumber+1) +':' + `</li>`
     if(response.getElementsByTagName('mc')[randomNumber]){
