@@ -14,13 +14,13 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 function addWord(word){
 // if($.inArray(word, wordsArray) === -1){
 // If the plus sign button is 'style: block' then add the word
-if(document.querySelector("#plus-"+word).style.display === 'block'){
+if(document.getElementById("plus-"+word).style.display === 'block'){
   console.log($.inArray(word, wordsArray));
   wordsArray.push(word);
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
-  document.querySelector("#plus-"+word).style.display = 'none';
-  document.querySelector("#checkmark-"+word).style.display = 'block';
+  document.getElementById("plus-"+word).style.display = 'none';
+  document.getElementById("checkmark-"+word).style.display = 'block';
   document.getElementById('word-search-error').style.display = 'none';
   document.getElementById('repeat-word-error').style.display = 'none';
   var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
@@ -55,6 +55,10 @@ function hideSpeedInput(){
   document.querySelector("#speed-input").style.display = 'none';
   document.querySelector(".edit-speed-off").style.display = 'none';
   document.querySelector(".edit-speed-on").style.display = 'block';
+}
+
+function showCustomInputs(){
+  document.querySelector("#hidden-inputs").style.display = 'block';
 }
 
 var wordsArray = [];
@@ -94,17 +98,37 @@ function cycleWordsArray(num){
   }
 }
 function previousWord(){
+  if(wordCount >= 2){
   cycleWordsArray(wordCount-2)
+}
+else if (wordCount === 0) {
+  cycleWordsArray(wordsArray.length-2);
+}
+else{
+  cycleWordsArray(wordsArray.length-2);
+
+}
 }
 function nextWord(){
   cycleWordsArray(wordCount)
 }
+// Meant to allow you to remove word from learning array.
+// function removeWordButton(){
+//   var word = wordsArray[wordCount-1];
+//   var indexOfWord = wordsArray.indexOf(word);
+//   wordsArray.splice(indexOfWord,1);
+//   document.getElementById("demo").innerHTML = wordsArray;
+//   document.getElementById("numberInList").innerHTML = wordsArray.length;
+//   document.querySelector("#plus-"+word).style.display = 'block';
+//   document.querySelector("#checkmark-"+word).style.display = 'none';
+//   var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+//   var cycleDurationMinutes = cycleDurationSeconds / 60;
+//   document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+//   nextWord();
+// }
 var intervalCycle = function(){ setInterval(function(){
   cycleWordsArray();
 }, cycleSpeed);
-}
-function myStopFunction() {
-    clearInterval(intervalCycle);
 }
 
 // Starts cycling with wordsArray and cycleSpeed
@@ -244,6 +268,39 @@ else{
 })
 }
 // }
+
+
+var wordsToAdd = [];
+function addWordFromSynonyms(word){
+// if($.inArray(word, wordsArray) === -1){
+// If the plus sign button is 'style: block' then add the word
+if($.inArray(word, wordsArray) === -1){
+  console.log($.inArray(word, wordsArray));
+  wordsArray.push(word);
+  document.getElementById("demo").innerHTML = wordsArray;
+  document.getElementById("numberInList").innerHTML = wordsArray.length;
+  document.getElementById("synonym-"+word).style.color = 'blue';
+  document.getElementById("synonym-"+word).style.cursor = 'auto';
+  // document.getElementById("plus-"+word).style.display = 'none';
+  // document.getElementById("checkmark-"+word).style.display = 'block';
+  // document.getElementById('word-search-error').style.display = 'none';
+  // document.getElementById('repeat-word-error').style.display = 'none';
+  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+  var cycleDurationMinutes = cycleDurationSeconds / 60;
+  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  }
+if($.inArray(word, databaseArray) !== -1){
+    document.getElementById("plus-"+word).style.display = 'none';
+    document.getElementById("checkmark-"+word).style.display = 'block';
+  }
+if($.inArray(word, databaseArray) === -1){
+    wordsToAdd.push(word);
+    document.getElementById("wordstoaddparagraph").style.display = 'block';
+    document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+    }
+
+}
+
 var appendThis;
 function thesaurus(word) {
 $.ajax({
@@ -259,6 +316,43 @@ $.ajax({
       }
     }
     var randomNumber = Math.floor(Math.random() * countSens);
+
+// CODE THAT HAS TO DO WITH SYNONYMS--------------------------------------------------
+    var synonyms = response.getElementsByTagName('syn')[randomNumber].innerHTML;
+    var synonymsArray = synonyms.split(",");
+    function isInArray(value, array) {
+      return array.indexOf(value) > -1;
+    }
+    function addSynonymsHtml(){
+      var synonymsHtml = '';
+      for(var i = 0; i<= synonymsArray.length - 1; i++){
+        var noSpacesWord = synonymsArray[i].replace(" ", "");
+        if(noSpacesWord === response.querySelector('hw').innerHTML){
+          synonymsHtml += '';
+        }
+        else if(isInArray(noSpacesWord, wordsArray)){
+          // If word is in database, make it green
+        synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: blue" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + ', </span>';
+      }
+        else if(isInArray(noSpacesWord, databaseArray)){
+          // If word is in database, make it green
+        synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: green; cursor: pointer;" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + ', </span>';
+      }
+        else{
+          // If word is not in database, make it red
+          synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: red; cursor: pointer;"onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + ', </span>';
+        }
+  }
+    return synonymsHtml;
+  }
+  var synonymsHtml = addSynonymsHtml();
+  // -------------------------------------------------------------------------------------------------------------------
+
+// CODE THAT HAS TO DO WITH THE SENTENCE----------------------------------------------------------------------------------
+  var sentence = response.getElementsByTagName('vi')[randomNumber].innerHTML;
+  var boldedWordSentence = sentence.replace("<it>", "<it style='font-weight:bold;'>");
+// -----------------------------------------------------------------------------------------------------------------------
+
     appendThis = `<li class="word">`+  response.querySelector('hw').innerHTML + `<span style='font-size:12px; color: black;'> (`+response.querySelector('fl').innerHTML+`)</span>
     <span style='font-size:12px; color: black;'>(V.`+ (randomNumber+1)+`)</li>`
     console.log('random definition number: ' + randomNumber);
@@ -267,10 +361,10 @@ $.ajax({
       appendThis += `<li class="en_eg">`+  response.getElementsByTagName('mc')[randomNumber].innerHTML + `</li>`
     }
     if(response.getElementsByTagName('vi')[randomNumber]){
-      appendThis += `<li class="en_eg">`+  response.getElementsByTagName('vi')[randomNumber].innerHTML + `</li>`
+      appendThis += `<li class="en_eg">`+  boldedWordSentence + `</li>`
     }
     if(response.getElementsByTagName('syn')[randomNumber]){
-      appendThis += `<li class="en_eg"> <strong>Synonyms:</strong> `+  response.getElementsByTagName('syn')[randomNumber].innerHTML + `</li>`
+      appendThis += `<li class="en_eg"> <strong>Synonyms:</strong> ` +  synonymsHtml + ` </li>`;
     }
     document.getElementById("wordslist").innerHTML = appendThis;
   }

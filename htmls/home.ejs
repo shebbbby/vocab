@@ -4,6 +4,9 @@
   <p>
     <strong>Current List: </strong><span id="demo"></span>
   </p>
+  <p id="wordstoaddparagraph" style="display:none;">
+   <strong>Words to add to database:</strong>  <span id="wordsToAdd"></span>
+  </p>
   <p>
    <strong># Words:</strong>  <span id="numberInList"></span>
   </p>
@@ -39,14 +42,15 @@
 <div id="hideUponBegin">
   <strong>Add New Word:</strong><br>
   <input id="age" type="text" name="firstname" value="">
+  <!-- <button id="custom-button" onclick="showCustomInputs()"> Custom </button> -->
   <br>
     <br>
   <!-- <input id="age" type="text" name="firstname" value="" onchange="addWordUsingInput()"> -->
   <p style="border:1px solid black;" class="btn btn-sm" onclick="inputFiller()">Submit</p>
-<form style="display: none;" method="post" action="/">
+<form id="hidden-inputs" style="display: none;" method="post" action="/">
 
   <label for="word-input"> Word </label>
-  <input  id="word-input" name="word" type="text">
+  <input  id="word-input" name="word" type="text" required>
   <br>
   <label for="definition-input"> Definition </label>
   <input  id="definition-input" name="definition" type="text" step="0.10">
@@ -74,6 +78,10 @@
 
 <h2> All Words <span style="font-size: 20px;">(<span id="numberOfDatabaseWords"></span>)</span> </h2>
 
+
+<% var noDatabaseArray = [] %>
+<% console.log(noDatabaseArray) %>
+
 <ul>
   <% listOfWords.forEach((oneWord) => { %>
     <li style="list-style: none;" class="word-list">
@@ -86,7 +94,6 @@
         <button style="float:left; display:block;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
         <button onclick="removeWordFromStudyArray('<%= oneWord.word %>')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-<%= oneWord.word %>" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
     </li>
-
   <% }) %>
 </ul>
 </div>
@@ -127,6 +134,41 @@ document.querySelector('#random-number-input').value = '';
 
   addRandomWordsToLearningList(chosenNumber)
 }
+
+// Function to count how many times a word exists in array
+function countInArray(array, what){
+    var count = 0;
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] === what) {
+            count++;
+        }
+    }
+    return count;
+}
+
+// Create array with duplicate words
+var duplicateWords = [];
+for (var i = 0; i < databaseArray.length; i++) {
+  var count = countInArray(databaseArray,databaseArray[i]);
+  if(count > 1){
+    duplicateWords.push(databaseArray[i]);
+  }
+}
+// Create array with only 1 of the duplicate words
+function squash(arr){
+    var tmp = [];
+    for(var i = 0; i < arr.length; i++){
+        if(tmp.indexOf(arr[i]) == -1){
+        tmp.push(arr[i]);
+        }
+    }
+    return tmp;
+}
+var duplicateWordsOnce = squash(duplicateWords);
+// Alert if a duplicate word exists
+if(duplicateWordsOnce[0]){
+  alert('The following words are duplicated: ' + duplicateWordsOnce);
+}
 </script>
 
 
@@ -135,9 +177,16 @@ document.querySelector('#random-number-input').value = '';
 
 
 <div>
+  <p>
+    <span style="color:blue;">In Learning List</span> -
+    <span style="color:green;">In Database</span> -
+    <span style="color:red;">Not In Either</span>
+  </p>
   <div id="next-previous-buttons" style="position: relative; top:50px; left:300px; display: none;">
     <button id="previousWordButton" onclick="previousWord()"><</button>
     <button id="nextWordButton" onclick="nextWord()">></button>
+    <!-- Meant to allow you to remove word from array. Doesnt work yet. -->
+    <!-- <button id="removeWordButton" onclick="removeWordButton()">X</button> -->
   </div>
   <ul style="display: none;" class="flashcard" id="wordslist">
 
