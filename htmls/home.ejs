@@ -5,7 +5,7 @@
     <strong>Current List: </strong><span id="demo"></span>
   </p>
   <p id="wordstoaddparagraph" style="display:none;">
-   <strong>Words to add to database:</strong>  <span id="wordsToAdd"></span>
+   <strong>Words to add to database (<span id="wordsToAddNumber"></span>):</strong>  <span id="wordsToAdd"></span>
   </p>
   <p>
    <strong># Words:</strong>  <span id="numberInList"></span>
@@ -182,7 +182,8 @@ if(duplicateWordsOnce[0]){
   <p id="colorLabelInforation" style="display:none;">
     <span style="color:blue;">In Learning List</span> -
     <span style="color:green;">In Database</span> -
-    <span style="color:red;">Not In Either</span>
+    <span style="color:red;">Not In Either</span> -
+    <span style="color:black;">Not A Word You Can Add</span>
   </p>
   <div id="next-previous-buttons" style="position: relative; top:50px; left:280px; display: none;">
     <button id="previousWordButton" onclick="previousWord()"><</button>

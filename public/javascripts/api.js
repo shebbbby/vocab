@@ -101,20 +101,24 @@ function previousWord(){
   if(wordCount >= 2){
   cycleWordsArray(wordCount-2)
 }
-else if (wordCount === 0) {
-  cycleWordsArray(wordsArray.length-2);
+else if (currentFlashcardWordIndexInStudyArray === 0) {
+  cycleWordsArray(wordsArray.length-1);
 }
 else{
   cycleWordsArray(wordsArray.length-2);
-
 }
 }
 function nextWord(){
   cycleWordsArray(wordCount)
 }
+
+
+
 // Meant to allow you to remove word from learning array when cycle has already started.
 function removeWordButton(word){
   var indexOfWord = wordsArray.indexOf(word);
+  // If you are removing any word but the last word, skip to the next word
+  if(currentFlashcardWordIndexInStudyArray !== wordsArray.length-1){
   wordsArray.splice(indexOfWord,1);
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
@@ -124,6 +128,24 @@ function removeWordButton(word){
   var cycleDurationMinutes = cycleDurationSeconds / 60;
   document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
   cycleWordsArray(currentFlashcardWordIndexInStudyArray);
+}
+// If you are removing the last word, skip to the first word in array.
+  else if(currentFlashcardWordIndexInStudyArray === wordsArray.length-1){
+    wordsArray.splice(indexOfWord,1);
+    document.getElementById("demo").innerHTML = wordsArray;
+    document.getElementById("numberInList").innerHTML = wordsArray.length;
+    document.querySelector("#plus-"+word).style.display = 'block';
+    document.querySelector("#checkmark-"+word).style.display = 'none';
+    var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+    var cycleDurationMinutes = cycleDurationSeconds / 60;
+    document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+    cycleWordsArray(wordsArray[1]);
+  }
+  if(wordsArray.length === 0){
+    alert('You do not have any words left! Please select some words!');
+    document.querySelector("body").style.display = 'none';
+    location.reload();
+  }
 }
 
 var cycleTimer = cycleSpeed;
@@ -285,36 +307,63 @@ else{
 // }
 
 
+
 var wordsToAdd = [];
 function addWordFromSynonyms(word){
 // if($.inArray(word, wordsArray) === -1){
 // If the plus sign button is 'style: block' then add the word
-if($.inArray(word, wordsArray) === -1){
+var indexOfWord = wordsArray.indexOf(word);
+var indexOfWordInWordsToAddArray = wordsToAdd.indexOf(word);
+
+if($.inArray(word, wordsArray) === -1 && document.getElementById("synonym-"+word).style.color !== 'blue'){
   console.log($.inArray(word, wordsArray));
   wordsArray.push(word);
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.getElementById("synonym-"+word).style.color = 'blue';
-  document.getElementById("synonym-"+word).style.cursor = 'auto';
-  // document.getElementById("plus-"+word).style.display = 'none';
-  // document.getElementById("checkmark-"+word).style.display = 'block';
-  // document.getElementById('word-search-error').style.display = 'none';
-  // document.getElementById('repeat-word-error').style.display = 'none';
   var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
   var cycleDurationMinutes = cycleDurationSeconds / 60;
   document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
-  }
+
 if($.inArray(word, databaseArray) !== -1){
     document.getElementById("plus-"+word).style.display = 'none';
     document.getElementById("checkmark-"+word).style.display = 'block';
   }
-if($.inArray(word, databaseArray) === -1){
+if($.inArray(word, databaseArray) === -1 && $.inArray(word, wordsToAdd) === -1){
     wordsToAdd.push(word);
     document.getElementById("wordstoaddparagraph").style.display = 'block';
     document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+    document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
     }
-
+  }
+  // if color is blue and word is not in database:
+else if(document.getElementById("synonym-"+word).style.color === 'blue' && $.inArray(word, databaseArray) !== -1){
+  wordsArray.splice(indexOfWord,1);
+  document.getElementById("demo").innerHTML = wordsArray;
+  document.getElementById("numberInList").innerHTML = wordsArray.length;
+  document.getElementById("synonym-"+word).style.color = 'green';
+  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+  var cycleDurationMinutes = cycleDurationSeconds / 60;
+  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  document.getElementById("plus-"+word).style.display = 'block';
+  document.getElementById("checkmark-"+word).style.display = 'none';
 }
+else if(document.getElementById("synonym-"+word).style.color === 'blue' && $.inArray(word, databaseArray) === -1){
+  wordsArray.splice(indexOfWord,1);
+  wordsToAdd.splice(indexOfWordInWordsToAddArray,1);
+  document.getElementById("demo").innerHTML = wordsArray;
+  if(wordsToAdd.length === 0){
+  document.getElementById("wordstoaddparagraph").style.display = 'none';
+}
+  document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+  document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+  document.getElementById("numberInList").innerHTML = wordsArray.length;
+  document.getElementById("synonym-"+word).style.color = 'red';
+  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+  var cycleDurationMinutes = cycleDurationSeconds / 60;
+  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+}
+ }
 
 var appendThis;
 var currentFlashcardWord;
@@ -351,9 +400,13 @@ $.ajax({
         if(noSpacesWord === response.querySelector('hw').innerHTML){
           synonymsHtml += '';
         }
+        // If a synonym has symbols incombatible with the api search, make it black.
+        else if(noSpacesWord.includes("(") || noSpacesWord.includes(")") || noSpacesWord.includes("[") || noSpacesWord.includes("]")){
+          synonymsHtml += '<span style="color: black; cursor: auto;">' + noSpacesWord + ', </span>';
+        }
         else if(isInArray(noSpacesWord, wordsArray)){
-          // If word is in database, make it green
-        synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: blue" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + ', </span>';
+          // If word is in learning list, make it blue
+        synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: blue; cursor: pointer;" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + ', </span>';
       }
         else if(isInArray(noSpacesWord, databaseArray)){
           // If word is in database, make it green
@@ -390,7 +443,9 @@ $.ajax({
     document.getElementById("wordslist").innerHTML = appendThis;
   }
   else{
-    getDefinition(word);
+    nextWord();
+    // Remove word with extra symbols ex.'()'. This is rarely going to be used because this has been resolved when adding synonyms list in thesaurus();
+    removeWordButton(word);
   }
 },
   error: function (err) {
