@@ -396,25 +396,29 @@ $.ajax({
     function addSynonymsHtml(){
       var synonymsHtml = '';
       for(var i = 0; i<= synonymsArray.length - 1; i++){
+        var comma = ', ';
+        if(i === synonymsArray.length - 1){
+          comma = '';
+        }
         var noSpacesWord = synonymsArray[i].replace(" ", "");
         if(noSpacesWord === response.querySelector('hw').innerHTML){
           synonymsHtml += '';
         }
         // If a synonym has symbols incombatible with the api search, make it black.
         else if(noSpacesWord.includes("(") || noSpacesWord.includes(")") || noSpacesWord.includes("[") || noSpacesWord.includes("]")){
-          synonymsHtml += '<span style="color: black; cursor: auto;">' + noSpacesWord + ', </span>';
+          synonymsHtml += '<span style="color: black; cursor: auto;">' + noSpacesWord + comma + '</span>';
         }
         else if(isInArray(noSpacesWord, wordsArray)){
           // If word is in learning list, make it blue
-        synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: blue; cursor: pointer;" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + ', </span>';
+        synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: blue; cursor: pointer;" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
       }
         else if(isInArray(noSpacesWord, databaseArray)){
           // If word is in database, make it green
-        synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: green; cursor: pointer;" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + ', </span>';
+        synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: green; cursor: pointer;" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
       }
         else{
           // If word is not in database, make it red
-          synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: red; cursor: pointer;"onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + ', </span>';
+          synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: red; cursor: pointer;"onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
         }
   }
     return synonymsHtml;
