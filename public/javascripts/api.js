@@ -190,7 +190,6 @@ function displayWordsList(){
   document.querySelector('#begin-cycle-button').style.display = 'block';
   document.querySelector('#begin-cycle-button').innerHTML = 'Continue';
   document.querySelector('#display-words-list').style.display = 'none';
-
 }
 // startCycle();
 function inputFiller() {
@@ -237,6 +236,7 @@ $.ajax({
       }
       else{
         document.getElementById('words-uploading').style.display = 'block';
+        // Give wordToWords() time to finish all ajax requests before clicking and posting.
         setTimeout(function(){
           document.getElementById('word-submitter').click(); }, 3000);
       }
@@ -498,4 +498,45 @@ function ajaxTest(word){
       console.log(err);
     }
   })
+}
+
+var wordsToRemoveArray = [];
+// function removeWordsFromDatabase(){
+//   for(var i = 0; i <= databaseArray.length - 1; i++){
+//     console.log(databaseArray[i]);
+//     document.querySelector('#remove-'+databaseArray[i]).style.display = 'none';
+//     document.querySelector('#plus-'+databaseArray[i]).style.display = 'none';
+//   }
+// }
+
+function clickSubmitButton(){
+  document.querySelector('#word-submitter').click();
+}
+function addWordFromRemoveWordsArray(word){
+  if($.inArray(word, wordsToRemoveArray) === -1){
+    wordsToRemoveArray.push(word);
+    console.log('wordsToRemoveArray: ' + wordsToRemoveArray);
+    document.querySelector('#wordsToBeDeleted-input').value = wordsToRemoveArray;
+    document.querySelector('#wordsToDelete').innerHTML = wordsToRemoveArray;
+    document.querySelector('#wordsToDeleteParagraph').style.display = 'block';
+    document.querySelector('#minus-'+word).style.display = 'none';
+  }
+}
+
+function displayMinusButtons(){
+  if(document.querySelector('#plus-and-delete-buttons').style.display === 'block'){
+    $( "#plus-and-delete-buttons").hide();
+    $( ".delete-buttons" ).hide();
+    $( ".plus-buttons" ).hide();
+    $( ".minus-buttons" ).show();
+  }
+  else{
+    $( "#plus-and-delete-buttons").show();
+    $( ".delete-buttons" ).show();
+    $( ".plus-buttons" ).show();
+    $( ".minus-buttons" ).hide();
+    wordsToRemoveArray = [];
+    document.querySelector('#wordsToDelete').innerHTML = wordsToRemoveArray;
+    document.querySelector('#wordsToDeleteParagraph').style.display = 'none';
+  }
 }
