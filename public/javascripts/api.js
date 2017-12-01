@@ -194,8 +194,10 @@ function displayWordsList(){
 }
 // startCycle();
 function inputFiller() {
-  var newWord = document.querySelector('#age').value;
-  // if(newWord.indexOf(',') === -1){
+  var uploadWordsArray = document.querySelector('#age').value.split(",");
+  console.log(uploadWordsArray);
+  var newWord = uploadWordsArray[0];
+  wordToWords();
 $.ajax({
   url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+newWord+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
   method: "GET",
@@ -229,7 +231,13 @@ $.ajax({
       document.getElementById('word-search-error').style.display = 'none';
       document.getElementById('repeat-word-error').style.display = 'none';
       document.getElementById('begin-error').style.display = 'none';
-      document.getElementById('word-submitter').click()
+      if(uploadWordsArray.length === 1){
+        document.getElementById('word-submitter').click();
+      }
+      else{
+        document.getElementById('words-uploading').style.display = 'block';
+        setTimeout(function(){ document.getElementById('word-submitter').click(); }, 3000);
+      }
   }
   if(!response.querySelector('hw'))
   {
@@ -447,42 +455,43 @@ $.ajax({
 });
 }
 
-
+var ajaxPassedTestArray = [];
 // Code that has to do with adding multiple words at a time.
-// function wordToWords(){
-//   wordsArray = document.querySelector('#age').value.split(',');
-//   document.querySelector('#word-input').value = wordsArray[0];
-//   wordsArray.splice(0,1);
-//   document.querySelector('#words-input').value = wordsArray;
-// //   for(var i = 0; i <= wordsArray.length - 1; i++){
-// //     ajaxTest(wordsArray[i]);
-// // }
-// }
-
-// function ajaxTest(word){
-//   var indexOfWord = wordsArray.indexOf(word);
-//   $.ajax({
-//     url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
-//     method: "GET",
-//     success: function (response) {
-//   // If database already has that word then display error message
-//   // Convert value to have no upper case or spaces
-//       if($.inArray(word.toLowerCase().replace(/\s/g, ''), databaseArray) === -1 && response.querySelector('hw')){
-//         console.log(word+ ' was successfully found')
-//         }
-//       else if($.inArray(word.toLowerCase().replace(/\s/g, ''), databaseArray) !== -1){
-//         wordsArray.splice(indexOfWord,1);
-//         console.log(word+ ' is already in database');
-//         document.querySelector('#words-input').value = wordsArray;
-//       }
-//       else if(!response.querySelector('hw')){
-//         wordsArray.splice(indexOfWord,1);
-//         console.log(word+ ' not found')
-//         document.querySelector('#words-input').value = wordsArray;
-//       }
-//     },
-//     error: function (err) {
-//       console.log(err);
-//     }
-//   })
-// }
+function wordToWords(){
+  wordsArray = document.querySelector('#age').value.split(',');
+  document.querySelector('#word-input').value = wordsArray[0];
+  wordsArray.splice(0,1);
+  for(var i = 0; i <= wordsArray.length - 1; i++){
+    ajaxTest(wordsArray[i]);
+}
+}
+function ajaxTest(word){
+  var indexOfWord = wordsArray.indexOf(word);
+  $.ajax({
+    url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+    method: "GET",
+    success: function (response) {
+  // If database already has that word then display error message
+  // Convert value to have no upper case or spaces
+      if($.inArray(word.toLowerCase().replace(/\s/g, ''), databaseArray) === -1 && response.querySelector('hw')){
+        ajaxPassedTestArray.push(response.querySelector('hw').innerHTML);
+        console.log(word+ ' was successfully found');
+        console.log(ajaxPassedTestArray);
+        document.querySelector('#words-input').value = ajaxPassedTestArray;
+        }
+      else if($.inArray(word.toLowerCase().replace(/\s/g, ''), databaseArray) !== -1){
+        // wordsArray.splice(indexOfWord,1);
+        console.log(word+ ' is already in database');
+        // document.querySelector('#words-input').value = wordsArray;
+      }
+      else if(!response.querySelector('hw')){
+        // wordsArray.splice(indexOfWord,1);
+        console.log(word+ ' not found')
+        // document.querySelector('#words-input').value = wordsArray;
+      }
+    },
+    error: function (err) {
+      console.log(err);
+    }
+  })
+}

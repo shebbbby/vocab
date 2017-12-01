@@ -2,7 +2,7 @@
 <br>
 <br>
   <p>
-    <strong>Current List: </strong><span id="demo"></span>
+    <strong>Current Learning List: </strong><span id="demo"></span>
   </p>
   <p id="wordstoaddparagraph" style="display:none;">
    <strong>Words to add to database (<span id="wordsToAddNumber"></span>):</strong>  <span id="wordsToAdd"></span>
@@ -37,12 +37,13 @@
 
   <p id="display-words-list" style="border:1px solid black; display: none; width:80px;" class="btn btn-sm" onclick="displayWordsList()">Add Words</p>
 <p style="display:none; color: green; border:1px solid green; width: 15%;" id="word-search-success">Word Added!</p>
+<p style="display:none; color: green; border:1px solid green; width: 15%;" id="words-uploading">Uploading...</p>
 <p style="display:none; color: red; border:1px solid red; width: 15%;" id="word-search-error">Sorry, Word not found!</p>
 <p style="display:none; color: red; border:1px solid red; width: 15%;" id="repeat-word-error">You Already Have this word!</p>
 <p style="display:none; color: red; border:1px solid red; width: 30%;" id="begin-error">You have to add at least 1 word to begin!</p>
 
 <div id="hideUponBegin">
-  <strong>Add New Word:</strong><br>
+  <strong>Add New Word</strong><span> (One Word: hello | Multiple words: hello,cliche,...):</span><br>
   <input id="age" type="text" name="firstname" value="">
   <!-- <button id="custom-button" onclick="showCustomInputs()"> Custom </button> -->
   <br>
@@ -57,8 +58,8 @@
   <br>
   <label for="words-input"> Words </label>
   <input id="words-input" name="words" type="text" value="">
-  <br>
-
+  <p id="begin-cycle-button" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="wordToWords()">Select</p>
+<br>
   <label for="definition-input"> Definition </label>
   <input  id="definition-input" name="definition" type="text" step="0.10">
   <br>
