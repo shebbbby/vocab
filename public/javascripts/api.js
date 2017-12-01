@@ -227,6 +227,7 @@ $.ajax({
       document.querySelector('#antonyms-input').value = response.querySelector('ant').innerHTML
     }
     if(response.querySelector('hw')){
+      document.getElementById('word-search-success').innerHTML = newWord + ' was added!';
       document.getElementById('word-search-success').style.display = 'block';
       document.getElementById('word-search-error').style.display = 'none';
       document.getElementById('repeat-word-error').style.display = 'none';
@@ -236,16 +237,19 @@ $.ajax({
       }
       else{
         document.getElementById('words-uploading').style.display = 'block';
-        setTimeout(function(){ document.getElementById('word-submitter').click(); }, 3000);
+        setTimeout(function(){
+          document.getElementById('word-submitter').click(); }, 3000);
       }
   }
   if(!response.querySelector('hw'))
   {
+    document.getElementById('word-search-error').innerHTML = 'Sorry, ' + newWord + ' not Found';
     document.getElementById('word-search-error').style.display = 'block';
     document.getElementById('repeat-word-error').style.display = 'none';
   }
 }
 else{
+  document.getElementById('repeat-word-error').innerHTML = 'You Already Have The Word: ' + newWord;
   document.getElementById('repeat-word-error').style.display = 'block';
   document.getElementById('word-search-error').style.display = 'none';
 }
