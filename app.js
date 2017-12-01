@@ -131,7 +131,7 @@ app.get('/:wordId', (req, res, next) => {
 // <form method="post" action="/products">
 app.post('/', (req, res, next) => {
     // create a new product object
-    const theWord = new WordModel({
+    var theWord = new WordModel({
         word: req.body.word,
         definition: req.body.definition,
         speech: req.body.speech,
@@ -141,7 +141,6 @@ app.post('/', (req, res, next) => {
         antonyms: req.body.antonyms
     }); //  |                          |
         // from SCHEMA            from INPUT NAMES
-
     // save that product to the database
     theWord.save((err) => {
         // if there's a validation error...
@@ -169,6 +168,45 @@ app.post('/', (req, res, next) => {
         // res.render('home', {req: req.body});
           // You can only redirect to a URL
     });
+
+    // This section has to do with the extra words that are added every multiple words are added
+    wordsArray = req.body.words.split(",");
+    if(wordsArray[0] === ""){
+      wordsArray.splice(0,1);
+    }
+    for (var i = 0; i <= wordsArray.length - 1; i++){
+      var theWord = new WordModel({
+          word: wordsArray[i]
+          });
+
+          // save that product to the database
+          theWord.save((err) => {
+              // if there's a validation error...
+              if (err && theWord.errors) {
+                  // send the error messages to the view
+                  res.locals.errorMessages = theWord.errors;
+
+                  // display the form again with the errors
+                  res.render('home.ejs');
+                  return;
+              }
+
+              // if there's a database error...
+              if (err && !theWord.errors) {
+                  // skip to the error handler middleware
+                  next(err);
+                  // return to avoid showing the view
+                  return;
+                    // early return instead of "else"
+              }
+
+              // STEP #3 redirect
+              // ALWAYS redirect after a successful to POST to avoid resubmitting
+              // res.redirect('/');
+              // res.render('home', {req: req.body});
+                // You can only redirect to a URL
+      });
+  }
 }); // close POST /products
 
 

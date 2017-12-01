@@ -6,9 +6,11 @@
   </p>
   <p id="wordstoaddparagraph" style="display:none;">
    <strong>Words to add to database (<span id="wordsToAddNumber"></span>):</strong>  <span id="wordsToAdd"></span>
+   <br>
+   <span style="border:1px solid black; width:150px;" class="btn btn-sm" onclick="downloadSynonymNewWords()">Add Words To Database</span>
   </p>
   <p>
-   <strong># Words:</strong>  <span id="numberInList"></span>
+   <strong># Words in Learning List:</strong>  <span id="numberInList"></span>
   </p>
 <p>
  <strong>Cycle Duration:</strong>  <span id="cycleTime"></span>
@@ -47,11 +49,16 @@
     <br>
   <!-- <input id="age" type="text" name="firstname" value="" onchange="addWordUsingInput()"> -->
   <p style="border:1px solid black;" class="btn btn-sm" onclick="inputFiller()">Submit</p>
-<form id="hidden-inputs" style="display: none;" method="post" action="/">
+<form style="display:none;" id="hidden-inputs" method="post" action="/">
+  <!-- style="display:none;" -->
 
   <label for="word-input"> Word </label>
   <input  id="word-input" name="word" type="text" required>
   <br>
+  <label for="words-input"> Words </label>
+  <input id="words-input" name="words" type="text" value="">
+  <br>
+
   <label for="definition-input"> Definition </label>
   <input  id="definition-input" name="definition" type="text" step="0.10">
   <br>
@@ -171,6 +178,14 @@ if(duplicateWordsOnce[0]){
   // Click remove button
   document.getElementById('remove-'+ duplicateWordsOnce[0]).click()
 }
+// Alert and delete empty values if there happens to somehow be one
+if(document.getElementById('remove-')){
+  alert('An empty value will be deleted: ""');
+  // Click remove button
+  document.getElementById('remove-').click()
+}
+
+
 </script>
 
 

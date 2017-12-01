@@ -195,63 +195,6 @@ function displayWordsList(){
 // startCycle();
 function inputFiller() {
   var newWord = document.querySelector('#age').value;
-  // My attempt to be able to post multiple words at a time. Doesnt work because of reloading of page upon post.
-  // if (newWord.indexOf(',') > -1){
-  //   var arrayWords = newWord.split(",");
-  //   console.log(arrayWords);
-  //   for(var i = 0; i <= arrayWords.length-1; i++){
-  //     $.ajax({
-  //       url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+arrayWords[i]+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
-  //       method: "GET",
-  //       success: function (response) {
-  //     // If database already has that word then display error message
-  //     // Convert value to have no upper case or spaces
-  //         if($.inArray(response.querySelector('hw').innerHTML.toLowerCase().replace(/\s/g, ''), databaseArray) == -1){
-  //         if(document.querySelector('#word-input') != '' && response.querySelector('hw')){
-  //           document.querySelector('#word-input').value = response.querySelector('hw').innerHTML
-  //         }
-  //         if(document.querySelector('#definition-input') != '' && response.querySelector('mc')){
-  //           document.querySelector('#definition-input').value = response.querySelector('mc').innerHTML
-  //         }
-  //         if(document.querySelector('#speech-input') != '' && response.querySelector('fl')){
-  //           document.querySelector('#speech-input').value = response.querySelector('fl').innerHTML
-  //         }
-  //         if(document.querySelector('#sentence-input') != '' && response.querySelector('vi')){
-  //           document.querySelector('#sentence-input').value = response.querySelector('vi').innerHTML
-  //         }
-  //         if(document.querySelector('#synonyms-input') != '' && response.querySelector('syn')){
-  //           document.querySelector('#synonyms-input').value = response.querySelector('syn').innerHTML
-  //         }
-  //         if(document.querySelector('#relatedwords-input') != '' && response.querySelector('rel')){
-  //           document.querySelector('#relatedwords-input').value = response.querySelector('rel').innerHTML
-  //         }
-  //         if(document.querySelector('#antonyms-input') != '' && response.querySelector('ant')){
-  //           document.querySelector('#antonyms-input').value = response.querySelector('ant').innerHTML
-  //         }
-  //         if(response.querySelector('hw')){
-  //           document.getElementById('word-search-success').style.display = 'block';
-  //           document.getElementById('word-search-error').style.display = 'none';
-  //           document.getElementById('repeat-word-error').style.display = 'none';
-  //           document.getElementById('begin-error').style.display = 'none';
-  //           document.getElementById('word-submitter').click()
-  //       }
-  //       if(!response.querySelector('hw'))
-  //       {
-  //         document.getElementById('word-search-error').style.display = 'block';
-  //         document.getElementById('repeat-word-error').style.display = 'none';
-  //       }
-  //     }
-  //     else{
-  //       document.getElementById('repeat-word-error').style.display = 'block';
-  //       document.getElementById('word-search-error').style.display = 'none';
-  //     }
-  //       },
-  //       error: function (err) {
-  //         console.log(err);
-  //       }
-  //     })
-  //   }
-  // }
   // if(newWord.indexOf(',') === -1){
 $.ajax({
   url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+newWord+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
@@ -306,9 +249,28 @@ else{
 }
 // }
 
-
-
 var wordsToAdd = [];
+
+function downloadSynonymNewWords(){
+  document.querySelector('#words-input').value = '';
+  for(var i = 0; i <= wordsToAdd.length - 1; i++){
+    // If the word is not already in database
+    if($.inArray(wordsToAdd[i].toLowerCase().replace(/\s/g, ''), databaseArray) !== -1){
+      wordsToAdd.splice(i,1);
+    }
+  }
+  document.querySelector('#word-input').value = wordsToAdd[0];
+  for(var i = 1; i <= wordsToAdd.length - 1; i++){
+    if(i === wordsToAdd.length - 1){
+      document.querySelector('#words-input').value += wordsToAdd[i];
+    }
+    else{
+      document.querySelector('#words-input').value += wordsToAdd[i] + ',';
+    }
+  }
+  document.getElementById('word-submitter').click()
+}
+
 function addWordFromSynonyms(word){
 // if($.inArray(word, wordsArray) === -1){
 // If the plus sign button is 'style: block' then add the word
@@ -484,3 +446,43 @@ $.ajax({
   }
 });
 }
+
+
+// Code that has to do with adding multiple words at a time.
+// function wordToWords(){
+//   wordsArray = document.querySelector('#age').value.split(',');
+//   document.querySelector('#word-input').value = wordsArray[0];
+//   wordsArray.splice(0,1);
+//   document.querySelector('#words-input').value = wordsArray;
+// //   for(var i = 0; i <= wordsArray.length - 1; i++){
+// //     ajaxTest(wordsArray[i]);
+// // }
+// }
+
+// function ajaxTest(word){
+//   var indexOfWord = wordsArray.indexOf(word);
+//   $.ajax({
+//     url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+//     method: "GET",
+//     success: function (response) {
+//   // If database already has that word then display error message
+//   // Convert value to have no upper case or spaces
+//       if($.inArray(word.toLowerCase().replace(/\s/g, ''), databaseArray) === -1 && response.querySelector('hw')){
+//         console.log(word+ ' was successfully found')
+//         }
+//       else if($.inArray(word.toLowerCase().replace(/\s/g, ''), databaseArray) !== -1){
+//         wordsArray.splice(indexOfWord,1);
+//         console.log(word+ ' is already in database');
+//         document.querySelector('#words-input').value = wordsArray;
+//       }
+//       else if(!response.querySelector('hw')){
+//         wordsArray.splice(indexOfWord,1);
+//         console.log(word+ ' not found')
+//         document.querySelector('#words-input').value = wordsArray;
+//       }
+//     },
+//     error: function (err) {
+//       console.log(err);
+//     }
+//   })
+// }
