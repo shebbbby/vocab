@@ -53,7 +53,7 @@
   <!-- style="display:none;" -->
 
   <label for="word-input"> Word </label>
-  <input  id="word-input" name="word" type="text" required>
+  <input  id="word-input" name="word" type="text">
   <br>
   <label for="words-input"> Words </label>
   <input id="words-input" name="words" type="text" value="">
@@ -79,16 +79,16 @@
   <input id="antonyms-input" name="antonyms" type="text">
   <br>
 
+  <label for="wordsToBeDeleted-input"> wordsToBeDeleted </label>
+  <input  id="wordsToBeDeleted-input" name="wordsToBeDeleted" type="text">
+
   <button id="word-submitter"> Save This Word </button>
 
 </form>
 
-<h2> All Words <span style="font-size: 20px;">(<span id="numberOfDatabaseWords"></span>)</span> </h2>
+<h2> All Words <span style="font-size: 20px;">(<span id="numberOfDatabaseWords"></span>)</span> <button onclick="removeWordsFromDatabase()"><i style="color:red;" id="deleteArrayOfWords" class="fa fa-minus" aria-hidden="true"></i></button> </h2>
 
-
-<% var noDatabaseArray = [] %>
-<% console.log(noDatabaseArray) %>
-
+<br>
 <ul>
   <% listOfWords.forEach((oneWord) => { %>
     <li style="list-style: none;" class="word-list">
@@ -96,16 +96,24 @@
       <!-- use a form with a button for delete instead of an anchor tag
            so that it can be a (semantically correct) POST route -->
       <form style="float:left; margin-left: 10px; class="delete-button" method="post" action="/<%= oneWord._id %>/delete">
-        <button id="remove-<%= oneWord.word %>"> X </button>
+        <button style="color:red;" id="remove-<%= oneWord.word %>"> X </button>
       </form>
-        <button style="float:left; display:block;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
+        <button style="float:left; display:block; color:green;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
+        <button style="float:left; display:none;" id="minus-<%= oneWord.word %>" onclick="addWordFromRemoveWordsArray('<%= oneWord.word %>')"> - </button>
         <button onclick="removeWordFromStudyArray('<%= oneWord.word %>')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-<%= oneWord.word %>" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
     </li>
   <% }) %>
 </ul>
 </div>
-
 <script>
+// function removeWordsFromDatabase(){
+//   for(var i = 0; i <= databaseArray.length - 1; i++){
+//     console.log(databaseArray[i]);
+//     document.querySelector('#remove-'+databaseArray[i]).style.display = 'none';
+//     document.querySelector('#plus-'+databaseArray[i]).style.display = 'none';
+//   }
+// }
+
 // THis is the array of actual database words.
   databaseArray = [];
   <% listOfWords.forEach((oneWord) => { %>

@@ -3,18 +3,39 @@
 
 <h2> Word Details </h2>
 
-<h3> <%= wordInfo.word %><span>(<%= wordInfo.speech %>) </span> </h3>
+<h3 id="wordInDetailsPage"> <%= wordInfo.word %><span id="speechDetails">(<%= wordInfo.speech %>) </span> </h3>
 
-<p><%= wordInfo.definition %></p>
+<p id="definitionDetails"><%= wordInfo.definition %></p>
 
-<p><%= wordInfo.sentence %></p>
+<p id="sentenceDetails"><%= wordInfo.sentence %></p>
 
-<p> <%= wordInfo.synonyms %> </p>
-<p> <%= wordInfo.relatedwords %> </p>
-<p> <%= wordInfo.antonyms %> </p>
+<p id="synonymsDetails"> <%= wordInfo.synonyms %> </p>
+<p id="relatedWordsDetails"> <%= wordInfo.relatedwords %> </p>
+<p id="antonymsDetails"> <%= wordInfo.antonyms %> </p>
 
 
 <form method="post" action="/<%= wordInfo._id %>/delete">
   <button> Delete </button>
 </form>
 </div>
+
+
+<script>
+// Doesnt do shittttt
+function fillInEmptyDetailsPage(word) {
+  if(document.querySelector('#speechDetails').innerHTML === '()'){
+$.ajax({
+  url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+  method: "GET",
+  success: function (response) {
+    console.log(response.querySelector('hw'));
+},
+  error: function (err) {
+    console.log(err);
+  }
+})
+}
+}
+fillInEmptyDetailsPage(document.querySelector('#wordInDetailsPage').innerHTML);
+
+</script>

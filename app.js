@@ -131,6 +131,9 @@ app.get('/:wordId', (req, res, next) => {
 // <form method="post" action="/products">
 app.post('/', (req, res, next) => {
     // create a new product object
+    // This if statement will make it so that I don't have to upload a word every time I post something to the home page.
+    // This will allow me to also delete lists of words
+  if(req.body.word !== ""){
     var theWord = new WordModel({
         word: req.body.word,
         definition: req.body.definition,
@@ -142,6 +145,7 @@ app.post('/', (req, res, next) => {
     }); //  |                          |
         // from SCHEMA            from INPUT NAMES
     // save that product to the database
+    console.log(req.body.word);
     theWord.save((err) => {
         // if there's a validation error...
         if (err && theWord.errors) {
@@ -168,9 +172,15 @@ app.post('/', (req, res, next) => {
         // res.render('home', {req: req.body});
           // You can only redirect to a URL
     });
+  }
+  else{
+    res.redirect('/');
+  }
 
     // This section has to do with the extra words that are added every multiple words are added
     wordsArray = req.body.words.split(",");
+    // When you upload only one word, wordsArray[0] is still considered a value even tho it is an empty string.
+    // Which means if this if statement doesn't exist, an empty value will be uploaded to the database.
     if(wordsArray[0] === ""){
       wordsArray.splice(0,1);
     }
@@ -207,6 +217,20 @@ app.post('/', (req, res, next) => {
                 // You can only redirect to a URL
       });
   }
+
+var wordsToBeDeletedArray = req.body.wordsToBeDeleted.split(",");
+  for (var i = 0; i <= wordsToBeDeletedArray.length - 1; i++){
+    WordModel.remove({word: wordsToBeDeletedArray },
+      (err, wordInfo) => {
+          if (err) {
+              next(err);
+              return;
+          }
+
+      }
+    );
+  }
+
 }); // close POST /products
 
 
