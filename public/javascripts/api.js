@@ -170,6 +170,7 @@ var intervalCycle = function(){ setInterval(function(){
 // Starts cycling with wordsArray and cycleSpeed
 function startCycle(){
   if(wordsArray.length > 0){
+  getAllSentences();
   document.querySelector('.flashcard').style.display = 'block';
   document.getElementById('colorLabelInforation').style.display = 'block';
   document.querySelector('#next-previous-buttons').style.display = 'block';
@@ -418,6 +419,8 @@ $.ajax({
     if(response.getElementsByTagName('syn')[randomNumber]){
       appendThis += `<li class="en_eg"> <strong>Synonyms:</strong> ` +  synonymsHtml + ` </li>`;
     }
+    appendThis += '<li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Take Quiz</li>';
+
     document.getElementById("wordslist").innerHTML = appendThis;
   }
   else{
@@ -539,4 +542,183 @@ function displayMinusButtons(){
     document.querySelector('#wordsToDelete').innerHTML = wordsToRemoveArray;
     document.querySelector('#wordsToDeleteParagraph').style.display = 'none';
   }
+}
+
+
+
+function generateQuiz(){
+  (function() {
+    function buildQuiz() {
+      // we'll need a place to store the HTML output
+      const output = [];
+
+      // for each question...
+      myQuestions.forEach((currentQuestion, questionNumber) => {
+        // we'll want to store the list of answer choices
+        const answers = [];
+
+        // and for each available answer...
+        for (letter in currentQuestion.answers) {
+          // ...add an HTML radio button
+          answers.push(
+            `<label>
+              <input type="radio" name="question${questionNumber}" value="${letter}">
+
+              ${currentQuestion.answers[letter]}
+            </label>`
+          );
+        }
+
+        // add this question and its answers to the output
+        output.push(
+          `<div class="question"> ${currentQuestion.question} </div>
+          <div class="answers"> ${answers.join("")} </div>`
+        );
+      });
+
+      // finally combine our output list into one string of HTML and put it on the page
+      quizContainer.innerHTML = output.join("");
+    }
+
+    function showResults() {
+      // gather answer containers from our quiz
+      const answerContainers = quizContainer.querySelectorAll(".answers");
+
+      // keep track of user's answers
+      let numCorrect = 0;
+
+      // for each question...
+      myQuestions.forEach((currentQuestion, questionNumber) => {
+        // find selected answer
+        const answerContainer = answerContainers[questionNumber];
+        const selector = `input[name=question${questionNumber}]:checked`;
+        const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+
+        // if answer is correct
+        if (userAnswer === currentQuestion.correctAnswer) {
+          // add to the number of correct answers
+          numCorrect++;
+
+          // color the answers green
+          answerContainers[questionNumber].style.color = "lightgreen";
+        } else {
+          // if answer is wrong or blank
+          // color the answers red
+          answerContainers[questionNumber].style.color = "red";
+        }
+      });
+
+      // show number of correct answers out of total
+      resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
+    }
+
+    const quizContainer = document.getElementById("quiz");
+    const resultsContainer = document.getElementById("results");
+    const submitButton = document.getElementById("submit");
+
+    // display quiz right away
+    buildQuiz();
+    document.querySelector('#submit').style.display = 'block';
+
+    // on submit, show results
+    submitButton.addEventListener("click", showResults);
+  })();
+}
+
+var myQuestions = [];
+
+function pushQuizQuestion(word,mc1,mc2,mc3,mc4,answer){
+  myQuestions.push(
+    {
+      question: word,
+      answers: {
+        a: mc1,
+        b: mc2,
+        c: mc3,
+        d: mc4
+      },
+      correctAnswer: answer
+    }
+  )
+  generateQuiz();
+}
+function pushQuizQuestionUsingInputs(){
+  pushQuizQuestion(document.querySelector('#quizWord-input').value,
+                      document.querySelector('#mc1-input').value,
+                      document.querySelector('#mc2-input').value,
+                      document.querySelector('#mc3-input').value,
+                      document.querySelector('#mc4-input').value,'c')
+    }
+var sentencesArray = [];
+function getSentence(word){
+  // var randomWord = Math.floor(Math.random()* wordsArray.length );
+  $.ajax({
+    url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+    method: "GET",
+    success: function (response) {
+      var wordForFlashcard = {
+        word: word,
+        sentence: response.getElementsByTagName('mc')[0].innerHTML
+      };
+      sentencesArray.push(wordForFlashcard);
+      console.log(sentencesArray);
+    },
+    error: function (err) {
+      console.log(err);
+    }
+  })
+}
+function getAllSentences(){
+  for(var i = 0; i <= wordsArray.length - 1; i++){
+    getSentence(wordsArray[i]);
+  }
+}
+
+function makeQuestions(){
+  myQuestions = [];
+  // console.log(randomWordNumber);
+  for(var i = 0; i <= sentencesArray.length; i++){
+    var randomWordNumber = findRandomNumber();
+    if(randomWordNumber === i){
+      randomWordNumber = findRandomNumber();
+    }
+    var randomWordNumber2 = findRandomNumber();
+    while(randomWordNumber2 === i || randomWordNumber2 === randomWordNumber|| randomWordNumber2 === randomWordNumber3 || randomWordNumber2 === randomWordNumber4){
+      randomWordNumber2 = findRandomNumber();
+    }
+    var randomWordNumber3 = findRandomNumber();
+    while(randomWordNumber3 === i || randomWordNumber3 === randomWordNumber|| randomWordNumber3 === randomWordNumber2 || randomWordNumber3 === randomWordNumber4){
+      randomWordNumber3 = findRandomNumber();
+    }
+    var randomWordNumber4 = findRandomNumber();
+    while(randomWordNumber4 === i || randomWordNumber4 === randomWordNumber|| randomWordNumber4 === randomWordNumber2 || randomWordNumber4 === randomWordNumber3){
+      randomWordNumber4 = findRandomNumber();
+    }
+    var randomAnswerNumber = Math.floor(Math.random() * 4);
+    var randomAnswerLetter;
+
+    if(randomAnswerNumber === 0){
+      randomAnswerLetter = 'a';
+      randomWordNumber = i;
+    }
+    else if(randomAnswerNumber === 1){
+      randomAnswerLetter = 'b';
+      randomWordNumber2 = i;
+    }
+    else if(randomAnswerNumber === 2){
+      randomAnswerLetter = 'c';
+      randomWordNumber3 = i;
+    }
+    else{
+      randomAnswerLetter = 'd';
+      randomWordNumber4 = i;
+    }
+    pushQuizQuestion(sentencesArray[i].word,sentencesArray[randomWordNumber].sentence,sentencesArray[randomWordNumber2].sentence,sentencesArray[randomWordNumber3].sentence,sentencesArray[randomWordNumber4].sentence,randomAnswerLetter);
+  }
+}
+
+
+function findRandomNumber(){
+  var randomNumber = Math.floor(Math.random() * sentencesArray.length);
+  return randomNumber;
 }

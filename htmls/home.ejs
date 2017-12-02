@@ -1,3 +1,6 @@
+
+<!-- <a href="/quiz">quiz</a> -->
+
 <div class="container">
 <br>
 <br>
@@ -33,7 +36,39 @@
   <br>
   <br>
   <p id="begin-cycle-button" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle()">Begin</p>
+  <!-- <ul class="quizQuestion">
+    <li class="word">Hello</li>
+    <li id="multipleChoice1" class="en_eg">This is a sentence</li>
+    <li id="multipleChoice2" class="en_eg">This is a sentence</li>
+    <li id="multipleChoice3" class="en_eg">This is a sentence</li>
+    <li id="multipleChoice4" class="en_eg">This is a sentence</li>
+  </ul> -->
+  <!-- <br>
+  <label for="quizWord-input"> Quiz Word </label>
+  <input id="quizWord-input" name="quizWord" type="text" step="0.10">
+  <br>
+  <label for="mc1-input"> MC1 </label>
+  <input  id="mc1-input" name="mc1" type="text">
+  <br>
+  <label for="mc2-input"> MC2 </label>
+  <input  id="mc2-input" name="mc2" type="text">
+  <br>
+  <label for="mc3-input"> MC3 </label>
+  <input  id="mc3-input" name="mc3" type="text">
+  <br>
+  <label for="mc4-input"> MC4 </label>
+  <input  id="mc4-input" name="mc4" type="text">
+  <br>
+  <br> -->
+  <!-- <p style="border:1px solid black;" class="btn btn-sm" onclick="pushQuizQuestionUsingInputs()">Submit Question</p> -->
+  <br>
+  <br>
+  <!-- <p style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</p>
+  <div id="quiz"></div>
+  <button style="display:none;" id="submit">Submit Quiz</button>
+  <div id="results"></div> -->
   <hr>
+
 
   <p id="display-words-list" style="border:1px solid black; display: none; width:80px;" class="btn btn-sm" onclick="displayWordsList()">Add Words</p>
 <p style="display:none; color: green; border:1px solid green; width: 15%;" id="word-search-success">Word Added!</p>
@@ -220,9 +255,15 @@ if(document.getElementById('remove-')){
   <ul style="display: none;" class="flashcard" id="wordslist">
 
   </ul>
-  <br>
-  <br>
-  <br>
+
   <br>
 </div>
+<!-- <li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</li> -->
+<div id="quiz"></div>
+<button style="display:none;" id="submit">Submit Quiz</button>
+<div id="results"></div>
+<br>
+<br>
+<br>
+<br>
 </div>

@@ -99,6 +99,10 @@ app.get('/', (request, response, next) => {
   });
 });
 
+// app.get('/quiz', (req, res, next) => {
+//     res.render('quiz.ejs');
+// });
+
 app.get('/:wordId', (req, res, next) => {
     //      req.params.wordId
     // <a href="/words/9999">
@@ -260,6 +264,8 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
 
 // All signup and login views
 app.get('/signup', (req, res, next) => {
