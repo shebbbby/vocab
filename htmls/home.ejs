@@ -6,6 +6,9 @@
 <br>
   <p>
     <strong>Current Learning List: </strong><span id="demo"></span>
+    <br>
+    <!-- The true in getAllSentences(true) is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle sentence and wait until the proper time to generate questions -->
+    <span id="takeQuizQuttonUnderLearningList" style="border:1px solid black; display:none; width: 100px;" class="btn btn-sm" onclick="generateQuizWithoutStartingCycle();">Take Quiz</span>
   </p>
   <p id="wordstoaddparagraph" style="display:none;">
    <strong>Words to add to database (<span id="wordsToAddNumber"></span>):</strong>  <span id="wordsToAdd"></span>
@@ -77,6 +80,7 @@
 <p style="display:none; color: red; border:1px solid red; width: 15%;" id="repeat-word-error">You Already Have this word!</p>
 <p style="display:none; color: red; border:1px solid red; width: 30%;" id="begin-error">You have to add at least 1 word to begin!</p>
 
+<div id="listOfWords">
 <div id="hideUponBegin">
   <strong>Add New Word</strong><span> (One Word: hello | Multiple words: hello,cliche,...):</span><br>
   <input id="age" type="text" name="firstname" value="">
@@ -122,6 +126,7 @@
 
 </form>
 
+
 <h2> All Words <span style="font-size: 20px;">(<span id="numberOfDatabaseWords"></span>)</span> <button onclick="displayMinusButtons()"><i style="color:red;" id="deleteArrayOfWords" class="fa fa-minus" aria-hidden="true"></i></button> </h2>
 <p id="wordsToDeleteParagraph" style="display:none;">
   <strong>Words to Delete: </strong><span id="wordsToDelete"></span>
@@ -149,16 +154,37 @@
   <% }) %>
 </ul>
 </div>
+</div>
 <script>
 
 
 // THis is the array of actual database words.
   databaseArray = [];
+  databaseDefinitionArray = [];
+  var wordsSeparatedByCommas = '';
   <% listOfWords.forEach((oneWord) => { %>
     databaseArray.push('<%= oneWord.word %>');
+    // All Definitions
+    // databaseDefinitionArray.push('<%= oneWord.definition %>')
+
       <% }) %>
       // Log all words in alphabetical order
-      console.log(databaseArray.sort());
+      // console.log(databaseArray.sort());
+      // console.log(databaseArray);
+      // console.log(databaseDefinitionArray);
+      function getAllWordsSeparatedByCommas(){
+        for(var i = 0; i <= databaseArray.length - 1; i++){
+          if(i === databaseArray.length - 1){
+            wordsSeparatedByCommas += databaseArray[i]
+          }
+          else{
+            wordsSeparatedByCommas += databaseArray[i] + ',';
+          }
+        }
+        console.log(wordsSeparatedByCommas);
+    }
+      // console.log(wordsSeparatedByCommas);
+      //
       document.getElementById('numberOfDatabaseWords').innerHTML = databaseArray.length;
 
 

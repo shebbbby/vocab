@@ -1,16 +1,9 @@
-// Remove Elements
-// And then you can remove elements like this
-// document.getElementById("my-element").remove();
-Element.prototype.remove = function() {
-    this.parentElement.removeChild(this);
+function updateCycleInformation(){
+  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+  var cycleDurationMinutes = cycleDurationSeconds / 60;
+  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
 }
-NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
-    for(var i = this.length - 1; i >= 0; i--) {
-        if(this[i] && this[i].parentElement) {
-            this[i].parentElement.removeChild(this[i]);
-        }
-    }
-}
+
 function addWord(word){
 // if($.inArray(word, wordsArray) === -1){
 // If the plus sign button is 'style: block' then add the word
@@ -21,11 +14,12 @@ if(document.getElementById("plus-"+word).style.display === 'block'){
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.getElementById("plus-"+word).style.display = 'none';
   document.getElementById("checkmark-"+word).style.display = 'block';
+  if(wordsArray.length > 5){
+    document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+  }
   document.getElementById('word-search-error').style.display = 'none';
   document.getElementById('repeat-word-error').style.display = 'none';
-  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-  var cycleDurationMinutes = cycleDurationSeconds / 60;
-  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  updateCycleInformation();
 }
 }
 // }
@@ -37,13 +31,14 @@ function removeWordFromStudyArray(word){
   var indexOfWord = wordsArray.indexOf(word);
   // Splice word from wordsArray
   wordsArray.splice(indexOfWord,1);
+  if(wordsArray.length <= 5){
+    document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+  }
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.querySelector("#plus-"+word).style.display = 'block';
   document.querySelector("#checkmark-"+word).style.display = 'none';
-  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-  var cycleDurationMinutes = cycleDurationSeconds / 60;
-  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  updateCycleInformation();
 }
 
 function showSpeedInput(){
@@ -73,10 +68,7 @@ function changeSpeed(){
   console.log(cycleSpeed)
   document.querySelector('#cycleSpeed').innerHTML = (cycleSpeed / 1000) + ' Seconds Per Word';
   document.querySelector('#defaultSpeed').innerHTML = '';
-  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-  var cycleDurationMinutes = cycleDurationSeconds / 60;
-  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
-  // document.getElementById("time").innerHTML = cycleSpeed;
+  updateCycleInformation();  // document.getElementById("time").innerHTML = cycleSpeed;
 }
 
 // This is only if you use the input to add something
@@ -120,25 +112,27 @@ function removeWordButton(word){
   // If you are removing any word but the last word, skip to the next word
   if(currentFlashcardWordIndexInStudyArray !== wordsArray.length-1){
   wordsArray.splice(indexOfWord,1);
+  if(wordsArray.length <= 5){
+    document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+  }
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.querySelector("#plus-"+word).style.display = 'block';
   document.querySelector("#checkmark-"+word).style.display = 'none';
-  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-  var cycleDurationMinutes = cycleDurationSeconds / 60;
-  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  updateCycleInformation();
   cycleWordsArray(currentFlashcardWordIndexInStudyArray);
 }
 // If you are removing the last word, skip to the first word in array.
   else if(currentFlashcardWordIndexInStudyArray === wordsArray.length-1){
     wordsArray.splice(indexOfWord,1);
+    if(wordsArray.length <= 5){
+      document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+    }
     document.getElementById("demo").innerHTML = wordsArray;
     document.getElementById("numberInList").innerHTML = wordsArray.length;
     document.querySelector("#plus-"+word).style.display = 'block';
     document.querySelector("#checkmark-"+word).style.display = 'none';
-    var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-    var cycleDurationMinutes = cycleDurationSeconds / 60;
-    document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+    updateCycleInformation();
     cycleWordsArray(wordsArray[1]);
   }
   if(wordsArray.length === 0){
@@ -239,7 +233,8 @@ $.ajax({
         document.getElementById('words-uploading').style.display = 'block';
         // Give wordToWords() time to finish all ajax requests before clicking and posting.
         setTimeout(function(){
-          document.getElementById('word-submitter').click(); }, 3000);
+          document.getElementById('word-submitter').click();
+        }, 3000);
       }
   }
   if(!response.querySelector('hw'))
@@ -304,9 +299,7 @@ else if(document.getElementById("synonym-"+word).style.color === 'fuchsia'){
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.getElementById("synonym-"+word).style.color = 'blue';
-  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-  var cycleDurationMinutes = cycleDurationSeconds / 60;
-  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  updateCycleInformation();
   getSentence(word);
 }
 else if($.inArray(word, wordsArray) === -1 && document.getElementById("synonym-"+word).style.color === 'green'){
@@ -316,15 +309,12 @@ else if($.inArray(word, wordsArray) === -1 && document.getElementById("synonym-"
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.getElementById("synonym-"+word).style.color = 'blue';
-  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-  var cycleDurationMinutes = cycleDurationSeconds / 60;
-  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
-
-if($.inArray(word, databaseArray) !== -1){
-    document.getElementById("plus-"+word).style.display = 'none';
-    document.getElementById("checkmark-"+word).style.display = 'block';
-  }
-if($.inArray(word, databaseArray) === -1 && $.inArray(word, wordsToAdd) === -1){
+  updateCycleInformation();
+  if($.inArray(word, databaseArray) !== -1){
+      document.getElementById("plus-"+word).style.display = 'none';
+      document.getElementById("checkmark-"+word).style.display = 'block';
+    }
+  if($.inArray(word, databaseArray) === -1 && $.inArray(word, wordsToAdd) === -1){
     wordsToAdd.push(word);
     document.getElementById("wordstoaddparagraph").style.display = 'block';
     document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
@@ -334,17 +324,23 @@ if($.inArray(word, databaseArray) === -1 && $.inArray(word, wordsToAdd) === -1){
   // if color is blue and word is not in database:
 else if(document.getElementById("synonym-"+word).style.color === 'blue' && $.inArray(word, databaseArray) !== -1){
   wordsArray.splice(indexOfWord,1);
+  if(wordsArray.length <= 5){
+    document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+  }
+  getAllSentences();
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.getElementById("synonym-"+word).style.color = 'green';
-  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-  var cycleDurationMinutes = cycleDurationSeconds / 60;
-  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  updateCycleInformation();
   document.getElementById("plus-"+word).style.display = 'block';
   document.getElementById("checkmark-"+word).style.display = 'none';
 }
 else if(document.getElementById("synonym-"+word).style.color === 'blue' && $.inArray(word, databaseArray) === -1){
   wordsArray.splice(indexOfWord,1);
+  if(wordsArray.length <= 5){
+    document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+  }
+  getAllSentences();
   wordsToAdd.splice(indexOfWordInWordsToAddArray,1);
   document.getElementById("demo").innerHTML = wordsArray;
   if(wordsToAdd.length === 0){
@@ -354,9 +350,7 @@ else if(document.getElementById("synonym-"+word).style.color === 'blue' && $.inA
   document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.getElementById("synonym-"+word).style.color = 'red';
-  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
-  var cycleDurationMinutes = cycleDurationSeconds / 60;
-  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  updateCycleInformation();
 }
  }
 
@@ -443,8 +437,9 @@ $.ajax({
     if(response.getElementsByTagName('syn')[randomNumber]){
       appendThis += `<li class="en_eg"> <strong>Synonyms:</strong> ` +  synonymsHtml + ` </li>`;
     }
+    if(wordsArray.length > 5){
     appendThis += '<li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Take Quiz</li>';
-
+    }
     document.getElementById("wordslist").innerHTML = appendThis;
   }
   else{
@@ -671,10 +666,17 @@ function pushQuizQuestionUsingInputs(){
                       document.querySelector('#mc1-input').value,
                       document.querySelector('#mc2-input').value,
                       document.querySelector('#mc3-input').value,
-                      document.querySelector('#mc4-input').value,'c')
+                      document.querySelector('#mc4-input').value,'c'
+                    )
     }
 var sentencesArray = [];
-function getSentence(word){
+function getSentence(word, activateCheckerOfGetAllSentences){
+  function checkIfGetAllSentencesHasFinished(){
+    if(sentencesArray.length === wordsArray.length - 5 && wordsArray.length >= 6){
+      console.log('getAllSentences() has almost finished! You may begin generating questions!');
+      setTimeout(function(){ makeQuestions(); }, 2000);
+    }
+  }
   // var randomWord = Math.floor(Math.random()* wordsArray.length );
   $.ajax({
     url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
@@ -685,6 +687,9 @@ function getSentence(word){
         sentence: response.getElementsByTagName('mc')[0].innerHTML
       };
       sentencesArray.push(wordForFlashcard);
+      if(activateCheckerOfGetAllSentences === true){
+        checkIfGetAllSentencesHasFinished();
+      }
       console.log(sentencesArray);
     },
     error: function (err) {
@@ -692,9 +697,11 @@ function getSentence(word){
     }
   })
 }
-function getAllSentences(){
+function getAllSentences(activateCheckerOfGetAllSentences){
+  sentencesArray = [];
+  document.querySelector('#listOfWords').style.display = 'none';
   for(var i = 0; i <= wordsArray.length - 1; i++){
-    getSentence(wordsArray[i]);
+    getSentence(wordsArray[i], activateCheckerOfGetAllSentences);
   }
 }
 
@@ -747,12 +754,32 @@ function makeQuestions(){
     );
   }
 }
+function generateQuizWithoutStartingCycle(){
+  // The true is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle
+  // sentence and wait until the proper time to generate questions
+  getAllSentences(true);
+}
 
 
+// Additional Functions
 function findRandomNumber(){
   var randomNumber = Math.floor(Math.random() * sentencesArray.length);
   return randomNumber;
 }
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+// Remove Elements
+// And then you can remove elements like this
+// document.getElementById("my-element").remove();
+Element.prototype.remove = function() {
+    this.parentElement.removeChild(this);
+}
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+    for(var i = this.length - 1; i >= 0; i--) {
+        if(this[i] && this[i].parentElement) {
+            this[i].parentElement.removeChild(this[i]);
+        }
+    }
 }
