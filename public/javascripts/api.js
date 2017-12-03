@@ -227,7 +227,7 @@ $.ajax({
       document.querySelector('#antonyms-input').value = response.querySelector('ant').innerHTML
     }
     if(response.querySelector('hw')){
-      document.getElementById('word-search-success').innerHTML = newWord + ' was added!';
+      document.getElementById('word-search-success').innerHTML = capitalizeFirstLetter(newWord) + ' was added!';
       document.getElementById('word-search-success').style.display = 'block';
       document.getElementById('word-search-error').style.display = 'none';
       document.getElementById('repeat-word-error').style.display = 'none';
@@ -244,13 +244,13 @@ $.ajax({
   }
   if(!response.querySelector('hw'))
   {
-    document.getElementById('word-search-error').innerHTML = 'Sorry, ' + newWord + ' not Found';
+    document.getElementById('word-search-error').innerHTML = 'Sorry, ' + capitalizeFirstLetter(newWord) + ' not Found';
     document.getElementById('word-search-error').style.display = 'block';
     document.getElementById('repeat-word-error').style.display = 'none';
   }
 }
 else{
-  document.getElementById('repeat-word-error').innerHTML = 'You Already Have The Word: ' + newWord;
+  document.getElementById('repeat-word-error').innerHTML = 'You Already Have The Word: ' + capitalizeFirstLetter(newWord);
   document.getElementById('repeat-word-error').style.display = 'block';
   document.getElementById('word-search-error').style.display = 'none';
 }
@@ -281,7 +281,7 @@ function downloadSynonymNewWords(){
       document.querySelector('#words-input').value += wordsToAdd[i] + ',';
     }
   }
-  document.getElementById('word-submitter').click()
+  document.getElementById('word-submitter').click();
 }
 
 function addWordFromSynonyms(word){
@@ -290,8 +290,28 @@ function addWordFromSynonyms(word){
 var indexOfWord = wordsArray.indexOf(word);
 var indexOfWordInWordsToAddArray = wordsToAdd.indexOf(word);
 
-if($.inArray(word, wordsArray) === -1 && document.getElementById("synonym-"+word).style.color !== 'blue'){
+if(document.getElementById("synonym-"+word).style.color === 'red'){
+  wordsToAdd.push(word);
+  document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+  document.getElementById("synonym-"+word).style.color = 'fuchsia';
+  document.getElementById("wordstoaddparagraph").style.display = 'block';
+  document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+  document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+}
+
+else if(document.getElementById("synonym-"+word).style.color === 'fuchsia'){
+  wordsArray.push(word);
+  document.getElementById("demo").innerHTML = wordsArray;
+  document.getElementById("numberInList").innerHTML = wordsArray.length;
+  document.getElementById("synonym-"+word).style.color = 'blue';
+  var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+  var cycleDurationMinutes = cycleDurationSeconds / 60;
+  document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
+  getSentence(word);
+}
+else if($.inArray(word, wordsArray) === -1 && document.getElementById("synonym-"+word).style.color === 'green'){
   console.log($.inArray(word, wordsArray));
+  getSentence(word);
   wordsArray.push(word);
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
@@ -391,6 +411,10 @@ $.ajax({
           // If word is in database, make it green
         synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: green; cursor: pointer;" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
       }
+      else if(isInArray(noSpacesWord, wordsToAdd)){
+        // If word is in learning list, make it blue
+      synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: fuchsia; cursor: pointer;" onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+    }
         else{
           // If word is not in database, make it red
           synonymsHtml += '<span id="synonym-'+ noSpacesWord +'" style="color: red; cursor: pointer;"onclick="addWordFromSynonyms('+ "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
@@ -679,7 +703,7 @@ function makeQuestions(){
   // console.log(randomWordNumber);
   for(var i = 0; i <= sentencesArray.length; i++){
     var randomWordNumber = findRandomNumber();
-    if(randomWordNumber === i){
+    while(randomWordNumber === i){
       randomWordNumber = findRandomNumber();
     }
     var randomWordNumber2 = findRandomNumber();
@@ -713,7 +737,14 @@ function makeQuestions(){
       randomAnswerLetter = 'd';
       randomWordNumber4 = i;
     }
-    pushQuizQuestion(sentencesArray[i].word,sentencesArray[randomWordNumber].sentence,sentencesArray[randomWordNumber2].sentence,sentencesArray[randomWordNumber3].sentence,sentencesArray[randomWordNumber4].sentence,randomAnswerLetter);
+    pushQuizQuestion(
+      sentencesArray[i].word,
+      sentencesArray[randomWordNumber].sentence,
+      sentencesArray[randomWordNumber2].sentence,
+      sentencesArray[randomWordNumber3].sentence,
+      sentencesArray[randomWordNumber4].sentence,
+      randomAnswerLetter
+    );
   }
 }
 
@@ -721,4 +752,7 @@ function makeQuestions(){
 function findRandomNumber(){
   var randomNumber = Math.floor(Math.random() * sentencesArray.length);
   return randomNumber;
+}
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
