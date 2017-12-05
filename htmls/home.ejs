@@ -236,8 +236,10 @@
   }
   function addRandomWordsToLearningList(number){
     if((number + wordsArray.length) > databaseArray.length){
+      console.log('Truth');
+      console.log((number + wordsArray.length) > databaseArray.length);
       number = databaseArray.length - wordsArray.length;
-      alert('You Selected More Words Than You Have!')
+      alert('You Selected More Words Than You Have!');
     }
   var RandomWordsArray = getRandomWords(databaseArray, number);
   for(var i = 0; i <= RandomWordsArray.length-1; i++){
