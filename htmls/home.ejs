@@ -235,6 +235,9 @@
         return result;
   }
   function addRandomWordsToLearningList(number){
+    if(number > databaseArray.length){
+      number = databaseArray.length;
+    }
   var RandomWordsArray = getRandomWords(databaseArray, number);
   for(var i = 0; i <= RandomWordsArray.length-1; i++){
     console.log('Clicking id: #plus-'+RandomWordsArray[i]);
