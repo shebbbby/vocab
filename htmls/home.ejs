@@ -235,7 +235,7 @@
         return result;
   }
   function addRandomWordsToLearningList(number){
-    if((number - wordsArray.length) > databaseArray.length){
+    if((number + wordsArray.length) > databaseArray.length){
       number = databaseArray.length - wordsArray.length;
       alert('You Selected More Words Than You Have!')
     }
