@@ -32,7 +32,6 @@ if(wordsArray.length !== databaseArray.length){
   }
 }
 else {
-  alert('You dont have any more words that you can add!');
   console.log('You dont have any more words that you can add!');
 }
 }
