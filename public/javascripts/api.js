@@ -4,11 +4,13 @@ function updateCycleInformation(){
   document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Minutes / ' + cycleDurationSeconds.toFixed(0) + ' Seconds';
 }
 
+var copyOfDatabaseArray = databaseArray;
 function addWord(word){
 // if($.inArray(word, wordsArray) === -1){
 // If the plus sign button is 'style: block' then add the word
-if(document.getElementById("plus-"+word).style.display === 'block'){
-  console.log($.inArray(word, wordsArray));
+if(document.getElementById("plus-"+word).style.display === 'block' && $.inArray(word, wordsArray) === -1){
+  console.log("Adding: " + word + ' to learning list!');
+  console.log("----------------------------------------");
   wordsArray.push(word);
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
@@ -20,6 +22,11 @@ if(document.getElementById("plus-"+word).style.display === 'block'){
   document.getElementById('word-search-error').style.display = 'none';
   document.getElementById('repeat-word-error').style.display = 'none';
   updateCycleInformation();
+}
+else{
+  var randomWordNumber = Math.floor(Math.random() * databaseArray.length);
+  console.log(word + ' is already in learning list!');
+  addWord(databaseArray[randomWordNumber]);
 }
 }
 // }
@@ -65,7 +72,7 @@ document.getElementById("cycleTime").innerHTML = '0 Seconds';
 function changeSpeed(){
   var x = document.querySelector("#speed-input").value;
   cycleSpeed = Number(x)*1000;
-  console.log(cycleSpeed)
+  console.log(cycleSpeed/1000 + ' Seconds Per Word');
   document.querySelector('#cycleSpeed').innerHTML = (cycleSpeed / 1000) + ' Seconds Per Word';
   document.querySelector('#defaultSpeed').innerHTML = '';
   updateCycleInformation();  // document.getElementById("time").innerHTML = cycleSpeed;
@@ -111,6 +118,7 @@ function removeWordButton(word){
   var indexOfWord = wordsArray.indexOf(word);
   // If you are removing any word but the last word, skip to the next word
   if(currentFlashcardWordIndexInStudyArray !== wordsArray.length-1){
+    console.log('Removing ' + word + ' from learning list!');
   wordsArray.splice(indexOfWord,1);
   if(wordsArray.length <= 5){
     document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
@@ -190,7 +198,7 @@ function displayWordsList(){
 function inputFiller() {
   var uploadWordsArray = document.querySelector('#age').value.split(",");
   console.log(uploadWordsArray);
-  var newWord = uploadWordsArray[0];
+  var newWord = uploadWordsArray[0].toLowerCase().replace(/\s/g, '');
   wordToWords();
 $.ajax({
   url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+newWord+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
@@ -395,6 +403,7 @@ $.ajax({
         }
         // If a synonym has symbols incombatible with the api search, make it black.
         else if(noSpacesWord.includes("(") || noSpacesWord.includes(")") || noSpacesWord.includes("[") || noSpacesWord.includes("]")){
+          // noSpacesWord = noSpacesWord.replace(/(.*)/, '');
           synonymsHtml += '<span style="color: black; cursor: auto;">' + noSpacesWord + comma + '</span>';
         }
         else if(isInArray(noSpacesWord, wordsArray)){
@@ -482,13 +491,18 @@ $.ajax({
 }
 
 var ajaxPassedTestArray = [];
+var ajaxPassedTestArrayDefinitions = [];
+var ajaxPassedTestArraySentences = [];
+var ajaxPassedTestArraySpeeches = [];
+var ajaxPassedTestArraySynonyms = [];
+var ajaxPassedTestArrayAntonyms = [];
 // Code that has to do with adding multiple words at a time.
 function wordToWords(){
   wordsArray = document.querySelector('#age').value.split(',');
   document.querySelector('#word-input').value = wordsArray[0];
   wordsArray.splice(0,1);
   for(var i = 0; i <= wordsArray.length - 1; i++){
-    ajaxTest(wordsArray[i]);
+    ajaxTest(wordsArray[i].toLowerCase().replace(/\s/g, ''));
 }
 }
 function ajaxTest(word){
@@ -504,6 +518,43 @@ function ajaxTest(word){
         console.log(word+ ' was successfully found');
         console.log(ajaxPassedTestArray);
         document.querySelector('#words-input').value = ajaxPassedTestArray;
+        // Definitions
+        if(response.querySelector('mc')){
+          ajaxPassedTestArrayDefinitions.push(response.querySelector('mc').innerHTML + '|');
+          document.querySelector('#definitions-input').value = ajaxPassedTestArrayDefinitions;
+        }
+        else{
+          ajaxPassedTestArrayDefinitions.push('Definition Not Found');
+        }
+        if(response.querySelector('vi')){
+          ajaxPassedTestArraySentences.push(response.querySelector('vi').innerHTML + '|');
+          document.querySelector('#sentences-input').value = ajaxPassedTestArraySentences;
+        }
+        else{
+          ajaxPassedTestArraySentences.push('Sentence Not Found');
+        }
+        if(response.querySelector('fl')){
+          ajaxPassedTestArraySpeeches.push(response.querySelector('fl').innerHTML + '|');
+          document.querySelector('#speeches-input').value = ajaxPassedTestArraySpeeches;
+        }
+        else{
+          ajaxPassedTestArraySpeeches.push('Speech Not Found');
+        }
+        if(response.querySelector('syn')){
+          ajaxPassedTestArraySynonyms.push(response.querySelector('syn').innerHTML + '||');
+          document.querySelector('#synonyms-input').value = ajaxPassedTestArraySynonyms;
+        }
+        else{
+          ajaxPassedTestArraySynonyms.push('Synonyms Not Found');
+        }
+        if(response.querySelector('ant')){
+          ajaxPassedTestArrayAntonyms.push(response.querySelector('ant').innerHTML + '||');
+          document.querySelector('#antonyms-input').value = ajaxPassedTestArrayAntonyms;
+        }
+        else{
+          ajaxPassedTestArrayAntonyms.push('Antonyms Not Found');
+        }
+
         }
       else if($.inArray(word.toLowerCase().replace(/\s/g, ''), databaseArray) !== -1){
         // wordsArray.splice(indexOfWord,1);
@@ -677,14 +728,30 @@ function getSentence(word, activateCheckerOfGetAllSentences){
       setTimeout(function(){ makeQuestions(); }, 2000);
     }
   }
-  // var randomWord = Math.floor(Math.random()* wordsArray.length );
+  var sentenceCount = 0;
   $.ajax({
     url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
     method: "GET",
     success: function (response) {
+      for(var i = 0; i <= 5; i++){
+        if(response.getElementsByTagName('mc')[i]){
+          sentenceCount ++;
+        }
+        else{
+          break;
+        }
+      }
+      // Select a random sentence
+      var randomSentenceNumber = Math.floor( Math.random() * sentenceCount );
+      var randomSentence = response.getElementsByTagName('mc')[randomSentenceNumber].innerHTML;
+
+      console.log('Word: ' + word);
+      console.log('Number of Sentences: ' + sentenceCount);
+      console.log('Random Sentence: ' + randomSentence);
+      console.log('Random Sentence #: ' + randomSentenceNumber);
       var wordForFlashcard = {
         word: word,
-        sentence: response.getElementsByTagName('mc')[0].innerHTML
+        sentence: randomSentence
       };
       sentencesArray.push(wordForFlashcard);
       if(activateCheckerOfGetAllSentences === true){
@@ -706,9 +773,13 @@ function getAllSentences(activateCheckerOfGetAllSentences){
 }
 
 function makeQuestions(){
+
   myQuestions = [];
   // console.log(randomWordNumber);
-  for(var i = 0; i <= sentencesArray.length; i++){
+  for(var i = 0; i <= sentencesArray.length - 1; i++){
+    // Either sentence or definition
+    // var randomQuestionType = Math.floor(Math.random() * 2);
+    // if(randomQuestionType === 0){
     var randomWordNumber = findRandomNumber();
     while(randomWordNumber === i){
       randomWordNumber = findRandomNumber();
@@ -752,6 +823,10 @@ function makeQuestions(){
       sentencesArray[randomWordNumber4].sentence,
       randomAnswerLetter
     );
+  // }
+      // else{
+
+    // }
   }
 }
 function generateQuizWithoutStartingCycle(){
@@ -783,3 +858,108 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
         }
     }
 }
+
+
+//
+// sentenceDefinitionArray = [];
+// function getSentenceDefinition(word, activateCheckerOfGetAllSentences){
+//   function checkIfGetAllSentencesHasFinished(){
+//     if(sentencesArray.length === wordsArray.length - 5 && wordsArray.length >= 6){
+//       console.log('getAllSentences() has almost finished! You may begin generating questions!');
+//       setTimeout(function(){ makeQuestions(); }, 2000);
+//     }
+//   }
+//   var randomWord = Math.floor(Math.random()* wordsArray.length );
+//   $.ajax({
+//     url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/'+word+'?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+//     method: "GET",
+//     success: function (response) {
+//     var sentenceDefinition = response.getElementsByTagName('vi')[0].innerHTML;
+//     var wordFromSentenceDefinition = response.getElementsByTagName('it')[0].innerHTML;
+//     var strippedDefinition = sentenceDefinition.replace(/<it.*it>/, '_____');
+//     // console.log(sentenceDefinition.getElementsByTagName('it'));
+//     // console.log(sentenceDefinition);
+//     // console.log(wordFromSentenceDefinition);
+//     // console.log(strippedDefinition);
+//
+//       var wordForFlashcard = {
+//         fillInBlank: strippedDefinition,
+//         correctWord: wordFromSentenceDefinition
+//       };
+//       sentenceDefinitionArray.push(wordForFlashcard);
+//       // if(activateCheckerOfGetAllSentences === true){
+//       //   checkIfGetAllSentencesHasFinished();
+//       // }
+//       console.log(sentenceDefinitionArray);
+//     },
+//     error: function (err) {
+//       console.log(err);
+//     }
+//   })
+// }
+//
+// function getAllSentenceDefinitions(activateCheckerOfGetAllSentences){
+//   sentenceDefinitionArray = [];
+//   document.querySelector('#listOfWords').style.display = 'none';
+//   for(var i = 0; i <= wordsArray.length - 1; i++){
+//     getSentenceDefinition(wordsArray[i], activateCheckerOfGetAllSentences);
+//   }
+// }
+//
+// function makeDefinitionQuestions(){
+//
+//   myQuestions = [];
+//   // console.log(randomWordNumber);
+//   for(var i = 0; i <= wordsArray.length - 1; i++){
+//     // Either sentence or definition
+//     // var randomQuestionType = Math.floor(Math.random() * 2);
+//     // if(randomQuestionType === 0){
+//     var randomWordNumber = findRandomNumber();
+//     while(randomWordNumber === i){
+//       randomWordNumber = findRandomNumber();
+//     }
+//     var randomWordNumber2 = findRandomNumber();
+//     while(randomWordNumber2 === i || randomWordNumber2 === randomWordNumber|| randomWordNumber2 === randomWordNumber3 || randomWordNumber2 === randomWordNumber4){
+//       randomWordNumber2 = findRandomNumber();
+//     }
+//     var randomWordNumber3 = findRandomNumber();
+//     while(randomWordNumber3 === i || randomWordNumber3 === randomWordNumber|| randomWordNumber3 === randomWordNumber2 || randomWordNumber3 === randomWordNumber4){
+//       randomWordNumber3 = findRandomNumber();
+//     }
+//     var randomWordNumber4 = findRandomNumber();
+//     while(randomWordNumber4 === i || randomWordNumber4 === randomWordNumber|| randomWordNumber4 === randomWordNumber2 || randomWordNumber4 === randomWordNumber3){
+//       randomWordNumber4 = findRandomNumber();
+//     }
+//     var randomAnswerNumber = Math.floor(Math.random() * 4);
+//     var randomAnswerLetter;
+//
+//     if(randomAnswerNumber === 0){
+//       randomAnswerLetter = 'a';
+//       randomWordNumber = i;
+//     }
+//     else if(randomAnswerNumber === 1){
+//       randomAnswerLetter = 'b';
+//       randomWordNumber2 = i;
+//     }
+//     else if(randomAnswerNumber === 2){
+//       randomAnswerLetter = 'c';
+//       randomWordNumber3 = i;
+//     }
+//     else{
+//       randomAnswerLetter = 'd';
+//       randomWordNumber4 = i;
+//     }
+//     pushQuizQuestion(
+//       sentenceDefinitionArray[i].fillInBlank,
+//       sentenceDefinitionArray[randomWordNumber].correctWord,
+//       sentenceDefinitionArray[randomWordNumber2].correctWord,
+//       sentenceDefinitionArray[randomWordNumber3].correctWord,
+//       sentenceDefinitionArray[randomWordNumber4].correctWord,
+//       randomAnswerLetter
+//     );
+//   // }
+//       // else{
+//
+//     // }
+//   }
+// }

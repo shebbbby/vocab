@@ -102,21 +102,39 @@
   <label for="definition-input"> Definition </label>
   <input  id="definition-input" name="definition" type="text" step="0.10">
   <br>
+  <label for="definitions-input"> Definitions </label>
+  <input  id="definitions-input" name="definitions" type="text" step="0.10">
+  <br>
   <label for="speech-input"> Speech </label>
   <input  id="speech-input" name="speech" type="text">
+  <br>
+  <label for="speeches-input"> Speeches </label>
+  <input  id="speeches-input" name="speeches" type="text">
   <br>
   <label for="sentence-input"> Sentence </label>
   <input  id="sentence-input" name="sentence" type="text">
   <br>
+  <label for="sentences-input"> Sentences </label>
+  <input  id="sentences-input" name="sentences" type="text">
+  <br>
   <label for="synonyms-input"> synonyms </label>
   <input  id="synonyms-input" name="synonyms" type="text">
+  <br>
+  <label for="synonyms-multiple-input"> synonyms-multiple </label>
+  <input  id="synonyms-multiple-input" name="synonyms-multiple" type="text">
   <br>
   <label for="relatedwords-input"> relatedwords </label>
   <input  id="relatedwords-input" name="relatedwords" type="text">
   <br>
+  <label for="relatedwords-multiple-input"> relatedwords-multiple </label>
+  <input  id="relatedwords-multiple-input" name="relatedwords-multiple" type="text">
+  <br>
 
   <label   for="antonyms-input"> antonyms </label>
   <input id="antonyms-input" name="antonyms" type="text">
+  <br>
+  <label   for="antonyms-multiple-input"> antonyms-multiple </label>
+  <input id="antonyms-multiple-input" name="antonyms-multiple" type="text">
   <br>
 
   <label for="wordsToBeDeleted-input"> wordsToBeDeleted </label>
@@ -127,7 +145,7 @@
 </form>
 
 
-<h2> All Words <span style="font-size: 20px;">(<span id="numberOfDatabaseWords"></span>)</span> <button onclick="displayMinusButtons()"><i style="color:red;" id="deleteArrayOfWords" class="fa fa-minus" aria-hidden="true"></i></button> </h2>
+<h2> All Words <span style="font-size: 20px;">(<span id="numberOfDatabaseWords"></span>)</span> <button style="display:none;" id="deleteArrayOfWordsButton" onclick="displayMinusButtons()"><i style="color:red;" id="deleteArrayOfWords" class="fa fa-minus" aria-hidden="true"></i></button> </h2>
 <p id="wordsToDeleteParagraph" style="display:none;">
   <strong>Words to Delete: </strong><span id="wordsToDelete"></span>
   <br><br>
@@ -135,8 +153,23 @@
 </p>
 
 <br>
-
-<ul>
+<script>
+  function expandWordsList(){
+    if(document.getElementById('listOfWordsId').style.display === 'none'){
+      document.getElementById('listOfWordsId').style.display = 'block';
+      document.getElementById('deleteArrayOfWordsButton').style.display = 'inline-block';
+      // document.getElementById('deleteArrayOfWordsButton').style.float = 'left';
+      document.getElementById('listOfWordsIdButton').innerHTML = 'Hide all words';
+    }
+    else {
+      document.getElementById('listOfWordsId').style.display = 'none';
+      document.getElementById('deleteArrayOfWordsButton').style.display = 'none';
+      document.getElementById('listOfWordsIdButton').innerHTML = 'View all words';
+    }
+  }
+</script>
+<span id="listOfWordsIdButton" style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="expandWordsList()">View all words</span>
+<ul id="listOfWordsId" style="display: none;">
   <% listOfWords.forEach((oneWord) => { %>
     <li style="list-style: none;" class="word-list">
       <h3 style="display: inline;"> <a style="float:left;" href="/<%= oneWord._id %>"> <%= oneWord.word %> </a></h3>
@@ -204,6 +237,7 @@
   function addRandomWordsToLearningList(number){
   var RandomWordsArray = getRandomWords(databaseArray, number);
   for(var i = 0; i <= RandomWordsArray.length-1; i++){
+    console.log('Clicking id: #plus-'+RandomWordsArray[i]);
     document.getElementById('plus-'+ RandomWordsArray[i]).click()
   }
 }

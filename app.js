@@ -183,14 +183,29 @@ app.post('/', (req, res, next) => {
 
     // This section has to do with the extra words that are added every multiple words are added
     wordsArray = req.body.words.split(",");
+    // definitionsArray = req.body.definitions.split("|,");
+    // sentencesArray = req.body.sentences.split("|,");
+    // speechesArray = req.body.speeches.split("|,");
+    // synonymsArray = req.body.synonyms-multiple.split("||,");
+    // antonymsArray = req.body.antonyms-multiple.split("||,");
     // When you upload only one word, wordsArray[0] is still considered a value even tho it is an empty string.
     // Which means if this if statement doesn't exist, an empty value will be uploaded to the database.
     if(wordsArray[0] === ""){
       wordsArray.splice(0,1);
+      // definitionsArray.splice(0,1);
+      // sentencesArray.splice(0,1);
+      // speechesArray.splice(0,1);
+      // synonymsArray.splice(0,1);
+      // antonymsArray.splice(0,1);
     }
     for (var i = 0; i <= wordsArray.length - 1; i++){
       var theWord = new WordModel({
-          word: wordsArray[i]
+          word: wordsArray[i],
+          // definition: definitionsArray[i].replace(/|/g , ""),
+          // sentence: sentencesArray[i].replace(/|/g , ""),
+          // speech: speechesArray[i].replace(/|/g , ""),
+          // synonyms: synonymsArray[i].replace(/|/g , ""),
+          // antonyms: antonymsArray[i].replace(/|/g , "")
           });
 
           // save that product to the database
