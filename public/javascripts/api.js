@@ -6,27 +6,34 @@ function updateCycleInformation(){
 
 var copyOfDatabaseArray = databaseArray;
 function addWord(word){
-// if($.inArray(word, wordsArray) === -1){
-// If the plus sign button is 'style: block' then add the word
-if(document.getElementById("plus-"+word).style.display === 'block' && $.inArray(word, wordsArray) === -1){
-  console.log("Adding: " + word + ' to learning list!');
-  console.log("----------------------------------------");
-  wordsArray.push(word);
-  document.getElementById("demo").innerHTML = wordsArray;
-  document.getElementById("numberInList").innerHTML = wordsArray.length;
-  document.getElementById("plus-"+word).style.display = 'none';
-  document.getElementById("checkmark-"+word).style.display = 'block';
-  if(wordsArray.length > 5){
-    document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+  // Make sure wordsArray doesn't already have all words in database
+if(wordsArray.length !== databaseArray.length){
+  // if($.inArray(word, wordsArray) === -1){
+  // If the plus sign button is 'style: block' then add the word
+  if(document.getElementById("plus-"+word).style.display === 'block' && $.inArray(word, wordsArray) === -1){
+    console.log("Adding: " + word + ' to learning list!');
+    console.log("----------------------------------------");
+    wordsArray.push(word);
+    document.getElementById("demo").innerHTML = wordsArray;
+    document.getElementById("numberInList").innerHTML = wordsArray.length;
+    document.getElementById("plus-"+word).style.display = 'none';
+    document.getElementById("checkmark-"+word).style.display = 'block';
+    if(wordsArray.length > 5){
+      document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+    }
+    document.getElementById('word-search-error').style.display = 'none';
+    document.getElementById('repeat-word-error').style.display = 'none';
+    updateCycleInformation();
   }
-  document.getElementById('word-search-error').style.display = 'none';
-  document.getElementById('repeat-word-error').style.display = 'none';
-  updateCycleInformation();
+  else{
+    var randomWordNumber = Math.floor(Math.random() * databaseArray.length);
+    console.log(word + ' is already in learning list!');
+    addWord(databaseArray[randomWordNumber]);
+  }
 }
-else{
-  var randomWordNumber = Math.floor(Math.random() * databaseArray.length);
-  console.log(word + ' is already in learning list!');
-  addWord(databaseArray[randomWordNumber]);
+else {
+  alert('You dont have any more words that you can add!');
+  console.log('You dont have any more words that you can add!');
 }
 }
 // }
