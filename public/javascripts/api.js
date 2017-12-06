@@ -202,6 +202,7 @@ function displayWordsList(){
 }
 // startCycle();
 function inputFiller() {
+  document.querySelector('#wordsInLearningList-input').value = wordsArray;
   var uploadWordsArray = document.querySelector('#age').value.split(",");
   console.log(uploadWordsArray);
   var newWord = uploadWordsArray[0].toLowerCase().replace(/\s/g, '');
@@ -274,6 +275,7 @@ else{
 var wordsToAdd = [];
 
 function downloadSynonymNewWords(){
+  document.querySelector('#wordsInLearningList-input').value = wordsArray;
   document.querySelector('#words-input').value = '';
   for(var i = 0; i <= wordsToAdd.length - 1; i++){
     // If the word is not already in database
@@ -292,6 +294,16 @@ function downloadSynonymNewWords(){
   }
   document.getElementById('word-submitter').click();
 }
+
+// function submitQuiz(){
+//   if(wordsToAdd.length > 0){
+//     setTimeout(function(){ downloadSynonymNewWords(); }, 3000);
+//
+//   }
+//   else{
+//     setTimeout(function(){ document.getElementById('word-submitter').click(); }, 3000);
+//   }
+// }
 
 function addWordFromSynonyms(word){
 // if($.inArray(word, wordsArray) === -1){
@@ -444,10 +456,10 @@ $.ajax({
     console.log('random definition number: ' + randomNumber);
     // appendThis += `<li> Version ` + (randomNumber+1) +':' + `</li>`
     if(response.getElementsByTagName('mc')[randomNumber]){
-      appendThis += `<li class="en_eg">`+  response.getElementsByTagName('mc')[randomNumber].innerHTML + `</li>`
+      appendThis += `<li class="en_eg"> <strong>Definition: </strong>`+  response.getElementsByTagName('mc')[randomNumber].innerHTML + `</li>`
     }
     if(response.getElementsByTagName('vi')[randomNumber]){
-      appendThis += `<li class="en_eg">`+  boldedWordSentence + `</li>`
+      appendThis += `<li class="en_eg"> <strong>Sentence: </strong>`+  boldedWordSentence + `</li>`
     }
     if(response.getElementsByTagName('syn')[randomNumber]){
       appendThis += `<li class="en_eg"> <strong>Synonyms:</strong> ` +  synonymsHtml + ` </li>`;
@@ -620,8 +632,27 @@ function displayMinusButtons(){
   }
 }
 
+function viewQuizResults(){
+  if(document.querySelector('.correct').style.color !== 'green' || document.querySelector('.incorrect').style.color !== 'red'){
+    // document.querySelector('#quizResultNumber').style.display = 'block';
+    // document.querySelector('#selectAllIncorrect').style.display = 'inline-block';
+    $( ".quizResultNumber" ).css('display', 'block');
+    $( ".correct" ).not(".widget-selected").css('color', 'green');
+    $( ".incorrect" ).not(".widget-selected").css('color', 'red');
+  }
+  else{
+    $( ".quizResultNumber" ).css('display', 'none');
+    // document.querySelector('#quizResultNumber').style.display = 'none';
+    // document.querySelector('#selectAllIncorrect').style.display = 'none';
+      $( ".correct" ).not(".widget-selected").css('color', 'black');
+      $( ".incorrect" ).not(".widget-selected").css('color', 'black');
+  }
+}
 
 
+
+var wordsCorrectArray = [];
+var wordsIncorrectArray = [];
 function generateQuiz(){
   (function() {
     function buildQuiz() {
@@ -662,9 +693,11 @@ function generateQuiz(){
 
       // keep track of user's answers
       let numCorrect = 0;
+      let questionNum = 0;
 
       // for each question...
       myQuestions.forEach((currentQuestion, questionNumber) => {
+        questionNum ++;
         // find selected answer
         const answerContainer = answerContainers[questionNumber];
         const selector = `input[name=question${questionNumber}]:checked`;
@@ -674,12 +707,16 @@ function generateQuiz(){
         if (userAnswer === currentQuestion.correctAnswer) {
           // add to the number of correct answers
           numCorrect++;
-
+          wordsCorrectArray.push(myQuestions[questionNum - 1].question);
+          document.querySelector('#wordsCorrectInQuiz-input').value = wordsCorrectArray;
           // color the answers green
           answerContainers[questionNumber].style.color = "lightgreen";
+
         } else {
           // if answer is wrong or blank
           // color the answers red
+          wordsIncorrectArray.push(myQuestions[questionNum - 1].question);
+          document.querySelector('#wordsIncorrectInQuiz-input').value = wordsIncorrectArray;
           answerContainers[questionNumber].style.color = "red";
         }
       });
@@ -772,7 +809,7 @@ function getSentence(word, activateCheckerOfGetAllSentences){
 }
 function getAllSentences(activateCheckerOfGetAllSentences){
   sentencesArray = [];
-  document.querySelector('#listOfWords').style.display = 'none';
+  // document.querySelector('#listOfWords').style.display = 'none';
   for(var i = 0; i <= wordsArray.length - 1; i++){
     getSentence(wordsArray[i], activateCheckerOfGetAllSentences);
   }
@@ -836,6 +873,7 @@ function makeQuestions(){
   }
 }
 function generateQuizWithoutStartingCycle(){
+  document.querySelector('#listOfWords').style.display = 'none';
   // The true is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle
   // sentence and wait until the proper time to generate questions
   getAllSentences(true);
@@ -969,3 +1007,61 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 //     // }
 //   }
 // }
+
+
+function addWordFromPreviousLists(word){
+// if($.inArray(word, wordsArray) === -1){
+// If the plus sign button is 'style: block' then add the word
+var indexOfWord = wordsArray.indexOf(word);
+var indexOfWordInWordsToAddArray = wordsToAdd.indexOf(word);
+
+if(document.getElementById(word+'-previous').style.color === 'black'){
+  getAllSentences();
+  $('#'+word+'-previous').addClass('widget-selected');
+  wordsArray.push(word);
+  document.getElementById("demo").innerHTML = wordsArray;
+  document.getElementById("numberInList").innerHTML = wordsArray.length;
+  document.getElementById(word+'-previous').style.color = 'black';
+  document.getElementById(word+'-previous').style.color = 'blue';
+  updateCycleInformation();
+  if($.inArray(word, databaseArray) !== -1){
+      document.getElementById("plus-"+word).style.display = 'none';
+      document.getElementById("checkmark-"+word).style.display = 'block';
+    }
+    if($.inArray(word, databaseArray) === -1 && $.inArray(word, wordsToAdd) === -1){
+        wordsToAdd.push(word);
+        document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+        document.getElementById("wordstoaddparagraph").style.display = 'block';
+        document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+        document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+      }
+    if(wordsArray.length >= 5){
+      document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+    }
+}
+  // if color is blue and word is not in database:
+else if(document.getElementById(word+'-previous').style.color === 'blue'){
+  wordsArray.splice(indexOfWord,1);
+  $('#'+word+'-previous').removeClass('widget-selected');
+  if(wordsArray.length <= 5){
+    document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+  }
+  getAllSentences();
+  document.getElementById("demo").innerHTML = wordsArray;
+  document.getElementById("numberInList").innerHTML = wordsArray.length;
+  document.getElementById(word+'-previous').style.color = 'black';
+  updateCycleInformation();
+  document.getElementById("plus-"+word).style.display = 'block';
+  document.getElementById("checkmark-"+word).style.display = 'none';
+  if(wordsArray.length <= 5){
+    document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+  }
+}
+ }
+
+ function selectAllFromPreviousLists(array){
+   for (var i = 0; i < array.length - 1; i++) {
+    document.querySelector('#'+array[i]+'-previous').click();
+   }
+
+ }

@@ -18,6 +18,66 @@
   <p>
    <strong># Words in Learning List:</strong>  <span id="numberInList"></span>
   </p>
+  <span id="expandPreviousLists" style="border:1px solid black; width:140px;" class="btn btn-sm" onclick="expandPreviousLists()">View Previous Lists</span>
+
+  <div id="previousLists" style="display:none;">
+    <% listOfDates.forEach((oneDate) => { %>
+      <li style="list-style: none;" class="word-list">
+        <% var date = oneDate.create_date %>
+        <% var d = date.toLocaleString('en-US', { timeZone: 'America/New_York' }); %>
+        <% var countCorrect = 0; %>
+        <% var countIncorrect = 0; %>
+        <p id="<%= oneDate.words %>" style="display: inline; cursor: pointer;"> <%= d %></p>
+        <p id="<%= oneDate.words + '-list' %>">
+          <% if( oneDate.correctWords[0] !== '' || oneDate.incorrectWords[0] !== ''){ %>
+          <% for(var i = 0; i <= oneDate.correctWords.length - 1; i++){ %>
+            <% if(i === oneDate.words.length - 1){ %>
+              <!-- <%= countCorrect ++  %> -->
+              <span class="word-previous correct" style="cursor: pointer; color:black;" id="<%= oneDate.correctWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.correctWords[i] %>')"><%= oneDate.correctWords[i]%></span>
+            <% } %>
+            <% if(i !== oneDate.words.length - 1){ %>
+              <!-- <%= countCorrect ++  %> -->
+              <span class="word-previous correct" style="cursor: pointer; color:black;" id="<%= oneDate.correctWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.correctWords[i] %>')"><%= oneDate.correctWords[i]%></span><span>,</span>
+            <% } %>
+          <% } %>
+          <% for(var i = 0; i <= oneDate.incorrectWords.length - 1; i++){ %>
+            <% if(i === oneDate.incorrectWords.length - 1){ %>
+              <!-- <%= countIncorrect ++  %> -->
+              <span class="word-previous incorrect" style="cursor: pointer; color:black;" id="<%= oneDate.incorrectWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.incorrectWords[i] %>')"><%= oneDate.incorrectWords[i]%></span>
+            <% } %>
+            <% if(i !== oneDate.incorrectWords.length - 1){ %>
+              <!-- <%= countIncorrect ++  %> -->
+              <span class="word-previous incorrect" style="cursor: pointer; color:black;" id="<%= oneDate.incorrectWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.incorrectWords[i] %>')"><%= oneDate.incorrectWords[i]%></span><span>,</span>
+            <% } %>
+          <% } %>
+        <% } %>
+          <% if( oneDate.correctWords[0] === '' && oneDate.incorrectWords[0] === ''){ %>
+            <% for(var i = 0; i <= oneDate.words.length - 1; i++){ %>
+              <% if(i === oneDate.words.length - 1){ %>
+                <span class="word-previous" style="cursor: pointer; color:black;" id="<%= oneDate.words[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.words[i] %>')"><%= oneDate.words[i]%></span>
+              <% } %>
+              <% if(i !== oneDate.words.length - 1){ %>
+                <span class="word-previous" style="cursor: pointer; color:black;" id="<%= oneDate.words[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.words[i] %>')"><%= oneDate.words[i]%></span><span>,</span>
+              <% } %>
+              <% } %>
+            <% } %>
+        </p>
+        <% var percent = (countCorrect/countIncorrect) * 100 %>
+        <p style="display:none;" class="quizResultNumber">
+          <%= percent.toFixed(2) %>%
+        </p>
+        <form margin-left: 10px; class="delete-button" method="post" action="/<%= oneDate._id %>/delete">
+          <button class="delete-buttons" style="color:red;"> X </button>
+        </form>
+        <% if( oneDate.correctWords[0] !== '' || oneDate.incorrectWords[0] !== ''){ %>
+        <span id="viewQuizResults" style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="viewQuizResults()">Quiz Results</span>
+        <!-- <span id="selectAllIncorrect" style="border:1px solid black; width:120px; display:none;" class="btn btn-sm" onclick="selectAllIncorrect()">Select All Incorrect</span> -->
+      <% } %>
+      </li>
+    <% }) %>
+  </div>
+  <br>
+
 <p>
  <strong>Cycle Duration:</strong>  <span id="cycleTime"></span>
 </p>
@@ -139,6 +199,17 @@
 
   <label for="wordsToBeDeleted-input"> wordsToBeDeleted </label>
   <input  id="wordsToBeDeleted-input" name="wordsToBeDeleted" type="text">
+
+  <br>
+  <label for="wordsInLearningList-input"> wordsInLearningList </label>
+  <input  id="wordsInLearningList-input" name="wordsInLearningList" type="text">
+
+  <br>
+  <label for="wordsCorrectInQuiz-input"> wordsCorrectInQuiz </label>
+  <input  id="wordsCorrectInQuiz-input" name="wordsCorrectInQuiz" type="text">
+  <br>
+  <label for="wordsIncorrectInQuiz-input"> wordsIncorrectInQuiz </label>
+  <input  id="wordsIncorrectInQuiz-input" name="wordsIncorrectInQuiz" type="text">
 
   <button id="word-submitter"> Save This Word </button>
 
@@ -328,9 +399,24 @@ if(document.getElementById('remove-')){
 <!-- <li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</li> -->
 <div id="quiz"></div>
 <button style="display:none;" id="submit">Submit Quiz</button>
+<!-- onclick="submitQuiz()" -->
 <div id="results"></div>
+
 <br>
 <br>
-<br>
-<br>
+
+
 </div>
+
+<script>
+  function expandPreviousLists(id){
+    if(document.querySelector('#previousLists').style.display === 'none'){
+      document.querySelector('#previousLists').style.display = 'block';
+      document.querySelector('#expandPreviousLists').innerHTML= 'Hide Previous Lists';
+    }
+    else{
+      document.querySelector('#previousLists').style.display = 'none';
+      document.querySelector('#expandPreviousLists').innerHTML= 'View Previous Lists';
+    }
+  }
+</script>

@@ -9,10 +9,13 @@ const mongoose     = require('mongoose');
 const session      = require('express-session');
 const passport     = require('passport');
 const flash        = require('connect-flash');
+const request      = require('request');
+const cheerio      = require('cheerio');
 require("dotenv").config();
 
 const WordModel = require('./models/vocab-model.js');
 const UserModel = require('./models/user-model.js');
+const DateModel = require('./models/date-model.js');
 
 mongoose.connect(process.env.MONGODB_URI);
 // Create an Express app object
@@ -52,6 +55,8 @@ app.use(session(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 // our own custom middleware for defining "currentUser" for our views
 app.use((req, res, next) => {
@@ -96,6 +101,21 @@ app.get('/', (request, response, next) => {
     response.locals.listOfWords = allWords;
     // Send the contents of the "views/home.ejs" file to the browser
     response.render('home.ejs');
+  });
+  // Show dates with list of words in them
+  DateModel.find((err, allDates) => {
+    // if there's a database error...
+    if (err) {
+        // skip to the error handler middleware
+        next(err);
+        // return to avoid showing the view
+        return;
+          // early return instead of "else"
+    }
+
+
+    // send the results to the view
+    response.locals.listOfDates = allDates;
   });
 });
 
@@ -250,6 +270,51 @@ var wordsToBeDeletedArray = req.body.wordsToBeDeleted.split(",");
     );
   }
 
+wordsInDailyLearningListArray = req.body.wordsInLearningList.split(",");
+wordsCorrectInQuizArray = req.body.wordsCorrectInQuiz.split(",");
+wordsIncorrectInQuizArray = req.body.wordsIncorrectInQuiz.split(",");
+
+function uniq(a) {
+   return Array.from(new Set(a));
+}
+
+  if(req.body.wordsInLearningList !== ""){
+    var theDate = new DateModel({
+        words: wordsInDailyLearningListArray,
+        correctWords: uniq(wordsCorrectInQuizArray),
+        incorrectWords: uniq(wordsIncorrectInQuizArray)
+    }); //  |                          |
+        // from SCHEMA            from INPUT NAMES
+    // save that product to the database
+    console.log(req.body.wordsInLearningList);
+    console.log(theDate);
+    theDate.save((err) => {
+        // if there's a validation error...
+        if (err && theDate.errors) {
+            // send the error messages to the view
+            res.locals.errorMessages = theDate.errors;
+
+            return;
+        }
+
+        // if there's a database error...
+        if (err && !theDate.errors) {
+            // skip to the error handler middleware
+            next(err);
+            // return to avoid showing the view
+            return;
+              // early return instead of "else"
+        }
+        // STEP #3 redirect
+        // ALWAYS redirect after a successful to POST to avoid resubmitting
+
+        // res.render('home', {req: req.body});
+          // You can only redirect to a URL
+    });
+  }
+
+
+
 }); // close POST /products
 
 
@@ -266,8 +331,17 @@ app.post('/:wordId/delete', (req, res, next) => {
           res.redirect('/');
       }
     );
-}); // close POST /words/:wordId/delete
+    DateModel.findByIdAndRemove(
+      req.params.wordId,
 
+      (err, dateInfo) => {
+          if (err) {
+              next(err);
+              return;
+          }
+      }
+    );
+}); // close POST /words/:wordId/delete
 
 // error handler
 app.use((err, req, res, next) => {
@@ -396,3 +470,67 @@ app.listen(process.env.PORT || 3000, function(err){
         console.log("Listening on port on 3000");
     }
 });
+
+// Cheerio example from youtube girl
+// request('http://www.majortests.com/sat/wordlist-01',function(err,resp,body){
+//   if(err && resp.statusCode == 200){
+//     var $ = cheerio.load(body);
+//     $('th').each(function(){
+//       var url = this.attr('href');
+//       urls.push(url);
+//       console.log(urls);
+//     });
+//
+//   }
+// });
+// var number;
+// var satWords = [];
+// var tableHeaders;
+// var text = '';
+
+// function getAllShit(){
+// // for(var i = 21; i <= 27; i++){
+//  // number = i;
+//  // var numberString = number.toString();
+//  var url = 'http://www.cram.com/flashcards/gmat-vocabulary-288385';
+//  console.log(url);
+//  request(url, function (error, resp, body) {
+//    var $ = cheerio.load(body);
+//
+//   //  console.log($('.front_text')[0].children[0].data)
+//    for(var i = 1400; i <= 1410; i++){
+//      if($('.front_text')[i]){
+//     //  console.log($('.front_text')[i].children[0].data)
+//    }
+//   //  else {
+//   //    break;
+//   //  }
+//      var word = $('.front_text')[i].children[0].data;
+//      satWords.push(word);
+//      text += satWords[i].replace(/\s/g, '') + ',';
+//      console.log(text);
+//    }
+//
+//
+//  });
+// // }
+// }
+// getAllShit()
+
+// request(url, function (error, resp, body) {
+//   var $ = cheerio.load(body);
+//   for(var i = 0; i <= 500; i++){
+//     if($('th')[i]){
+//       tableHeaders = $('th')[i].children[0].data;
+//       satWords.push(tableHeaders);
+//     }
+//     else{
+//       break;
+//     }
+//   }
+//   for(var i = 0; i <= satWords.length - 1; i++){
+//     text += satWords[i] + ',';
+//   };
+//   console.log(text);
+// });
+  // var tableHeadersText = tableHeaders.text();
