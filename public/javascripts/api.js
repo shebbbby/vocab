@@ -133,6 +133,7 @@ function removeWordButton(word){
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.querySelector("#plus-"+word).style.display = 'block';
   document.querySelector("#checkmark-"+word).style.display = 'none';
+  getAllSentences();
   updateCycleInformation();
   cycleWordsArray(currentFlashcardWordIndexInStudyArray);
 }
@@ -393,7 +394,7 @@ $.ajax({
       currentFlashcardWordIndexInStudyArray = wordsArray.indexOf(currentFlashcardWord);
       console.log(response);
       console.log(currentFlashcardWord);
-      console.log('Word# '+currentFlashcardWordIndexInStudyArray);
+      console.log('Cycle to Word# '+currentFlashcardWordIndexInStudyArray);
       var countSens = 0;
       for(var i = 0; i <= 5; i++){
         if(response.getElementsByTagName('sens')[i]){

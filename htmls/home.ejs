@@ -62,9 +62,9 @@
               <% } %>
             <% } %>
         </p>
-        <% var percent = (countCorrect/countIncorrect) * 100 %>
+        <% var percent = (countCorrect/(countCorrect + countIncorrect )) * 100 %>
         <p style="display:none;" class="quizResultNumber">
-          <%= percent.toFixed(2) %>%
+          (<%= countCorrect %> out of <%= countCorrect + countIncorrect %>) <%= percent.toFixed(2) %>%
         </p>
         <form margin-left: 10px; class="delete-button" method="post" action="/<%= oneDate._id %>/delete">
           <button class="delete-buttons" style="color:red;"> X </button>
@@ -228,22 +228,28 @@
   function expandWordsList(){
     if(document.getElementById('listOfWordsId').style.display === 'none'){
       document.getElementById('listOfWordsId').style.display = 'block';
+      document.getElementById('wordsWithPoints').style.display = 'block';
       document.getElementById('deleteArrayOfWordsButton').style.display = 'inline-block';
       // document.getElementById('deleteArrayOfWordsButton').style.float = 'left';
       document.getElementById('listOfWordsIdButton').innerHTML = 'Hide all words';
     }
     else {
       document.getElementById('listOfWordsId').style.display = 'none';
+      document.getElementById('wordsWithPoints').style.display = 'none';
       document.getElementById('deleteArrayOfWordsButton').style.display = 'none';
       document.getElementById('listOfWordsIdButton').innerHTML = 'View all words';
     }
   }
 </script>
 <span id="listOfWordsIdButton" style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="expandWordsList()">View all words</span>
+
+<ul id="wordsWithPoints" style="list-style: none; display: none; position:relative; top: 13px;">
+
+</ul>
 <ul id="listOfWordsId" style="display: none;">
   <% listOfWords.forEach((oneWord) => { %>
-    <li style="list-style: none;" class="word-list">
-      <h3 style="display: inline;"> <a style="float:left;" href="/<%= oneWord._id %>"> <%= oneWord.word %> </a></h3>
+    <li style="list-style: none;" class="word-list" id="li-<%= oneWord.word %>">
+      <h3 id="h3-<%= oneWord.word %>" style="display: inline;"> <a style="float:left;" href="/<%= oneWord._id %>"> <%= oneWord.word %> <span style="display:none;" id="percent-complete-<%= oneWord.word %>">(<span id="percent-complete-inner-<%= oneWord.word %>"></span><span>%</span>)</span> </a></h3>
       <!-- use a form with a button for delete instead of an anchor tag
            so that it can be a (semantically correct) POST route -->
     <div style="display:block;" id="plus-and-delete-buttons">
@@ -264,6 +270,7 @@
 
 // THis is the array of actual database words.
   databaseArray = [];
+
   databaseDefinitionArray = [];
   var wordsSeparatedByCommas = '';
   <% listOfWords.forEach((oneWord) => { %>
@@ -272,6 +279,8 @@
     // databaseDefinitionArray.push('<%= oneWord.definition %>')
 
       <% }) %>
+
+
       // Log all words in alphabetical order
       // console.log(databaseArray.sort());
       // console.log(databaseArray);
@@ -369,6 +378,185 @@ if(document.getElementById('remove-')){
 }
 
 
+
+var datesArray = [];
+var correctArray = [];
+var incorrectArray = [];
+var correctArray2 = [];
+var incorrectArray2 = [];
+var allCorrectWords = [];
+var allIncorrectWords = [];
+
+<% listOfDates.forEach((oneDate) => { %>
+  datesArray.push('<%= oneDate.words %>');
+  correctArray.push('<%= oneDate.correctWords %>');
+  correctArray2.push('<%= oneDate.correctWords %>');
+  incorrectArray.push('<%= oneDate.incorrectWords %>');
+  incorrectArray2.push('<%= oneDate.incorrectWords %>');
+
+  for(var i = 0; i <= correctArray.length-1; i++){
+    correctArray2[i] = correctArray[i].split(",");
+  }
+  for(var i = 0; i <= incorrectArray.length-1; i++){
+    incorrectArray2[i] = incorrectArray[i].split(",");
+  }
+  // All Definitions
+    <% }) %>
+    // console.log(datesArray);
+    // console.log('-----------');
+    // console.log(correctArray2);
+    // console.log('-----------');
+    // console.log(incorrectArray2);
+    // console.log('-----------');
+
+
+    for(var i = 0; i <= correctArray2.length - 1; i++){
+      for(var y = 0; y <= correctArray2[i].length - 1; y++){
+        allCorrectWords.push(correctArray2[i][y]);
+        // console.log(incorrectArray2[i][y]);
+      }
+    }
+    for(var i = 0; i <= incorrectArray2.length - 1; i++){
+      for(var y = 0; y <= incorrectArray2[i].length - 1; y++){
+        allIncorrectWords.push(incorrectArray2[i][y]);
+        // console.log(incorrectArray2[i][y]);
+      }
+    }
+    // console.log('allCorrectWords');
+    // console.log(allCorrectWords);
+    // console.log('--------------');
+    // console.log('allIncorrectWords');
+    // console.log(allIncorrectWords);
+
+function countInArray(array, what) {
+  var count = 0;
+  for (var i = 0; i < array.length; i++) {
+      if (array[i] === what) {
+          count++;
+      }
+  }
+  return count;
+}
+
+var allCorrectWordsNumbers = [];
+for (var i = 0; i <= allCorrectWords.length - 1; i++) {
+allCorrectWordsNumbers.push(countInArray(allCorrectWords, allCorrectWords[i]));
+}
+
+var allCorrectWordsAndNumbers = [];
+
+for (var i = 0; i <= allCorrectWords.length - 1; i++) {
+allCorrectWordsAndNumbers.push(
+  {
+    word: allCorrectWords[i],
+    number: allCorrectWordsNumbers[i]
+  }
+);
+}
+for (var i = 0; i <= allCorrectWordsAndNumbers.length-1; i++) {
+for (var y = 0; y <= allCorrectWordsAndNumbers.length-1; y++) {
+  if(allCorrectWordsAndNumbers[i].word === allCorrectWordsAndNumbers[y].word && allCorrectWordsAndNumbers[i].number === allCorrectWordsAndNumbers[y].number && y !== i){
+    allCorrectWordsAndNumbers.splice(y,1);
+  }
+}
+}
+
+var allIncorrectWordsNumbers = [];
+for (var i = 0; i <= allIncorrectWords.length - 1; i++) {
+allIncorrectWordsNumbers.push(countInArray(allIncorrectWords, allIncorrectWords[i]));
+}
+
+var allIncorrectWordsAndNumbers = [];
+
+for (var i = 0; i <= allIncorrectWords.length - 1; i++) {
+allIncorrectWordsAndNumbers.push(
+  {
+    word: allIncorrectWords[i],
+    number: -allIncorrectWordsNumbers[i]
+  }
+);
+}
+for (var i = 0; i <= allIncorrectWordsAndNumbers.length-1; i++) {
+  for (var y = 0; y <= allIncorrectWordsAndNumbers.length-1; y++) {
+    if(allIncorrectWordsAndNumbers[i].word === allIncorrectWordsAndNumbers[y].word && allIncorrectWordsAndNumbers[i].number === allIncorrectWordsAndNumbers[y].number && y !== i){
+      allIncorrectWordsAndNumbers.splice(y,1);
+    }
+  }
+}
+
+
+
+for (var i = 0; i <= allCorrectWordsAndNumbers.length-1; i++) {
+  for (var y = 0; y <= allIncorrectWordsAndNumbers.length-1; y++) {
+    if(allCorrectWordsAndNumbers[i].word === allIncorrectWordsAndNumbers[y].word){
+      allCorrectWordsAndNumbers[i].number = allCorrectWordsAndNumbers[i].number + allIncorrectWordsAndNumbers[y].number
+      var toSplice = allIncorrectWordsAndNumbers.indexOf(allIncorrectWordsAndNumbers[y]);
+      allIncorrectWordsAndNumbers.splice(toSplice,1);
+    }
+  }
+}
+
+// console.log(allCorrectWordsAndNumbers);
+// console.log(allIncorrectWordsAndNumbers);
+
+var finalPointsArray = allCorrectWordsAndNumbers.concat(allIncorrectWordsAndNumbers);
+
+finalPointsArray.sort(function(a, b){
+    return b.number-a.number
+})
+
+console.log(finalPointsArray);
+console.log(databaseArray);
+
+
+
+
+
+function fillInWordLists(){
+  for (var y = 0; y <= finalPointsArray.length-1; y++) {
+    // if((finalPointsArray[y].number/5 *100) > 0){
+    var x = finalPointsArray[y].word.toString();
+    if(document.querySelector('#percent-complete-' + x)){
+      document.querySelector('#percent-complete-' + x).style.display = 'inline-block';
+      document.querySelector('#percent-complete-inner-' + x).innerHTML = (finalPointsArray[y].number/5 *100);
+}
+
+  }
+}
+
+function deleteWordWithPoints(word){
+  var toStringWord = word.toString();
+    document.getElementById('wordsToBeDeleted-input').value = toStringWord;
+    setTimeout(function(){
+      document.getElementById('word-submitter').click();
+   }, 500);
+
+}
+
+function createPointsWordsInList(word){
+  if(document.getElementById("li-"+word)){
+  var toStringWord = word.toString();
+  var appendUlPoints =
+  `<li class="word-list">
+      <h3 style="display: inline;"> <a style="float:left;" href="/"> `+ word + ` <span style="display:none;" id="percent-complete-`+ word + `">(<span id="percent-complete-inner-`+ word + `"></span><span>%</span>)</span> </a></h3>
+        <button class="delete-button delete-buttons" style="color:red; float:left; margin-left: 10px;" id="remove-`+ word + `" onclick="deleteWordWithPoints(`+ "'" + toStringWord + "'" + `)"> X </button>
+        <button class="plus-buttons" style="float:left; display:block; color:green;" id="plus-`+ word + `" onclick="addWord('`+ word + `')"> + </button>
+        <button class="minus-buttons" style="float:left; display:none; color:red;" id="minus-`+ word + `" onclick="addWordFromRemoveWordsArray('`+ word + `')"> - </button>
+        <button onclick="removeWordFromStudyArray('`+ word + `')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-`+ word + `" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
+  </li>`
+  document.getElementById("wordsWithPoints").innerHTML += appendUlPoints;
+  document.getElementById("li-"+word).remove();
+  }
+}
+
+function createPointsWordsInListAll(){
+for (var i = 0; i < finalPointsArray.length; i++) {
+  createPointsWordsInList(finalPointsArray[i].word);
+}
+}
+
+createPointsWordsInListAll();
+fillInWordLists();
 </script>
 
 
