@@ -5,6 +5,10 @@
 <br>
 <br>
   <p>
+   <strong>Total Points:</strong>  <span id="totalPoints"></span>
+  </p>
+  <hr>
+  <p>
     <strong>Current Learning List: </strong><span id="demo"></span>
     <br>
     <!-- The true in getAllSentences(true) is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle sentence and wait until the proper time to generate questions -->
@@ -505,8 +509,6 @@ finalPointsArray.sort(function(a, b){
     return b.number-a.number
 })
 
-console.log(finalPointsArray);
-console.log(databaseArray);
 
 
 
@@ -530,7 +532,6 @@ function deleteWordWithPoints(word){
     setTimeout(function(){
       document.getElementById('word-submitter').click();
    }, 500);
-
 }
 
 function createPointsWordsInList(word){
@@ -557,12 +558,17 @@ for (var i = 0; i < finalPointsArray.length; i++) {
 
 createPointsWordsInListAll();
 fillInWordLists();
+var totalPoints = 0;
+
+function addTotalPoints(){
+  for (var i = 0; i < finalPointsArray.length; i++) {
+    totalPoints += (finalPointsArray[i].number * 20);
+  }
+  document.querySelector('#totalPoints').innerHTML = totalPoints;
+}
+addTotalPoints();
+
 </script>
-
-
-
-
-
 
 <div>
   <p id="colorLabelInforation" style="display:none; position: relative; top:20px; left:10px;">
