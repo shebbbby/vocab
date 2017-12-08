@@ -210,7 +210,7 @@ app.post('/', (req, res, next) => {
     // antonymsArray = req.body.antonyms-multiple.split("||,");
     // When you upload only one word, wordsArray[0] is still considered a value even tho it is an empty string.
     // Which means if this if statement doesn't exist, an empty value will be uploaded to the database.
-    if(wordsArray[0] === ""){
+    if(wordsArray[0] === "" || !wordsArray[0] || wordsArray[0] === undefined){
       wordsArray.splice(0,1);
       // definitionsArray.splice(0,1);
       // sentencesArray.splice(0,1);
@@ -273,16 +273,25 @@ var wordsToBeDeletedArray = req.body.wordsToBeDeleted.split(",");
 wordsInDailyLearningListArray = req.body.wordsInLearningList.split(",");
 wordsCorrectInQuizArray = req.body.wordsCorrectInQuiz.split(",");
 wordsIncorrectInQuizArray = req.body.wordsIncorrectInQuiz.split(",");
+uniqueCorrectWords = uniq(wordsCorrectInQuizArray);
+uniqueIncorrectWords = uniq(wordsIncorrectInQuizArray);
+
 
 function uniq(a) {
    return Array.from(new Set(a));
+}
+if(uniqueCorrectWords[0] === ''){
+  uniqueCorrectWords = [];
+}
+if(uniqueIncorrectWords[0] === ''){
+  uniqueIncorrectWords = [];
 }
 
   if(req.body.wordsInLearningList !== ""){
     var theDate = new DateModel({
         words: wordsInDailyLearningListArray,
-        correctWords: uniq(wordsCorrectInQuizArray),
-        incorrectWords: uniq(wordsIncorrectInQuizArray)
+        correctWords: uniqueCorrectWords,
+        incorrectWords: uniqueIncorrectWords
     }); //  |                          |
         // from SCHEMA            from INPUT NAMES
     // save that product to the database

@@ -296,15 +296,15 @@ function downloadSynonymNewWords(){
   document.getElementById('word-submitter').click();
 }
 
-// function submitQuiz(){
-//   if(wordsToAdd.length > 0){
-//     setTimeout(function(){ downloadSynonymNewWords(); }, 3000);
-//
-//   }
-//   else{
-//     setTimeout(function(){ document.getElementById('word-submitter').click(); }, 3000);
-//   }
-// }
+function submitQuiz(){
+  // if(wordsToAdd.length > 0){
+    setTimeout(function(){ downloadSynonymNewWords(); }, 1000);
+  //
+  // }
+  // else{
+  //   setTimeout(function(){ document.getElementById('word-submitter').click(); }, 3000);
+  // }
+}
 
 function addWordFromSynonyms(word){
 // if($.inArray(word, wordsArray) === -1){
@@ -1017,7 +1017,7 @@ var indexOfWord = wordsArray.indexOf(word);
 var indexOfWordInWordsToAddArray = wordsToAdd.indexOf(word);
 
 if(document.getElementById(word+'-previous').style.color === 'black'){
-  getAllSentences();
+  // getAllSentences();
   $('#'+word+'-previous').addClass('widget-selected');
   wordsArray.push(word);
   document.getElementById("demo").innerHTML = wordsArray;
@@ -1047,7 +1047,6 @@ else if(document.getElementById(word+'-previous').style.color === 'blue'){
   if(wordsArray.length <= 5){
     document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
   }
-  getAllSentences();
   document.getElementById("demo").innerHTML = wordsArray;
   document.getElementById("numberInList").innerHTML = wordsArray.length;
   document.getElementById(word+'-previous').style.color = 'black';

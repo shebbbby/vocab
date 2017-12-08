@@ -8,6 +8,7 @@
    <strong>Total Points:</strong>  <span id="totalPoints"></span>
   </p>
   <hr>
+  <div id="first-body">
   <p>
     <strong>Current Learning List: </strong><span id="demo"></span>
     <br>
@@ -25,7 +26,9 @@
   <span id="expandPreviousLists" style="border:1px solid black; width:140px;" class="btn btn-sm" onclick="expandPreviousLists()">View Previous Lists</span>
 
   <div id="previousLists" style="display:none;">
-    <% listOfDates.forEach((oneDate) => { %>
+    <% var countOfArrays = listOfDates.length; %>
+    <% listOfDates.slice().reverse().forEach((oneDate) => { %>
+      <% countOfArrays --; %>
       <li style="list-style: none;" class="word-list">
         <% var date = oneDate.create_date %>
         <% var d = date.toLocaleString('en-US', { timeZone: 'America/New_York' }); %>
@@ -33,7 +36,7 @@
         <% var countIncorrect = 0; %>
         <p id="<%= oneDate.words %>" style="display: inline; cursor: pointer;"> <%= d %></p>
         <p id="<%= oneDate.words + '-list' %>">
-          <% if( oneDate.correctWords[0] !== '' || oneDate.incorrectWords[0] !== ''){ %>
+          <% if( oneDate.correctWords[0] !== '' || oneDate.correctWords[0] || oneDate.incorrectWords[0] !== '' || oneDate.incorrectWords[0]){ %>
           <% for(var i = 0; i <= oneDate.correctWords.length - 1; i++){ %>
             <% if(i === oneDate.words.length - 1){ %>
               <!-- <%= countCorrect ++  %> -->
@@ -55,7 +58,7 @@
             <% } %>
           <% } %>
         <% } %>
-          <% if( oneDate.correctWords[0] === '' && oneDate.incorrectWords[0] === ''){ %>
+          <% if( (oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0])){ %>
             <% for(var i = 0; i <= oneDate.words.length - 1; i++){ %>
               <% if(i === oneDate.words.length - 1){ %>
                 <span class="word-previous" style="cursor: pointer; color:black;" id="<%= oneDate.words[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.words[i] %>')"><%= oneDate.words[i]%></span>
@@ -67,19 +70,44 @@
             <% } %>
         </p>
         <% var percent = (countCorrect/(countCorrect + countIncorrect )) * 100 %>
+        <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
         <p style="display:none;" class="quizResultNumber">
           (<%= countCorrect %> out of <%= countCorrect + countIncorrect %>) <%= percent.toFixed(2) %>%
         </p>
+        <% } %>
         <form margin-left: 10px; class="delete-button" method="post" action="/<%= oneDate._id %>/delete">
           <button class="delete-buttons" style="color:red;"> X </button>
         </form>
-        <% if( oneDate.correctWords[0] !== '' || oneDate.incorrectWords[0] !== ''){ %>
+        <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
         <span id="viewQuizResults" style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="viewQuizResults()">Quiz Results</span>
         <!-- <span id="selectAllIncorrect" style="border:1px solid black; width:120px; display:none;" class="btn btn-sm" onclick="selectAllIncorrect()">Select All Incorrect</span> -->
       <% } %>
+      <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="addAllFromPreviousListsToCurrentList(datesArrayMultiple[<%= countOfArrays %>])">Select All</span>
+      <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
+      <span style="border:1px solid black; width:130px;" class="btn btn-sm" onclick="addAllFromPreviousListsToCurrentList(incorrectArray2[<%= countOfArrays %>])">Select All Incorrect</span>
+      <% } %>
+      <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="takeQuiz(datesArrayMultiple[<%= countOfArrays %>])">Take Quiz</span>
+
       </li>
     <% }) %>
   </div>
+
+<script>
+
+  function addAllFromPreviousListsToCurrentList(array){
+    console.log(array.length);
+    for (var i = 0; i < array.length; i++) {
+      console.log(array[i].toString());
+      var wordString = array[i].toString();
+      document.getElementById(wordString+'-previous').click();
+    }
+  }
+  function takeQuiz(array){
+    document.querySelector('#first-body').style.display = 'none';
+    addAllFromPreviousListsToCurrentList(array);
+    generateQuizWithoutStartingCycle();
+  }
+</script>
   <br>
 
 <p>
@@ -102,7 +130,7 @@
   <!-- <p id="select-random-words" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="addRandomWordsButton()">Select</p> -->
   <br>
   <br>
-  <p id="begin-cycle-button" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle()">Begin</p>
+  <p style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle(datesArray[i])">Begin</p>
   <!-- <ul class="quizQuestion">
     <li class="word">Hello</li>
     <li id="multipleChoice1" class="en_eg">This is a sentence</li>
@@ -135,7 +163,7 @@
   <button style="display:none;" id="submit">Submit Quiz</button>
   <div id="results"></div> -->
   <hr>
-
+</div>
 
   <p id="display-words-list" style="border:1px solid black; display: none; width:80px;" class="btn btn-sm" onclick="displayWordsList()">Add Words</p>
 <p style="display:none; color: green; border:1px solid green; width: 15%;" id="word-search-success">Word Added!</p>
@@ -325,12 +353,44 @@
     //   number = databaseArray.length - wordsArray.length;
     //   alert('You Selected More Words Than You Have!');
     // }
-  var RandomWordsArray = getRandomWords(databaseArray, number);
-  for(var i = 0; i <= RandomWordsArray.length-1; i++){
-    console.log('Clicking id: #plus-'+RandomWordsArray[i]);
-    document.getElementById('plus-'+ RandomWordsArray[i]).click()
+    // If odd number:
+    if(number/2 <= finalPointsArray.length){
+      if(number % 2 === 1){
+        number -= 1
+        var RandomWordsArray = getRandomWords(databaseArray, (number/2 + 1)) // 2));
+        var RandomWordsArrayWithPoints = getRandomWords(finalPointsArray, (number/2));
+        for(var i = 0; i <= RandomWordsArray.length-1; i++){
+          console.log('Clicking id: #plus-'+RandomWordsArray[i]);
+          document.getElementById('plus-'+ RandomWordsArray[i]).click()
+        }
+        for(var i = 0; i <= RandomWordsArrayWithPoints.length-1; i++){
+          console.log('Clicking id: #plus-'+RandomWordsArrayWithPoints[i].word);
+          document.getElementById('plus-'+ RandomWordsArrayWithPoints[i].word).click()
+        }
+      }
+      else{
+        var RandomWordsArray = getRandomWords(databaseArray, (number/2)) // 2));
+        var RandomWordsArrayWithPoints = getRandomWords(finalPointsArray, (number/2));
+        for(var i = 0; i <= RandomWordsArray.length-1; i++){
+          console.log('Clicking id: #plus-'+RandomWordsArray[i]);
+          document.getElementById('plus-'+ RandomWordsArray[i]).click()
+        }
+        for(var i = 0; i <= RandomWordsArrayWithPoints.length-1; i++){
+          console.log('Clicking id: #plus-'+RandomWordsArrayWithPoints[i].word);
+          document.getElementById('plus-'+ RandomWordsArrayWithPoints[i].word).click()
+        }
+      }
   }
+  else {
+      var RandomWordsArray = getRandomWords(databaseArray,number) // 2));
+      for(var i = 0; i <= RandomWordsArray.length-1; i++){
+        console.log('Clicking id: #plus-'+RandomWordsArray[i]);
+        document.getElementById('plus-'+ RandomWordsArray[i]).click()
+      }
+    }
 }
+
+
 function addRandomWordsButton(){
 var chosenNumber = document.querySelector('#random-number-input').value;
 document.querySelector('#random-number-input').value = '';
@@ -384,6 +444,7 @@ if(document.getElementById('remove-')){
 
 
 var datesArray = [];
+var datesArrayMultiple = [];
 var correctArray = [];
 var incorrectArray = [];
 var correctArray2 = [];
@@ -404,8 +465,26 @@ var allIncorrectWords = [];
   for(var i = 0; i <= incorrectArray.length-1; i++){
     incorrectArray2[i] = incorrectArray[i].split(",");
   }
+
+
   // All Definitions
     <% }) %>
+
+for (var i = 0; i < datesArray.length; i++) {
+
+  if(!(correctArray2[i][0] === '' || !correctArray2[i][0] && (incorrectArray2[i][0] === '' || !incorrectArray2[i][0]))){
+    var array = correctArray2[i].concat(incorrectArray2[i]);
+    datesArrayMultiple.push(array);
+  }
+  else{
+    datesArrayMultiple.push(datesArray[i].split(','))
+  }
+// }
+// else {
+//   var array = datesArray[i].split(',');
+//   datesArrayMultiple.push(array);
+// }
+}
     // console.log(datesArray);
     // console.log('-----------');
     // console.log(correctArray2);
@@ -592,7 +671,7 @@ addTotalPoints();
 </div>
 <!-- <li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</li> -->
 <div id="quiz"></div>
-<button style="display:none;" id="submit">Submit Quiz</button>
+<button style="display:none;" id="submit" onclick="submitQuiz()">Submit Quiz</button>
 <!-- onclick="submitQuiz()" -->
 <div id="results"></div>
 
