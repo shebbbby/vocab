@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 const dateSchema = new Schema({
     create_date: {type: Date, default: Date.now},
     words:[],
+    definitions: [],
     correctWords: [],
     incorrectWords: []
 });

@@ -62,3 +62,33 @@ li {
 #submit:hover{
     background-color: #38a;
 }
+
+
+
+
+
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  display: inline-block;
+  border-bottom: 5px solid black;
+  position: relative;
+  right: 20px;
+  bottom: 12px;
+  cursor: pointer;
+}
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+  display: inline-block;
+  position: relative;
+  right: 33px;
+  top: 9px;
+  cursor: pointer;
+}

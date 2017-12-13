@@ -151,6 +151,25 @@ app.get('/:wordId', (req, res, next) => {
     );
 }); // close GET /words/:wordId
 
+
+  // app.get('/:word', (req, res, next) => {
+  //
+  //     WordModel.findOne(
+  //       { word: req.params.word },
+  //
+  //       (err, wordFromDb) => {
+  //           if (err) {
+  //               next(err);
+  //               return;
+  //           }
+  //
+  //     res.locals.wordInfo = wordFromDb;
+  //
+  //     res.render('word-details.ejs');
+  //           }); // close theUser.save((err) => { ...
+  //       }); // close UserModel.findOne( ...
+
+
 // STEP #2 of the product create submission process
 // <form method="post" action="/products">
 app.post('/', (req, res, next) => {
@@ -271,6 +290,7 @@ var wordsToBeDeletedArray = req.body.wordsToBeDeleted.split(",");
   }
 
 wordsInDailyLearningListArray = req.body.wordsInLearningList.split(",");
+definitionsCorrectAnswersArray = req.body.definitionsCorrectAnswer.split("|,");
 wordsCorrectInQuizArray = req.body.wordsCorrectInQuiz.split(",");
 wordsIncorrectInQuizArray = req.body.wordsIncorrectInQuiz.split(",");
 uniqueCorrectWords = uniq(wordsCorrectInQuizArray);
@@ -290,6 +310,7 @@ if(uniqueIncorrectWords[0] === ''){
   if(req.body.wordsInLearningList !== ""){
     var theDate = new DateModel({
         words: wordsInDailyLearningListArray,
+        definitions: definitionsCorrectAnswersArray,
         correctWords: uniqueCorrectWords,
         incorrectWords: uniqueIncorrectWords
     }); //  |                          |
@@ -327,7 +348,36 @@ if(uniqueIncorrectWords[0] === ''){
 }); // close POST /products
 
 
+// app.post('/:word/delete', (req, res, next) => {
+//
+//   WordModel.deleteOne(
+//     { word: req.params.word },
+//
+//     (err, wordFromDb) => {
+//         if (err) {
+//             next(err);
+//             return;
+//         }
+//
+//   res.locals.wordInfo = wordFromDb;
+//
+//   res.redirect('/');
+//         }); // close theUser.save((err) => { ...
+//
+//     DateModel.findByIdAndRemove(
+//       req.params.wordId,
+//
+//       (err, dateInfo) => {
+//           if (err) {
+//               next(err);
+//               return;
+//           }
+//       }
+//     );
+// }); // close POST /words/:wordId/delete
+
 app.post('/:wordId/delete', (req, res, next) => {
+
     WordModel.findByIdAndRemove(
       req.params.wordId,
 

@@ -1,695 +1,770 @@
-
 <!-- <a href="/quiz">quiz</a> -->
-
 <div class="container">
-<br>
-<br>
-  <p>
-   <strong>Total Points:</strong>  <span id="totalPoints"></span>
-  </p>
-  <hr>
-  <div id="first-body">
-  <p>
-    <strong>Current Learning List: </strong><span id="demo"></span>
-    <br>
-    <!-- The true in getAllSentences(true) is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle sentence and wait until the proper time to generate questions -->
-    <span id="takeQuizQuttonUnderLearningList" style="border:1px solid black; display:none; width: 100px;" class="btn btn-sm" onclick="generateQuizWithoutStartingCycle();">Take Quiz</span>
-  </p>
-  <p id="wordstoaddparagraph" style="display:none;">
-   <strong>Words to add to database (<span id="wordsToAddNumber"></span>):</strong>  <span id="wordsToAdd"></span>
    <br>
-   <span style="border:1px solid black; width:150px;" class="btn btn-sm" onclick="downloadSynonymNewWords()">Add Words To Database</span>
-  </p>
-  <p>
-   <strong># Words in Learning List:</strong>  <span id="numberInList"></span>
-  </p>
-  <span id="expandPreviousLists" style="border:1px solid black; width:140px;" class="btn btn-sm" onclick="expandPreviousLists()">View Previous Lists</span>
-
-  <div id="previousLists" style="display:none;">
-    <% var countOfArrays = listOfDates.length; %>
-    <% listOfDates.slice().reverse().forEach((oneDate) => { %>
+   <br>
+   <p>
+      <strong class="yourTotalPoints" style="cursor:pointer;" onclick="voiceCommands.totalPoints()">Total Points:</strong>  <span id="totalPoints"></span>
+   </p>
+   <p>
+      <strong class="currentLearningListStrongTag" style="cursor:pointer; width:80%;" onclick="voiceCommands.currentLearningList()">Current Learning List: </strong><span style="width:800px;" id="demo"></span>
+      <br>
+      <!-- The true in getAllSentences(true) is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle sentence and wait until the proper time to generate questions -->
+      <span id="takeQuizQuttonUnderLearningList" style="border:1px solid black; display:none; width: 100px;" class="btn btn-sm" onclick="generateQuizWithoutStartingCycle();">Take Quiz</span>
+   </p>
+   <p id="wordstoaddparagraph" style="display:none;">
+      <strong class="wordstoaddstrong" style="cursor:pointer;" onclick="voiceCommands.wordsToAdd()">Words to add to database (<span id="wordsToAddNumber"></span>):</strong>  <span id="wordsToAdd"></span>
+      <br>
+      <span style="border:1px solid black; width:150px;" class="btn btn-sm" onclick="downloadSynonymNewWords()">Add Words To Database</span>
+   </p>
+   <span id="expandPreviousLists" style="border:1px solid black; width:140px;" class="btn btn-sm" onclick="expandPreviousLists()">View Previous Lists</span>
+   <br>
+   <div id="previousLists" style="display:none;">
+      <% var countOfArrays = listOfDates.length; %>
+      <% listOfDates.slice().reverse().forEach((oneDate) => { %>
       <% countOfArrays --; %>
-      <li style="list-style: none;" class="word-list">
-        <% var date = oneDate.create_date %>
-        <% var d = date.toLocaleString('en-US', { timeZone: 'America/New_York' }); %>
-        <% var countCorrect = 0; %>
-        <% var countIncorrect = 0; %>
-        <p id="<%= oneDate.words %>" style="display: inline; cursor: pointer;"> <%= d %></p>
-        <p id="<%= oneDate.words + '-list' %>">
-          <% if( oneDate.correctWords[0] !== '' || oneDate.correctWords[0] || oneDate.incorrectWords[0] !== '' || oneDate.incorrectWords[0]){ %>
-          <% for(var i = 0; i <= oneDate.correctWords.length - 1; i++){ %>
-            <% if(i === oneDate.words.length - 1){ %>
-              <!-- <%= countCorrect ++  %> -->
-              <span class="word-previous correct" style="cursor: pointer; color:black;" id="<%= oneDate.correctWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.correctWords[i] %>')"><%= oneDate.correctWords[i]%></span>
+      <li id="<%= 'li' + '-' + countOfArrays %>" style="list-style: none;" class="word-list">
+         <% var date = oneDate.create_date %>
+         <% var dateListWasSubmitted = date.toLocaleString('en-US', { timeZone: 'America/New_York' }); %>
+         <% var countCorrect = 0; %>
+         <% var countIncorrect = 0; %>
+         <a>
+            <h4 id="<%= 'date' + '-' + countOfArrays %>" style="display: inline; cursor: pointer;" onclick="expandDateList(<%= countOfArrays %>)"> <%= dateListWasSubmitted %></h4>
+         </a>
+         <div style="display:none;" id="<%= 'count' + '-' + countOfArrays %>">
+            <p>
+               <% if( oneDate.correctWords[0] !== '' || oneDate.correctWords[0] || oneDate.incorrectWords[0] !== '' || oneDate.incorrectWords[0]){ %>
+               <% for(var i = 0; i <= oneDate.correctWords.length - 1; i++){ %>
+               <% if(i === oneDate.words.length - 1){ %>
+               <!-- <%= countCorrect ++  %> -->
+               <span class="word-previous <%= 'correct-'+ countOfArrays %>" style="cursor: pointer; color:black;" id="<%= oneDate.correctWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.correctWords[i] %>')"><%= oneDate.correctWords[i]%></span>
+               <% } %>
+               <% if(i !== oneDate.words.length - 1){ %>
+               <!-- <%= countCorrect ++  %> -->
+               <span class="word-previous <%= 'correct-'+ countOfArrays %>" style="cursor: pointer; color:black;" id="<%= oneDate.correctWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.correctWords[i] %>')"><%= oneDate.correctWords[i]%></span><span>,</span>
+               <% } %>
+               <% } %>
+               <% for(var i = 0; i <= oneDate.incorrectWords.length - 1; i++){ %>
+               <% if(i === oneDate.incorrectWords.length - 1){ %>
+               <!-- <%= countIncorrect ++  %> -->
+               <span class="word-previous <%= 'incorrect-'+ countOfArrays %>" style="cursor: pointer; color:black;" id="<%= oneDate.incorrectWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.incorrectWords[i] %>')"><%= oneDate.incorrectWords[i]%></span>
+               <% } %>
+               <% if(i !== oneDate.incorrectWords.length - 1){ %>
+               <!-- <%= countIncorrect ++  %> -->
+               <span class="word-previous <%= 'incorrect-'+ countOfArrays %>" style="cursor: pointer; color:black;" id="<%= oneDate.incorrectWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.incorrectWords[i] %>')"><%= oneDate.incorrectWords[i]%></span><span>,</span>
+               <% } %>
+               <% } %>
+               <% } %>
+               <% if( (oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0])){ %>
+               <% for(var i = 0; i <= oneDate.words.length - 1; i++){ %>
+               <% if(i === oneDate.words.length - 1){ %>
+               <span class="word-previous" style="cursor: pointer; color:black;" id="<%= oneDate.words[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.words[i] %>')"><%= oneDate.words[i]%></span>
+               <% } %>
+               <% if(i !== oneDate.words.length - 1){ %>
+               <span class="word-previous" style="cursor: pointer; color:black;" id="<%= oneDate.words[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.words[i] %>')"><%= oneDate.words[i]%></span><span>,</span>
+               <% } %>
+               <% } %>
+               <% } %>
+            </p>
+            <% var percent = (countCorrect/(countCorrect + countIncorrect )) * 100 %>
+            <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
+            <p style="display:none;" class="<%= 'quizResultNumber-'+ countOfArrays %>">
+               (<%= countCorrect %> out of <%= countCorrect + countIncorrect %>) <%= percent.toFixed(2) %>%
+            </p>
             <% } %>
-            <% if(i !== oneDate.words.length - 1){ %>
-              <!-- <%= countCorrect ++  %> -->
-              <span class="word-previous correct" style="cursor: pointer; color:black;" id="<%= oneDate.correctWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.correctWords[i] %>')"><%= oneDate.correctWords[i]%></span><span>,</span>
+            <form margin-left: 10px; class="delete-button" method="post" action="/<%= oneDate._id %>/delete">
+               <button class="delete-buttons" style="color:red;"> X </button>
+            </form>
+            <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
+            <span id="viewQuizResults" style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="viewQuizResults(<%= countOfArrays %>)">Quiz Results</span>
+            <!-- <span id="selectAllIncorrect" style="border:1px solid black; width:120px; display:none;" class="btn btn-sm" onclick="selectAllIncorrect()">Select All Incorrect</span> -->
             <% } %>
-          <% } %>
-          <% for(var i = 0; i <= oneDate.incorrectWords.length - 1; i++){ %>
-            <% if(i === oneDate.incorrectWords.length - 1){ %>
-              <!-- <%= countIncorrect ++  %> -->
-              <span class="word-previous incorrect" style="cursor: pointer; color:black;" id="<%= oneDate.incorrectWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.incorrectWords[i] %>')"><%= oneDate.incorrectWords[i]%></span>
+            <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="addAllFromPreviousListsToCurrentList(datesArrayMultiple[<%= countOfArrays %>])">Select All</span>
+            <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
+            <span style="border:1px solid black; width:130px;" class="btn btn-sm" onclick="addAllFromPreviousListsToCurrentList(incorrectArray2[<%= countOfArrays %>])">Select All Incorrect</span>
             <% } %>
-            <% if(i !== oneDate.incorrectWords.length - 1){ %>
-              <!-- <%= countIncorrect ++  %> -->
-              <span class="word-previous incorrect" style="cursor: pointer; color:black;" id="<%= oneDate.incorrectWords[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.incorrectWords[i] %>')"><%= oneDate.incorrectWords[i]%></span><span>,</span>
-            <% } %>
-          <% } %>
-        <% } %>
-          <% if( (oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0])){ %>
-            <% for(var i = 0; i <= oneDate.words.length - 1; i++){ %>
-              <% if(i === oneDate.words.length - 1){ %>
-                <span class="word-previous" style="cursor: pointer; color:black;" id="<%= oneDate.words[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.words[i] %>')"><%= oneDate.words[i]%></span>
-              <% } %>
-              <% if(i !== oneDate.words.length - 1){ %>
-                <span class="word-previous" style="cursor: pointer; color:black;" id="<%= oneDate.words[i] + '-previous' %>" onclick="addWordFromPreviousLists('<%= oneDate.words[i] %>')"><%= oneDate.words[i]%></span><span>,</span>
-              <% } %>
-              <% } %>
-            <% } %>
-        </p>
-        <% var percent = (countCorrect/(countCorrect + countIncorrect )) * 100 %>
-        <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
-        <p style="display:none;" class="quizResultNumber">
-          (<%= countCorrect %> out of <%= countCorrect + countIncorrect %>) <%= percent.toFixed(2) %>%
-        </p>
-        <% } %>
-        <form margin-left: 10px; class="delete-button" method="post" action="/<%= oneDate._id %>/delete">
-          <button class="delete-buttons" style="color:red;"> X </button>
-        </form>
-        <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
-        <span id="viewQuizResults" style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="viewQuizResults()">Quiz Results</span>
-        <!-- <span id="selectAllIncorrect" style="border:1px solid black; width:120px; display:none;" class="btn btn-sm" onclick="selectAllIncorrect()">Select All Incorrect</span> -->
-      <% } %>
-      <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="addAllFromPreviousListsToCurrentList(datesArrayMultiple[<%= countOfArrays %>])">Select All</span>
-      <% if(!((oneDate.correctWords[0] === '' || !oneDate.correctWords[0]) && (oneDate.incorrectWords[0] === '' || !oneDate.incorrectWords[0]))){ %>
-      <span style="border:1px solid black; width:130px;" class="btn btn-sm" onclick="addAllFromPreviousListsToCurrentList(incorrectArray2[<%= countOfArrays %>])">Select All Incorrect</span>
-      <% } %>
-      <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="takeQuiz(datesArrayMultiple[<%= countOfArrays %>])">Take Quiz</span>
-
+            <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="takeQuiz(datesArrayMultiple[<%= countOfArrays %>])">Take Quiz</span>
+         </div>
       </li>
-    <% }) %>
-  </div>
-
-<script>
-
-  function addAllFromPreviousListsToCurrentList(array){
-    console.log(array.length);
-    for (var i = 0; i < array.length; i++) {
-      console.log(array[i].toString());
-      var wordString = array[i].toString();
-      document.getElementById(wordString+'-previous').click();
-    }
-  }
-  function takeQuiz(array){
-    document.querySelector('#first-body').style.display = 'none';
-    addAllFromPreviousListsToCurrentList(array);
-    generateQuizWithoutStartingCycle();
-  }
-</script>
-  <br>
-
-<p>
- <strong>Cycle Duration:</strong>  <span id="cycleTime"></span>
-</p>
-<p>
- <strong>Cycle Speed<span id="defaultSpeed"> (Default)</span>:</strong> <span id="cycleSpeed"></span>
-</p>
-  <!-- <span style="float:left;" id="speed"></span><span> </span> -->
-  <!-- <span style="float:left; margin-left:5px;" onclick="showSpeedInput()" class="fa fa-pencil edit-speed-on"> </span> </span>
-  <span onclick="hideSpeedInput()" style="display: none; float:left; margin-left:5px;" class="fa fa-pencil edit-speed-off"> </span> -->
-  <label for="speed-input">Seconds per word?</label>
-  <br>
-  <input id="speed-input" name="speed" type="number" onchange="changeSpeed()" placeholder="Seconds Per Word...">
-  <br>
-  <label for="random-number-input">Add How many words?</label>
-  <br>
-
-  <input  id="random-number-input" name="randomNumber" type="number" placeholder="# Words" onchange="addRandomWordsButton()">
-  <!-- <p id="select-random-words" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="addRandomWordsButton()">Select</p> -->
-  <br>
-  <br>
-  <p style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle(datesArray[i])">Begin</p>
-  <!-- <ul class="quizQuestion">
-    <li class="word">Hello</li>
-    <li id="multipleChoice1" class="en_eg">This is a sentence</li>
-    <li id="multipleChoice2" class="en_eg">This is a sentence</li>
-    <li id="multipleChoice3" class="en_eg">This is a sentence</li>
-    <li id="multipleChoice4" class="en_eg">This is a sentence</li>
-  </ul> -->
-  <!-- <br>
-  <label for="quizWord-input"> Quiz Word </label>
-  <input id="quizWord-input" name="quizWord" type="text" step="0.10">
-  <br>
-  <label for="mc1-input"> MC1 </label>
-  <input  id="mc1-input" name="mc1" type="text">
-  <br>
-  <label for="mc2-input"> MC2 </label>
-  <input  id="mc2-input" name="mc2" type="text">
-  <br>
-  <label for="mc3-input"> MC3 </label>
-  <input  id="mc3-input" name="mc3" type="text">
-  <br>
-  <label for="mc4-input"> MC4 </label>
-  <input  id="mc4-input" name="mc4" type="text">
-  <br>
-  <br> -->
-  <!-- <p style="border:1px solid black;" class="btn btn-sm" onclick="pushQuizQuestionUsingInputs()">Submit Question</p> -->
-  <br>
-  <br>
-  <!-- <p style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</p>
-  <div id="quiz"></div>
-  <button style="display:none;" id="submit">Submit Quiz</button>
-  <div id="results"></div> -->
-  <hr>
-</div>
-
-  <p id="display-words-list" style="border:1px solid black; display: none; width:80px;" class="btn btn-sm" onclick="displayWordsList()">Add Words</p>
-<p style="display:none; color: green; border:1px solid green; width: 15%;" id="word-search-success">Word Added!</p>
-<p style="display:none; color: green; border:1px solid green; width: 15%;" id="words-uploading">Uploading All Words...</p>
-<p style="display:none; color: red; border:1px solid red; width: 15%;" id="word-search-error">Sorry, Word not found!</p>
-<p style="display:none; color: red; border:1px solid red; width: 15%;" id="repeat-word-error">You Already Have this word!</p>
-<p style="display:none; color: red; border:1px solid red; width: 30%;" id="begin-error">You have to add at least 1 word to begin!</p>
-
-<div id="listOfWords">
-<div id="hideUponBegin">
-  <strong>Add New Word</strong><span> (One Word: hello | Multiple words: hello,cliche,...):</span><br>
-  <input id="age" type="text" name="firstname" value="">
-  <!-- <button id="custom-button" onclick="showCustomInputs()"> Custom </button> -->
-  <br>
-    <br>
-  <!-- <input id="age" type="text" name="firstname" value="" onchange="addWordUsingInput()"> -->
-  <p style="border:1px solid black;" class="btn btn-sm" onclick="inputFiller()">Submit</p>
-<form style="display:none;" id="hidden-inputs" method="post" action="/">
-  <!-- style="display:none;" -->
-
-  <label for="word-input"> Word </label>
-  <input  id="word-input" name="word" type="text">
-  <br>
-  <label for="words-input"> Words </label>
-  <input id="words-input" name="words" type="text" value="">
-  <p id="begin-cycle-button" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="wordToWords()">Select</p>
-<br>
-  <label for="definition-input"> Definition </label>
-  <input  id="definition-input" name="definition" type="text" step="0.10">
-  <br>
-  <label for="definitions-input"> Definitions </label>
-  <input  id="definitions-input" name="definitions" type="text" step="0.10">
-  <br>
-  <label for="speech-input"> Speech </label>
-  <input  id="speech-input" name="speech" type="text">
-  <br>
-  <label for="speeches-input"> Speeches </label>
-  <input  id="speeches-input" name="speeches" type="text">
-  <br>
-  <label for="sentence-input"> Sentence </label>
-  <input  id="sentence-input" name="sentence" type="text">
-  <br>
-  <label for="sentences-input"> Sentences </label>
-  <input  id="sentences-input" name="sentences" type="text">
-  <br>
-  <label for="synonyms-input"> synonyms </label>
-  <input  id="synonyms-input" name="synonyms" type="text">
-  <br>
-  <label for="synonyms-multiple-input"> synonyms-multiple </label>
-  <input  id="synonyms-multiple-input" name="synonyms-multiple" type="text">
-  <br>
-  <label for="relatedwords-input"> relatedwords </label>
-  <input  id="relatedwords-input" name="relatedwords" type="text">
-  <br>
-  <label for="relatedwords-multiple-input"> relatedwords-multiple </label>
-  <input  id="relatedwords-multiple-input" name="relatedwords-multiple" type="text">
-  <br>
-
-  <label   for="antonyms-input"> antonyms </label>
-  <input id="antonyms-input" name="antonyms" type="text">
-  <br>
-  <label   for="antonyms-multiple-input"> antonyms-multiple </label>
-  <input id="antonyms-multiple-input" name="antonyms-multiple" type="text">
-  <br>
-
-  <label for="wordsToBeDeleted-input"> wordsToBeDeleted </label>
-  <input  id="wordsToBeDeleted-input" name="wordsToBeDeleted" type="text">
-
-  <br>
-  <label for="wordsInLearningList-input"> wordsInLearningList </label>
-  <input  id="wordsInLearningList-input" name="wordsInLearningList" type="text">
-
-  <br>
-  <label for="wordsCorrectInQuiz-input"> wordsCorrectInQuiz </label>
-  <input  id="wordsCorrectInQuiz-input" name="wordsCorrectInQuiz" type="text">
-  <br>
-  <label for="wordsIncorrectInQuiz-input"> wordsIncorrectInQuiz </label>
-  <input  id="wordsIncorrectInQuiz-input" name="wordsIncorrectInQuiz" type="text">
-
-  <button id="word-submitter"> Save This Word </button>
-
-</form>
-
-
-<h2> All Words <span style="font-size: 20px;">(<span id="numberOfDatabaseWords"></span>)</span> <button style="display:none;" id="deleteArrayOfWordsButton" onclick="displayMinusButtons()"><i style="color:red;" id="deleteArrayOfWords" class="fa fa-minus" aria-hidden="true"></i></button> </h2>
-<p id="wordsToDeleteParagraph" style="display:none;">
-  <strong>Words to Delete: </strong><span id="wordsToDelete"></span>
-  <br><br>
-  <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="clickSubmitButton()">Delete Words</span>
-</p>
-
-<br>
-<script>
-  function expandWordsList(){
-    if(document.getElementById('listOfWordsId').style.display === 'none'){
-      document.getElementById('listOfWordsId').style.display = 'block';
-      document.getElementById('wordsWithPoints').style.display = 'block';
-      document.getElementById('deleteArrayOfWordsButton').style.display = 'inline-block';
-      // document.getElementById('deleteArrayOfWordsButton').style.float = 'left';
-      document.getElementById('listOfWordsIdButton').innerHTML = 'Hide all words';
-    }
-    else {
-      document.getElementById('listOfWordsId').style.display = 'none';
-      document.getElementById('wordsWithPoints').style.display = 'none';
-      document.getElementById('deleteArrayOfWordsButton').style.display = 'none';
-      document.getElementById('listOfWordsIdButton').innerHTML = 'View all words';
-    }
-  }
-</script>
-<span id="listOfWordsIdButton" style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="expandWordsList()">View all words</span>
-
-<ul id="wordsWithPoints" style="list-style: none; display: none; position:relative; top: 13px;">
-
-</ul>
-<ul id="listOfWordsId" style="display: none;">
-  <% listOfWords.forEach((oneWord) => { %>
-    <li style="list-style: none;" class="word-list" id="li-<%= oneWord.word %>">
-      <h3 id="h3-<%= oneWord.word %>" style="display: inline;"> <a style="float:left;" href="/<%= oneWord._id %>"> <%= oneWord.word %> <span style="display:none;" id="percent-complete-<%= oneWord.word %>">(<span id="percent-complete-inner-<%= oneWord.word %>"></span><span>%</span>)</span> </a></h3>
-      <!-- use a form with a button for delete instead of an anchor tag
-           so that it can be a (semantically correct) POST route -->
-    <div style="display:block;" id="plus-and-delete-buttons">
-      </div>
-      <form style="float:left; margin-left: 10px; class="delete-button" method="post" action="/<%= oneWord._id %>/delete">
-        <button class="delete-buttons" style="color:red;" id="remove-<%= oneWord.word %>"> X </button>
-      </form>
-        <button class="plus-buttons" style="float:left; display:block; color:green;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
-        <button class="minus-buttons" style="float:left; display:none; color:red;" id="minus-<%= oneWord.word %>" onclick="addWordFromRemoveWordsArray('<%= oneWord.word %>')"> - </button>
-        <button onclick="removeWordFromStudyArray('<%= oneWord.word %>')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-<%= oneWord.word %>" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
-    </li>
-  <% }) %>
-</ul>
-</div>
-</div>
-<script>
-
-
-// THis is the array of actual database words.
-  databaseArray = [];
-
-  databaseDefinitionArray = [];
-  var wordsSeparatedByCommas = '';
-  <% listOfWords.forEach((oneWord) => { %>
-    databaseArray.push('<%= oneWord.word %>');
-    // All Definitions
-    // databaseDefinitionArray.push('<%= oneWord.definition %>')
-
       <% }) %>
-
-
-      // Log all words in alphabetical order
-      // console.log(databaseArray.sort());
-      // console.log(databaseArray);
-      // console.log(databaseDefinitionArray);
-      function getAllWordsSeparatedByCommas(){
-        for(var i = 0; i <= databaseArray.length - 1; i++){
-          if(i === databaseArray.length - 1){
-            wordsSeparatedByCommas += databaseArray[i]
-          }
-          else{
-            wordsSeparatedByCommas += databaseArray[i] + ',';
-          }
-        }
-        console.log(wordsSeparatedByCommas);
-    }
-      // console.log(wordsSeparatedByCommas);
-      //
-      document.getElementById('numberOfDatabaseWords').innerHTML = databaseArray.length;
-
-
-  function getRandomWords(arr, n) {
-        var result = new Array(n),
-            len = arr.length,
-            taken = new Array(len);
-        if (n > len)
-            throw new RangeError("getRandom: more elements taken than available");
-        while (n--) {
-            var x = Math.floor(Math.random() * len);
-            result[n] = arr[x in taken ? taken[x] : x];
-            taken[x] = --len;
-        }
-        return result;
-  }
-  function addRandomWordsToLearningList(number){
-    // if((number + wordsArray.length) > databaseArray.length){
-    //   console.log('Truth');
-    //   console.log((number + wordsArray.length) > databaseArray.length);
-    //   number = databaseArray.length - wordsArray.length;
-    //   alert('You Selected More Words Than You Have!');
-    // }
-    // If odd number:
-    if(number/2 <= finalPointsArray.length){
-      if(number % 2 === 1){
-        number -= 1
-        var RandomWordsArray = getRandomWords(databaseArray, (number/2 + 1)) // 2));
-        var RandomWordsArrayWithPoints = getRandomWords(finalPointsArray, (number/2));
-        for(var i = 0; i <= RandomWordsArray.length-1; i++){
-          console.log('Clicking id: #plus-'+RandomWordsArray[i]);
-          document.getElementById('plus-'+ RandomWordsArray[i]).click()
-        }
-        for(var i = 0; i <= RandomWordsArrayWithPoints.length-1; i++){
-          console.log('Clicking id: #plus-'+RandomWordsArrayWithPoints[i].word);
-          document.getElementById('plus-'+ RandomWordsArrayWithPoints[i].word).click()
-        }
-      }
-      else{
-        var RandomWordsArray = getRandomWords(databaseArray, (number/2)) // 2));
-        var RandomWordsArrayWithPoints = getRandomWords(finalPointsArray, (number/2));
-        for(var i = 0; i <= RandomWordsArray.length-1; i++){
-          console.log('Clicking id: #plus-'+RandomWordsArray[i]);
-          document.getElementById('plus-'+ RandomWordsArray[i]).click()
-        }
-        for(var i = 0; i <= RandomWordsArrayWithPoints.length-1; i++){
-          console.log('Clicking id: #plus-'+RandomWordsArrayWithPoints[i].word);
-          document.getElementById('plus-'+ RandomWordsArrayWithPoints[i].word).click()
-        }
-      }
-  }
-  else {
-      var RandomWordsArray = getRandomWords(databaseArray,number) // 2));
-      for(var i = 0; i <= RandomWordsArray.length-1; i++){
-        console.log('Clicking id: #plus-'+RandomWordsArray[i]);
-        document.getElementById('plus-'+ RandomWordsArray[i]).click()
-      }
-    }
-}
-
-
-function addRandomWordsButton(){
-var chosenNumber = document.querySelector('#random-number-input').value;
-document.querySelector('#random-number-input').value = '';
-
-  addRandomWordsToLearningList(chosenNumber)
-}
-
-// Function to count how many times a word exists in array
-function countInArray(array, what){
-    var count = 0;
-    for (var i = 0; i < array.length; i++) {
-        if (array[i] === what) {
-            count++;
-        }
-    }
-    return count;
-}
-
-// Create array with duplicate words
-var duplicateWords = [];
-for (var i = 0; i < databaseArray.length; i++) {
-  var count = countInArray(databaseArray,databaseArray[i]);
-  if(count > 1){
-    duplicateWords.push(databaseArray[i]);
-  }
-}
-// Create array with only 1 of the duplicate words
-function squash(arr){
-    var tmp = [];
-    for(var i = 0; i < arr.length; i++){
-        if(tmp.indexOf(arr[i]) == -1){
-        tmp.push(arr[i]);
-        }
-    }
-    return tmp;
-}
-var duplicateWordsOnce = squash(duplicateWords);
-// Alert if a duplicate word exists
-if(duplicateWordsOnce[0]){
-  alert('The following word is duplicated and will be deleted: ' + duplicateWordsOnce);
-  // Click remove button
-  document.getElementById('remove-'+ duplicateWordsOnce[0]).click()
-}
-// Alert and delete empty values if there happens to somehow be one
-if(document.getElementById('remove-')){
-  alert('An empty value will be deleted: ""');
-  // Click remove button
-  document.getElementById('remove-').click()
-}
-
-
-
-var datesArray = [];
-var datesArrayMultiple = [];
-var correctArray = [];
-var incorrectArray = [];
-var correctArray2 = [];
-var incorrectArray2 = [];
-var allCorrectWords = [];
-var allIncorrectWords = [];
-
-<% listOfDates.forEach((oneDate) => { %>
-  datesArray.push('<%= oneDate.words %>');
-  correctArray.push('<%= oneDate.correctWords %>');
-  correctArray2.push('<%= oneDate.correctWords %>');
-  incorrectArray.push('<%= oneDate.incorrectWords %>');
-  incorrectArray2.push('<%= oneDate.incorrectWords %>');
-
-  for(var i = 0; i <= correctArray.length-1; i++){
-    correctArray2[i] = correctArray[i].split(",");
-  }
-  for(var i = 0; i <= incorrectArray.length-1; i++){
-    incorrectArray2[i] = incorrectArray[i].split(",");
-  }
-
-
-  // All Definitions
-    <% }) %>
-
-for (var i = 0; i < datesArray.length; i++) {
-
-  if(!(correctArray2[i][0] === '' || !correctArray2[i][0] && (incorrectArray2[i][0] === '' || !incorrectArray2[i][0]))){
-    var array = correctArray2[i].concat(incorrectArray2[i]);
-    datesArrayMultiple.push(array);
-  }
-  else{
-    datesArrayMultiple.push(datesArray[i].split(','))
-  }
-// }
-// else {
-//   var array = datesArray[i].split(',');
-//   datesArrayMultiple.push(array);
-// }
-}
-    // console.log(datesArray);
-    // console.log('-----------');
-    // console.log(correctArray2);
-    // console.log('-----------');
-    // console.log(incorrectArray2);
-    // console.log('-----------');
-
-
-    for(var i = 0; i <= correctArray2.length - 1; i++){
-      for(var y = 0; y <= correctArray2[i].length - 1; y++){
-        allCorrectWords.push(correctArray2[i][y]);
-        // console.log(incorrectArray2[i][y]);
-      }
-    }
-    for(var i = 0; i <= incorrectArray2.length - 1; i++){
-      for(var y = 0; y <= incorrectArray2[i].length - 1; y++){
-        allIncorrectWords.push(incorrectArray2[i][y]);
-        // console.log(incorrectArray2[i][y]);
-      }
-    }
-    // console.log('allCorrectWords');
-    // console.log(allCorrectWords);
-    // console.log('--------------');
-    // console.log('allIncorrectWords');
-    // console.log(allIncorrectWords);
-
-function countInArray(array, what) {
-  var count = 0;
-  for (var i = 0; i < array.length; i++) {
-      if (array[i] === what) {
-          count++;
-      }
-  }
-  return count;
-}
-
-var allCorrectWordsNumbers = [];
-for (var i = 0; i <= allCorrectWords.length - 1; i++) {
-allCorrectWordsNumbers.push(countInArray(allCorrectWords, allCorrectWords[i]));
-}
-
-var allCorrectWordsAndNumbers = [];
-
-for (var i = 0; i <= allCorrectWords.length - 1; i++) {
-allCorrectWordsAndNumbers.push(
-  {
-    word: allCorrectWords[i],
-    number: allCorrectWordsNumbers[i]
-  }
-);
-}
-for (var i = 0; i <= allCorrectWordsAndNumbers.length-1; i++) {
-for (var y = 0; y <= allCorrectWordsAndNumbers.length-1; y++) {
-  if(allCorrectWordsAndNumbers[i].word === allCorrectWordsAndNumbers[y].word && allCorrectWordsAndNumbers[i].number === allCorrectWordsAndNumbers[y].number && y !== i){
-    allCorrectWordsAndNumbers.splice(y,1);
-  }
-}
-}
-
-var allIncorrectWordsNumbers = [];
-for (var i = 0; i <= allIncorrectWords.length - 1; i++) {
-allIncorrectWordsNumbers.push(countInArray(allIncorrectWords, allIncorrectWords[i]));
-}
-
-var allIncorrectWordsAndNumbers = [];
-
-for (var i = 0; i <= allIncorrectWords.length - 1; i++) {
-allIncorrectWordsAndNumbers.push(
-  {
-    word: allIncorrectWords[i],
-    number: -allIncorrectWordsNumbers[i]
-  }
-);
-}
-for (var i = 0; i <= allIncorrectWordsAndNumbers.length-1; i++) {
-  for (var y = 0; y <= allIncorrectWordsAndNumbers.length-1; y++) {
-    if(allIncorrectWordsAndNumbers[i].word === allIncorrectWordsAndNumbers[y].word && allIncorrectWordsAndNumbers[i].number === allIncorrectWordsAndNumbers[y].number && y !== i){
-      allIncorrectWordsAndNumbers.splice(y,1);
-    }
-  }
-}
-
-
-
-for (var i = 0; i <= allCorrectWordsAndNumbers.length-1; i++) {
-  for (var y = 0; y <= allIncorrectWordsAndNumbers.length-1; y++) {
-    if(allCorrectWordsAndNumbers[i].word === allIncorrectWordsAndNumbers[y].word){
-      allCorrectWordsAndNumbers[i].number = allCorrectWordsAndNumbers[i].number + allIncorrectWordsAndNumbers[y].number
-      var toSplice = allIncorrectWordsAndNumbers.indexOf(allIncorrectWordsAndNumbers[y]);
-      allIncorrectWordsAndNumbers.splice(toSplice,1);
-    }
-  }
-}
-
-// console.log(allCorrectWordsAndNumbers);
-// console.log(allIncorrectWordsAndNumbers);
-
-var finalPointsArray = allCorrectWordsAndNumbers.concat(allIncorrectWordsAndNumbers);
-
-finalPointsArray.sort(function(a, b){
-    return b.number-a.number
-})
-
-
-
-
-
-
-function fillInWordLists(){
-  for (var y = 0; y <= finalPointsArray.length-1; y++) {
-    // if((finalPointsArray[y].number/5 *100) > 0){
-    var x = finalPointsArray[y].word.toString();
-    if(document.querySelector('#percent-complete-' + x)){
-      document.querySelector('#percent-complete-' + x).style.display = 'inline-block';
-      document.querySelector('#percent-complete-inner-' + x).innerHTML = (finalPointsArray[y].number/5 *100);
-}
-
-  }
-}
-
-function deleteWordWithPoints(word){
-  var toStringWord = word.toString();
-    document.getElementById('wordsToBeDeleted-input').value = toStringWord;
-    setTimeout(function(){
-      document.getElementById('word-submitter').click();
-   }, 500);
-}
-
-function createPointsWordsInList(word){
-  if(document.getElementById("li-"+word)){
-  var toStringWord = word.toString();
-  var appendUlPoints =
-  `<li class="word-list">
-      <h3 style="display: inline;"> <a style="float:left;" href="/"> `+ word + ` <span style="display:none;" id="percent-complete-`+ word + `">(<span id="percent-complete-inner-`+ word + `"></span><span>%</span>)</span> </a></h3>
-        <button class="delete-button delete-buttons" style="color:red; float:left; margin-left: 10px;" id="remove-`+ word + `" onclick="deleteWordWithPoints(`+ "'" + toStringWord + "'" + `)"> X </button>
-        <button class="plus-buttons" style="float:left; display:block; color:green;" id="plus-`+ word + `" onclick="addWord('`+ word + `')"> + </button>
-        <button class="minus-buttons" style="float:left; display:none; color:red;" id="minus-`+ word + `" onclick="addWordFromRemoveWordsArray('`+ word + `')"> - </button>
-        <button onclick="removeWordFromStudyArray('`+ word + `')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-`+ word + `" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
-  </li>`
-  document.getElementById("wordsWithPoints").innerHTML += appendUlPoints;
-  document.getElementById("li-"+word).remove();
-  }
-}
-
-function createPointsWordsInListAll(){
-for (var i = 0; i < finalPointsArray.length; i++) {
-  createPointsWordsInList(finalPointsArray[i].word);
-}
-}
-
-createPointsWordsInListAll();
-fillInWordLists();
-var totalPoints = 0;
-
-function addTotalPoints(){
-  for (var i = 0; i < finalPointsArray.length; i++) {
-    totalPoints += (finalPointsArray[i].number * 20);
-  }
-  document.querySelector('#totalPoints').innerHTML = totalPoints;
-}
-addTotalPoints();
-
-</script>
-
-<div>
-  <p id="colorLabelInforation" style="display:none; position: relative; top:20px; left:10px;">
-    <span style="color:blue;">In Learning List</span> -
-    <span style="color:green;">In Database</span> -
-    <span style="color:fuchsia;">In Words To Add</span> -
-    <span style="color:red;">Not In Either</span> -
-    <span style="color:black;">Not Addable</span>
-  </p>
-  <div id="next-previous-buttons" style="position: relative; top:50px; left:280px; display: none;">
-    <button id="previousWordButton" onclick="previousWord()"><</button>
-    <button id="nextWordButton" onclick="nextWord()">></button>
-    <!-- Meant to allow you to remove word from array. Doesnt work yet. -->
-    <button id="removeWordButton" onclick="removeWordButton(currentFlashcardWord)">X</button>
-  </div>
-  <ul style="display: none;" class="flashcard" id="wordslist">
-
-  </ul>
-
-  <br>
+   </div>
+   <hr>
+   <div class="row" id="theRowWithLearnAndDatabase">
+      <div id="first-body" class="col-md-3" style="border-right:1px solid grey;">
+         <h4>LEARN</h4>
+         <hr>
+         <label style="cursor:pointer;" onclick="voiceCommands.inputSpeed()" for="speed-input">Seconds per word?</label>
+         <br>
+         <input id="speed-input" name="speed" type="number" onchange="changeSpeed(this)" placeholder="Seconds Per Word...">
+         <br>
+         <label style="cursor:pointer;" onclick="voiceCommands.inputNumber()" for="random-number-input">Add How many words?</label>
+         <br>
+         <input  id="random-number-input" name="randomNumber" type="number" placeholder="# Words..." onchange="addRandomWordsButton(this);">
+         <br>
+         <br>
+         <p>
+            <strong class="numberOfCurrentLearningListStrongTag" style="cursor:pointer;" onclick="voiceCommands.currentLearningListNumber()"># Words in Learning List:</strong>  <span id="numberInList"></span>
+         </p>
+         <p>
+            <strong style="cursor:pointer;" onclick="voiceCommands.cycleSpeed()">Cycle Speed<span id="defaultSpeed"> (Default)</span>:</strong> <span id="cycleSpeed"></span>
+         </p>
+         <p>
+            <strong style="cursor:pointer;" onclick="voiceCommands.cycleDuration()">Cycle Duration:</strong>  <span id="cycleTime"></span>
+         </p>
+         <!-- <span style="float:left;" id="speed"></span><span> </span> -->
+         <!-- <span style="float:left; margin-left:5px;" onclick="showSpeedInput()" class="fa fa-pencil edit-speed-on"> </span> </span>
+            <span onclick="hideSpeedInput()" style="display: none; float:left; margin-left:5px;" class="fa fa-pencil edit-speed-off"> </span> -->
+         <!-- <p id="select-random-words" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="addRandomWordsButton()">Select</p> -->
+         <p style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle(datesArray[i])">Begin</p>
+         <!-- <ul class="quizQuestion">
+            <li class="word">Hello</li>
+            <li id="multipleChoice1" class="en_eg">This is a sentence</li>
+            <li id="multipleChoice2" class="en_eg">This is a sentence</li>
+            <li id="multipleChoice3" class="en_eg">This is a sentence</li>
+            <li id="multipleChoice4" class="en_eg">This is a sentence</li>
+            </ul> -->
+         <!-- <br>
+            <label for="quizWord-input"> Quiz Word </label>
+            <input id="quizWord-input" name="quizWord" type="text" step="0.10">
+            <br>
+            <label for="mc1-input"> MC1 </label>
+            <input  id="mc1-input" name="mc1" type="text">
+            <br>
+            <label for="mc2-input"> MC2 </label>
+            <input  id="mc2-input" name="mc2" type="text">
+            <br>
+            <label for="mc3-input"> MC3 </label>
+            <input  id="mc3-input" name="mc3" type="text">
+            <br>
+            <label for="mc4-input"> MC4 </label>
+            <input  id="mc4-input" name="mc4" type="text">
+            <br>
+            <br> -->
+         <!-- <p style="border:1px solid black;" class="btn btn-sm" onclick="pushQuizQuestionUsingInputs()">Submit Question</p> -->
+         <!-- <p style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</p>
+            <div id="quiz"></div>
+            <button style="display:none;" id="submit">Submit Quiz</button>
+            <div id="results"></div> -->
+         <!-- <hr> -->
+      </div>
+      <div id="second-body" class="col-md-4" style="border-right: 1px solid black;">
+         <h4>DATABASE</h4>
+         <hr>
+         <p id="display-words-list" style="border:1px solid black; display: none; width:80px;" class="btn btn-sm" onclick="displayWordsList()">Add Words</p>
+         <p style="display:none; color: green; border:1px solid green; width: 50%;" id="word-search-success">Word Added!</p>
+         <p style="display:none; color: green; border:1px solid green; width: 50%;" id="words-uploading">Uploading All Words...</p>
+         <p style="display:none; color: red; border:1px solid red; width: 50%;" id="word-search-error">Sorry, Word not found!</p>
+         <p style="display:none; color: red; border:1px solid red; width: 50%;" id="repeat-word-error">You Already Have this word!</p>
+         <p style="display:none; color: red; border:1px solid red; width: 50%;" id="begin-error">You have to add at least 1 word to begin!</p>
+         <div id="listOfWords">
+            <div id="hideUponBegin">
+               <strong style="cursor:pointer;" onclick="voiceCommands.addNewWords()">Add New Word</strong><span><br> (One Word: hello)<br> (Multiple words: hello,cliche,...)</span><br>
+               <input id="age" type="text" name="firstname" value="" list="words-list">
+               <datalist id="words-list">
+                  <% listOfWords.sort(function(a, b){if(a.word < b.word)return -1;if(a.word > b.word)return 1;return 0;}).forEach((oneWord) => { %>
+                  <option value="<%= oneWord.word %>">
+                     <% }) %>
+               </datalist>
+               <!-- <button id="custom-button" onclick="showCustomInputs()"> Custom </button> -->
+               <br>
+               <br>
+               <!-- <input id="age" type="text" name="firstname" value="" onchange="addWordUsingInput()"> -->
+               <p style="border:1px solid black;" class="btn btn-sm" onclick="inputFiller()">Submit</p>
+               <br>
+               <br>
+               <form style="display:none;" id="hidden-inputs" method="post" action="/">
+               <!-- style="display:none;" -->
+               <label for="word-input"> Word </label>
+               <input  id="word-input" name="word" type="text">
+               <br>
+               <label for="words-input"> Words </label>
+               <input id="words-input" name="words" type="text" value="">
+               <p id="begin-cycle-button" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="wordToWords()">Select</p>
+               <br>
+               <label for="definition-input"> Definition </label>
+               <input  id="definition-input" name="definition" type="text" step="0.10">
+               <br>
+               <label for="definitions-input"> Definitions </label>
+               <input  id="definitions-input" name="definitions" type="text" step="0.10">
+               <br>
+               <label for="speech-input"> Speech </label>
+               <input  id="speech-input" name="speech" type="text">
+               <br>
+               <label for="speeches-input"> Speeches </label>
+               <input  id="speeches-input" name="speeches" type="text">
+               <br>
+               <label for="sentence-input"> Sentence </label>
+               <input  id="sentence-input" name="sentence" type="text">
+               <br>
+               <label for="sentences-input"> Sentences </label>
+               <input  id="sentences-input" name="sentences" type="text">
+               <br>
+               <label for="synonyms-input"> synonyms </label>
+               <input  id="synonyms-input" name="synonyms" type="text">
+               <br>
+               <label for="synonyms-multiple-input"> synonyms-multiple </label>
+               <input  id="synonyms-multiple-input" name="synonyms-multiple" type="text">
+               <br>
+               <label for="relatedwords-input"> relatedwords </label>
+               <input  id="relatedwords-input" name="relatedwords" type="text">
+               <br>
+               <label for="relatedwords-multiple-input"> relatedwords-multiple </label>
+               <input  id="relatedwords-multiple-input" name="relatedwords-multiple" type="text">
+               <br>
+               <label   for="antonyms-input"> antonyms </label>
+               <input id="antonyms-input" name="antonyms" type="text">
+               <br>
+               <label   for="antonyms-multiple-input"> antonyms-multiple </label>
+               <input id="antonyms-multiple-input" name="antonyms-multiple" type="text">
+               <br>
+               <label for="wordsToBeDeleted-input"> wordsToBeDeleted </label>
+               <input  id="wordsToBeDeleted-input" name="wordsToBeDeleted" type="text">
+               <br>
+               <label for="wordsInLearningList-input"> wordsInLearningList </label>
+               <input  id="wordsInLearningList-input" name="wordsInLearningList" type="text">
+               <br>
+               <label for="wordsCorrectInQuiz-input"> wordsCorrectInQuiz </label>
+               <input  id="wordsCorrectInQuiz-input" name="wordsCorrectInQuiz" type="text">
+               <br>
+               <label for="wordsIncorrectInQuiz-input"> wordsIncorrectInQuiz </label>
+               <input  id="wordsIncorrectInQuiz-input" name="wordsIncorrectInQuiz" type="text">
+               <br>
+               <label for="definitionsCorrectAnswer-input"> definitionsCorrectAnswer </label>
+               <input  id="definitionsCorrectAnswer-input" name="definitionsCorrectAnswer" type="text">
+               <button id="word-submitter"> Save This Word </button>
+               </form>
+               <hr>
+               <h4> ALL WORDS <span>(<span id="numberOfDatabaseWords"></span>)</span> <button style="display:none;" id="deleteArrayOfWordsButton" onclick="displayMinusButtons()"><i style="color:red;" id="deleteArrayOfWords" class="fa fa-minus" aria-hidden="true"></i></button> </h4>
+               <p id="wordsToDeleteParagraph" style="display:none;">
+               <strong>Words to Delete: </strong><span id="wordsToDelete"></span>
+               <br><br>
+               <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="clickSubmitButton()">Delete Words</span>
+               </p>
+               <br>
+               <span id="listOfWordsIdButton" style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="expandWordsList()">View all words</span>
+               <ul id="wordsWithPoints" style="list-style: none; display: none; position:relative; top: 13px;">
+               </ul>
+               <ul id="listOfWordsId" style="display: none;">
+               <% listOfWords.sort(function(a, b){if(a.word < b.word)return -1;if(a.word > b.word)return 1;return 0;}).forEach((oneWord) => { %>
+               <li style="list-style: none;" class="word-list" id="li-<%= oneWord.word %>">
+               <h4 id="h3-<%= oneWord.word %>" style="display: inline;"> <a style="float:left;" href="/<%= oneWord._id %>"> <%= oneWord.word %> <span style="display:none;" id="percent-complete-<%= oneWord.word %>">(<span id="percent-complete-inner-<%= oneWord.word %>"></span><span>%</span>)</span> </a></h4>
+               <!-- use a form with a button for delete instead of an anchor tag
+                  so that it can be a (semantically correct) POST route -->
+               <div style="display:block;" id="plus-and-delete-buttons">
+               </div>
+               <form style="float:left; margin-left: 10px; class="delete-button" method="post" action="/<%= oneWord._id %>/delete">
+               <button class="delete-buttons" style="color:red;" id="remove-<%= oneWord.word %>"> X </button>
+               </form>
+               <button class="plus-buttons" style="float:left; display:block; color:green;" id="plus-<%= oneWord.word %>" onclick="addWord('<%= oneWord.word %>')"> + </button>
+               <button class="minus-buttons" style="float:left; display:none; color:red;" id="minus-<%= oneWord.word %>" onclick="addWordFromRemoveWordsArray('<%= oneWord.word %>')"> - </button>
+               <button onclick="removeWordFromStudyArray('<%= oneWord.word %>')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-<%= oneWord.word %>" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
+               </li>
+               <% }) %>
+               </ul>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div>
+   <p id="colorLabelInforation" style="display:none; position: relative; top:20px; left:10px;">
+   <span style="color:blue;">In Learning List</span> -
+   <span style="color:green;">In Database</span> -
+   <span style="color:fuchsia;">In Words To Add</span> -
+   <span style="color:red;">Not In Either</span> -
+   <span style="color:black;">Not Addable</span>
+   <br>
+   <!-- <span>Key Down Shortcuts:</span>
+      <br>
+      <span>> = Next Word </span> /
+      <span>< = Previous Word</span> /
+      <span>Space = Play Word</span> /
+      <span>A = Activate Auto Speech</span> /
+      <span>D = Play Definition</span> /
+      <span>S = Play Sentence</span>
+      <span>1-9 = Select Synonyms</span> -->
+   </p>
+   <p id="keyDownInformation" style="display:none; position: relative; top:20px; left:10px;">
+   </p>
+   <div id="next-previous-buttons" style="position: relative; top:50px; left:250px; display: none;">
+   <button id="makeAutomaticPlayButtonTrue" onclick="toggleAutomaticPlayButton()" class="fa fa-play-circle"></button>
+   <button class="fa fa-arrow-left" id="previousWordButton" onclick="previousWord()"></button>
+   <button class="fa fa-arrow-right" id="nextWordButton" onclick="nextWord()"></button>
+   <button class="fa fa-times" id="removeWordButton" onclick="removeWordButton(currentFlashcardWord)"></button>
+   </div>
+   <ul style="display: none; margin-top: 30px;" class="flashcard" id="wordslist">
+   </ul>
+   <br>
+   </div>
+   <!-- <li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</li> -->
+   <div id="quiz"></div>
+   <button style="display:none;" id="submit" onclick="submitQuiz()">Submit Quiz</button>
+   <!-- onclick="submitQuiz()" -->
+   <div id="results"></div>
+   <br>
+   <br>
+   <hr>
 </div>
-<!-- <li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</li> -->
-<div id="quiz"></div>
-<button style="display:none;" id="submit" onclick="submitQuiz()">Submit Quiz</button>
-<!-- onclick="submitQuiz()" -->
-<div id="results"></div>
-
-<br>
-<br>
-
-
-</div>
-
 <script>
-  function expandPreviousLists(id){
-    if(document.querySelector('#previousLists').style.display === 'none'){
-      document.querySelector('#previousLists').style.display = 'block';
-      document.querySelector('#expandPreviousLists').innerHTML= 'Hide Previous Lists';
-    }
-    else{
-      document.querySelector('#previousLists').style.display = 'none';
-      document.querySelector('#expandPreviousLists').innerHTML= 'View Previous Lists';
-    }
-  }
+   function expandWordsList(){
+     if(document.getElementById('listOfWordsId').style.display === 'none'){
+       document.getElementById('listOfWordsId').style.display = 'block';
+       document.getElementById('wordsWithPoints').style.display = 'block';
+       document.getElementById('deleteArrayOfWordsButton').style.display = 'inline-block';
+       // document.getElementById('deleteArrayOfWordsButton').style.float = 'left';
+       document.getElementById('listOfWordsIdButton').innerHTML = 'Hide all words';
+     }
+     else {
+       document.getElementById('listOfWordsId').style.display = 'none';
+       document.getElementById('wordsWithPoints').style.display = 'none';
+       document.getElementById('deleteArrayOfWordsButton').style.display = 'none';
+       document.getElementById('listOfWordsIdButton').innerHTML = 'View all words';
+     }
+   }
+</script>
+<script>
+   function expandDateList(number){
+     var numberString = number.toString();
+     if(document.querySelector('#count-'+numberString).style.display === 'none'){
+       document.querySelector('#count-'+numberString).style.display = 'block';
+     }
+     else {
+       document.querySelector('#count-'+numberString).style.display = 'none';
+     }
+   }
+</script>
+<script>
+   function addAllFromPreviousListsToCurrentList(array){
+     console.log(array.length);
+     for (var i = 0; i < array.length; i++) {
+       console.log(array[i].toString());
+       var wordString = array[i].toString();
+       document.getElementById(wordString+'-previous').click();
+     }
+   }
+   // function addAllFromPreviousListsToCurrentListImmediate(array){
+   //   if(wordsArray !== array){
+   //     wordsArray = array;
+   //     for (var i = 0; i < wordsArray.length; i++) {
+   //       var wordsString = wordsArray[i].toString()
+   //       document.querySelector('#'+wordsString + '-previous').style.color = 'blue';
+   //     }
+   //     document.getElementById("demo").innerHTML = wordsArray;
+   //     document.getElementById("numberInList").innerHTML = wordsArray.length;
+   //     document.getElementById("plus-"+word).style.display = 'none';
+   //     document.getElementById("checkmark-"+word).style.display = 'block';
+   //     if(wordsArray.length > 5){
+   //       document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+   //     }
+   //     updateCycleInformation();
+   // }
+   //   else {
+   //   for (var i = 0; i < wordsArray.length; i++) {
+   //     var wordsString = wordsArray[i].toString()
+   //     document.querySelector('#'+wordsString + '-previous').style.color = 'black';
+   //   }
+   //   wordsArray = [];
+   //   document.getElementById("demo").innerHTML = wordsArray;
+   //   document.getElementById("numberInList").innerHTML = wordsArray.length;
+   //   document.getElementById("plus-"+word).style.display = 'none';
+   //   document.getElementById("checkmark-"+word).style.display = 'block';
+   //   if(wordsArray.length > 5){
+   //     document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+   //   }
+   //   updateCycleInformation();
+   // }
+   // }
+   function takeQuiz(array){
+     document.querySelector('#first-body').style.display = 'none';
+     addAllFromPreviousListsToCurrentList(array);
+     generateQuizWithoutStartingCycle();
+   }
+</script>
+<script>
+   function expandPreviousLists(id){
+     if(document.querySelector('#previousLists').style.display === 'none'){
+       document.querySelector('#previousLists').style.display = 'block';
+       document.querySelector('#expandPreviousLists').innerHTML= 'Hide Previous Lists';
+     }
+     else{
+       document.querySelector('#previousLists').style.display = 'none';
+       document.querySelector('#expandPreviousLists').innerHTML= 'View Previous Lists';
+     }
+   }
+</script>
+<script>
+   // THis is the array of actual database words.
+     databaseArray = [];
+
+     databaseDefinitionArray = [];
+     var wordsSeparatedByCommas = '';
+     <% listOfWords.forEach((oneWord) => { %>
+       databaseArray.push('<%= oneWord.word %>');
+       // All Definitions
+       // databaseDefinitionArray.push('<%= oneWord.definition %>')
+
+         <% }) %>
+
+
+         // Log all words in alphabetical order
+         // console.log(databaseArray.sort());
+         // console.log(databaseArray);
+         // console.log(databaseDefinitionArray);
+         function getAllWordsSeparatedByCommas(){
+           for(var i = 0; i <= databaseArray.length - 1; i++){
+             if(i === databaseArray.length - 1){
+               wordsSeparatedByCommas += databaseArray[i]
+             }
+             else{
+               wordsSeparatedByCommas += databaseArray[i] + ',';
+             }
+           }
+           console.log(wordsSeparatedByCommas);
+       }
+         // console.log(wordsSeparatedByCommas);
+         //
+         document.getElementById('numberOfDatabaseWords').innerHTML = databaseArray.length;
+
+
+     function getRandomWords(arr, n) {
+           var result = new Array(n),
+               len = arr.length,
+               taken = new Array(len);
+           if (n > len)
+               throw new RangeError("getRandom: more elements taken than available");
+           while (n--) {
+               var x = Math.floor(Math.random() * len);
+               result[n] = arr[x in taken ? taken[x] : x];
+               taken[x] = --len;
+           }
+           return result;
+     }
+     function addRandomWordsToLearningList(number){
+       // if((number + wordsArray.length) > databaseArray.length){
+       //   console.log('Truth');
+       //   console.log((number + wordsArray.length) > databaseArray.length);
+       //   number = databaseArray.length - wordsArray.length;
+       //   alert('You Selected More Words Than You Have!');
+       // }
+       // If odd number:
+       if(number/2 <= finalPointsArray.length){
+         if(number % 2 === 1){
+           number -= 1
+           var RandomWordsArray = getRandomWords(databaseArray, (number/2 + 1)) // 2));
+           var RandomWordsArrayWithPoints = getRandomWords(finalPointsArray, (number/2));
+           for(var i = 0; i <= RandomWordsArray.length-1; i++){
+             console.log('Clicking id: #plus-'+RandomWordsArray[i]);
+             document.getElementById('plus-'+ RandomWordsArray[i]).click()
+           }
+           for(var i = 0; i <= RandomWordsArrayWithPoints.length-1; i++){
+             console.log('Clicking id: #plus-'+RandomWordsArrayWithPoints[i].word);
+             document.getElementById('plus-'+ RandomWordsArrayWithPoints[i].word).click()
+           }
+         }
+         else{
+           var RandomWordsArray = getRandomWords(databaseArray, (number/2)) // 2));
+           var RandomWordsArrayWithPoints = getRandomWords(finalPointsArray, (number/2));
+           for(var i = 0; i <= RandomWordsArray.length-1; i++){
+             console.log('Clicking id: #plus-'+RandomWordsArray[i]);
+             document.getElementById('plus-'+ RandomWordsArray[i]).click()
+           }
+           for(var i = 0; i <= RandomWordsArrayWithPoints.length-1; i++){
+             console.log('Clicking id: #plus-'+RandomWordsArrayWithPoints[i].word);
+             document.getElementById('plus-'+ RandomWordsArrayWithPoints[i].word).click()
+           }
+         }
+     }
+     else {
+         var RandomWordsArray = getRandomWords(databaseArray,number) // 2));
+         for(var i = 0; i <= RandomWordsArray.length-1; i++){
+           console.log('Clicking id: #plus-'+RandomWordsArray[i]);
+           document.getElementById('plus-'+ RandomWordsArray[i]).click()
+         }
+       }
+   }
+
+   // Limits the "Add How Many Words" Input to: (0-the max amount of words in database)
+   function limiter(input) {
+    if (input.value < 0) input.value = 0;
+    if (input.value > <%= listOfWords.length %>) input.value = <%= listOfWords.length %>;
+   }
+
+   function addRandomWordsButton(input){
+     limiter(input);
+     var chosenNumber = document.querySelector('#random-number-input').value;
+     document.querySelector('#random-number-input').value = '';
+
+     addRandomWordsToLearningList(chosenNumber)
+   }
+
+   // Function to count how many times a word exists in array
+   function countInArray(array, what){
+       var count = 0;
+       for (var i = 0; i < array.length; i++) {
+           if (array[i] === what) {
+               count++;
+           }
+       }
+       return count;
+   }
+
+   // Create array with duplicate words
+   var duplicateWords = [];
+   for (var i = 0; i < databaseArray.length; i++) {
+     var count = countInArray(databaseArray,databaseArray[i]);
+     if(count > 1){
+       duplicateWords.push(databaseArray[i]);
+     }
+   }
+   // Create array with only 1 of the duplicate words
+   function squash(arr){
+       var tmp = [];
+       for(var i = 0; i < arr.length; i++){
+           if(tmp.indexOf(arr[i]) == -1){
+           tmp.push(arr[i]);
+           }
+       }
+       return tmp;
+   }
+   var duplicateWordsOnce = squash(duplicateWords);
+   // Alert if a duplicate word exists
+   if(duplicateWordsOnce[0]){
+     alert('The following word is duplicated and will be deleted: ' + duplicateWordsOnce);
+     // Click remove button
+     document.getElementById('remove-'+ duplicateWordsOnce[0]).click()
+   }
+   // Alert and delete empty values if there happens to somehow be one
+   if(document.getElementById('remove-')){
+     alert('An empty value will be deleted: ""');
+     // Click remove button
+     document.getElementById('remove-').click()
+   }
+
+
+
+   var datesArray = [];
+   var datesArrayMultiple = [];
+   var correctArray = [];
+   var incorrectArray = [];
+   var correctArray2 = [];
+   var incorrectArray2 = [];
+   var allCorrectWords = [];
+   var allIncorrectWords = [];
+
+   <% listOfDates.forEach((oneDate) => { %>
+     datesArray.push('<%= oneDate.words %>');
+     correctArray.push('<%= oneDate.correctWords %>');
+     correctArray2.push('<%= oneDate.correctWords %>');
+     incorrectArray.push('<%= oneDate.incorrectWords %>');
+     incorrectArray2.push('<%= oneDate.incorrectWords %>');
+
+     for(var i = 0; i <= correctArray.length-1; i++){
+       correctArray2[i] = correctArray[i].split(",");
+     }
+     for(var i = 0; i <= incorrectArray.length-1; i++){
+       incorrectArray2[i] = incorrectArray[i].split(",");
+     }
+
+
+     // All Definitions
+       <% }) %>
+
+   for (var i = 0; i < datesArray.length; i++) {
+
+     if(!(correctArray2[i][0] === '' || !correctArray2[i][0] && (incorrectArray2[i][0] === '' || !incorrectArray2[i][0]))){
+       var array = correctArray2[i].concat(incorrectArray2[i]);
+       datesArrayMultiple.push(array);
+     }
+     else{
+       datesArrayMultiple.push(datesArray[i].split(','))
+     }
+   // }
+   // else {
+   //   var array = datesArray[i].split(',');
+   //   datesArrayMultiple.push(array);
+   // }
+   }
+       // console.log(datesArray);
+       // console.log('-----------');
+       // console.log(correctArray2);
+       // console.log('-----------');
+       // console.log(incorrectArray2);
+       // console.log('-----------');
+
+
+       for(var i = 0; i <= correctArray2.length - 1; i++){
+         for(var y = 0; y <= correctArray2[i].length - 1; y++){
+           allCorrectWords.push(correctArray2[i][y]);
+           // console.log(incorrectArray2[i][y]);
+         }
+       }
+       for(var i = 0; i <= incorrectArray2.length - 1; i++){
+         for(var y = 0; y <= incorrectArray2[i].length - 1; y++){
+           allIncorrectWords.push(incorrectArray2[i][y]);
+           // console.log(incorrectArray2[i][y]);
+         }
+       }
+       // console.log('allCorrectWords');
+       // console.log(allCorrectWords);
+       // console.log('--------------');
+       // console.log('allIncorrectWords');
+       // console.log(allIncorrectWords);
+
+   function countInArray(array, what) {
+     var count = 0;
+     for (var i = 0; i < array.length; i++) {
+         if (array[i] === what) {
+             count++;
+         }
+     }
+     return count;
+   }
+
+   var allCorrectWordsNumbers = [];
+   for (var i = 0; i <= allCorrectWords.length - 1; i++) {
+   allCorrectWordsNumbers.push(countInArray(allCorrectWords, allCorrectWords[i]));
+   }
+
+   var allCorrectWordsAndNumbers = [];
+
+   for (var i = 0; i <= allCorrectWords.length - 1; i++) {
+   allCorrectWordsAndNumbers.push(
+     {
+       word: allCorrectWords[i],
+       number: allCorrectWordsNumbers[i]
+     }
+   );
+   }
+   for (var i = 0; i <= allCorrectWordsAndNumbers.length-1; i++) {
+   for (var y = 0; y <= allCorrectWordsAndNumbers.length-1; y++) {
+     if(allCorrectWordsAndNumbers[i] && allCorrectWordsAndNumbers[y]){
+     if(allCorrectWordsAndNumbers[i].word === allCorrectWordsAndNumbers[y].word && allCorrectWordsAndNumbers[i].number === allCorrectWordsAndNumbers[y].number && y !== i){
+       allCorrectWordsAndNumbers.splice(y,1);
+     }
+   }
+   }
+   }
+
+   var allIncorrectWordsNumbers = [];
+   for (var i = 0; i <= allIncorrectWords.length - 1; i++) {
+   allIncorrectWordsNumbers.push(countInArray(allIncorrectWords, allIncorrectWords[i]));
+   }
+
+   var allIncorrectWordsAndNumbers = [];
+
+   for (var i = 0; i <= allIncorrectWords.length - 1; i++) {
+   allIncorrectWordsAndNumbers.push(
+     {
+       word: allIncorrectWords[i],
+       number: -allIncorrectWordsNumbers[i]
+     }
+   );
+   }
+   for (var i = 0; i <= allIncorrectWordsAndNumbers.length-1; i++) {
+     for (var y = 0; y <= allIncorrectWordsAndNumbers.length-1; y++) {
+       if(allIncorrectWordsAndNumbers[i].word === allIncorrectWordsAndNumbers[y].word && allIncorrectWordsAndNumbers[i].number === allIncorrectWordsAndNumbers[y].number && y !== i){
+         allIncorrectWordsAndNumbers.splice(y,1);
+       }
+     }
+   }
+
+
+
+   for (var i = 0; i <= allCorrectWordsAndNumbers.length-1; i++) {
+     for (var y = 0; y <= allIncorrectWordsAndNumbers.length-1; y++) {
+       if(allCorrectWordsAndNumbers[i].word === allIncorrectWordsAndNumbers[y].word){
+         allCorrectWordsAndNumbers[i].number = allCorrectWordsAndNumbers[i].number + allIncorrectWordsAndNumbers[y].number
+         var toSplice = allIncorrectWordsAndNumbers.indexOf(allIncorrectWordsAndNumbers[y]);
+         allIncorrectWordsAndNumbers.splice(toSplice,1);
+       }
+     }
+   }
+
+   // console.log(allCorrectWordsAndNumbers);
+   // console.log(allIncorrectWordsAndNumbers);
+
+   var finalPointsArray = allCorrectWordsAndNumbers.concat(allIncorrectWordsAndNumbers);
+
+   finalPointsArray.sort(function(a, b){
+       return b.number-a.number
+   })
+   console.log(finalPointsArray);
+
+
+
+
+
+   function fillInWordLists(){
+     for (var y = 0; y <= finalPointsArray.length-1; y++) {
+       // if((finalPointsArray[y].number/5 *100) > 0){
+       var x = finalPointsArray[y].word.toString();
+       if(document.querySelector('#percent-complete-' + x)){
+         document.querySelector('#percent-complete-' + x).style.display = 'inline-block';
+         document.querySelector('#percent-complete-inner-' + x).innerHTML = (finalPointsArray[y].number/5 *100);
+   }
+
+     }
+   }
+
+   function deleteWordWithPoints(word){
+     var toStringWord = word.toString();
+       document.getElementById('wordsToBeDeleted-input').value = toStringWord;
+       setTimeout(function(){
+         document.getElementById('word-submitter').click();
+      }, 500);
+   }
+
+   // var learnedWords = [];
+   // for (var i = 0; i <= finalPointsArray.length-1; i++) {
+   //   if(finalPointsArray[i].number >= 5){
+   //     // console.log(finalPointsArray[i]);
+   //     var indexOfNumber = finalPointsArray.indexOf(finalPointsArray[i]);
+   //     finalPointsArray.splice(indexOfNumber,1);
+   //     learnedWords.push(finalPointsArray[i]);
+   //   }
+   // }
+   // for (var i = 0; i <= finalPointsArray.length-1; i++) {
+   //   if(finalPointsArray[i].number >= 5){
+   //     // console.log(finalPointsArray[i]);
+   //     var indexOfNumber = finalPointsArray.indexOf(finalPointsArray[i]);
+   //     finalPointsArray.splice(indexOfNumber,1);
+   //     learnedWords.push(finalPointsArray[i]);
+   //   }
+   // }
+
+   // console.log(learnedWords);
+
+
+   function createPointsWordsInList(word){
+     if(document.getElementById("li-"+word)){
+     var toStringWord = word.toString();
+     var appendUlPoints =
+     `<li class="word-list">
+         <h4 style="display: inline;"> <a style="float:left;" href="/"> `+ word + ` <span style="display:none;" id="percent-complete-`+ word + `">(<span id="percent-complete-inner-`+ word + `"></span><span>%</span>)</span> </a></h4>
+           <button class="delete-button delete-buttons" style="color:red; float:left; margin-left: 10px;" id="remove-`+ word + `" onclick="deleteWordWithPoints(`+ "'" + toStringWord + "'" + `)"> X </button>
+           <button class="plus-buttons" style="float:left; display:block; color:green;" id="plus-`+ word + `" onclick="addWord('`+ word + `')"> + </button>
+           <button class="minus-buttons" style="float:left; display:none; color:red;" id="minus-`+ word + `" onclick="addWordFromRemoveWordsArray('`+ word + `')"> - </button>
+           <button onclick="removeWordFromStudyArray('`+ word + `')" style="border: none;padding: 0;background: none; margin-left: 5px;"><i id="checkmark-`+ word + `" style="color:green; display:none; float:left; margin-left: 5px;" class="fa fa-check" aria-hidden="true"></i></button>
+     </li>`
+     document.getElementById("wordsWithPoints").innerHTML += appendUlPoints;
+     document.getElementById("li-"+word).remove();
+     }
+   }
+
+   function createPointsWordsInListAll(){
+     for (var i = 0; i < finalPointsArray.length; i++) {
+       createPointsWordsInList(finalPointsArray[i].word);
+     }
+   }
+   createPointsWordsInListAll();
+   fillInWordLists();
+   var totalPoints = 0;
+
+   function addTotalPoints(){
+     for (var i = 0; i < finalPointsArray.length; i++) {
+       totalPoints += (finalPointsArray[i].number * 20);
+     }
+     document.querySelector('#totalPoints').innerHTML = totalPoints;
+   }
+   addTotalPoints();
+
+
 </script>

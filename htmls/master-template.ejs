@@ -16,36 +16,61 @@
 <body>
 
 
-    <header class="site-header">
-  <!-- <nav>
-    <a href="/"> Home </a>
-    <br>
+  <!-- <header>
 
-    <% if (currentUser) { %>
-      <a href="/my-rooms"> My Rooms </a>
-      <br>
-      <a href="/rooms/new"> Add a Room </a>
-      <br>
-      <a href="/logout"> Log Out </a>
-      <br>
-      <h2> <%= currentUser.email %> </h2>
-      <% if (currentUser.role === 'admin') { %>
-        <div>
-          <h2> Admin Zone </h2>
-          <a href="/admin/rooms"> All Rooms </a>
-          <br>
-          <a href="/admin/users"> All Users </a>
-          <br>
+    <div class="navbar navbar-inverse navbar-static-top" id="nav">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </div>
+          <div class="row collapse navbar-collapse">
+          <div class="navbar-brand col-lg-6">Auto-Vocab</div>
+            <ul class="nav navbar-nav navbar col-lg-6">
+              <li><a id="home-nav" href="/"> Home </a></li>
+ <li class="dropdown">
+  <a href="/" id="tools-nav" class="dropbtn">Subjects »
+  </a>
+    <div class="dropdown-content">
+      <a href="/"> Vocab </a>
+      <a href="/">Russain</a>
+      <a href="/">Spanish</a>
+      <a href="/">Coding</a>
+
+    </div>
+</li>
+
+              <li>
+
+                  <a id="signup-nav" href="/signup"> Sign Up </a>
+
+              </li>
+              <li>
+                  <a id="login-nav" href="/login"> Log In </a>
+              </li>
+              <li>
+
+                <a href="/logout"> Log Out </a>
+
+              </li>
+
+              <li><a id="contact-nav" href="/contact"> Contact </a></li>
+
+              <li>
+                <%  if( currentUser ) { %>
+                  <p class="user-email">
+                    <%= currentUser.email %>
+                  </p>
+                <% } %>
+              </li>
+            </ul>
+          </div>
         </div>
-      <% } %>
-    <% } else { %>
-      <a href="/signup"> Sign Up </a>
-      <br>
-      <a href="/login"> Log In </a>
-      <br>
-    <% } %>
-  </nav> -->
-    </header>
+    </div>
+</header> -->
 
     <!-- 🚨🚨🚨 DON'T FORGET THIS -->
     <%- body -%>
@@ -59,7 +84,10 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <!-- Bootstrap js should go before your JS -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <!-- Your Javascript -->
+    <!-- https://responsivevoice.com/voiceagent/ -->
+    <!-- Activates Text to Speech -->
+    <script src='//vws.responsivevoice.com/v/e?key=WngEpffC'></script>
+    <!-- Your Javascript -->
     <script src="/javascripts/api.js"></script>
 </body>
 </html>
