@@ -10,7 +10,7 @@ function addWord(word) {
 	// Make sure wordsArray doesn't already have all words in database
 	if (wordsArray.length !== databaseArray.length) {
 		// if($.inArray(word, wordsArray) === -1){
-		// If the plus sign button is 'style: block' then add the word
+		// If the plus sign button is 'style: block' AND word is NOT in learning list array, then add the word to learning list array
 		if (document.getElementById("plus-" + word).style.display === 'block' && $.inArray(word, wordsArray) === -1) {
 			console.log("Adding: " + word + ' to learning list!');
 			console.log("----------------------------------------");
@@ -216,94 +216,96 @@ function startCycle() {
 		intervalCycle();
 		// LEFT AND RIGHT KEY DOWN
 		document.addEventListener('keydown', keyDownListener, false);
-
-		function keyDownListener(e) {
-			switch (e.keyCode) {
-				// When pressing left key, go to previous word.
-				case 37:
-					document.querySelector('#previousWordButton').click();
-					e.preventDefault();
-					break;
-					// When pressing space, play the word sound
-				case 32:
-					document.querySelector('#volumeUp').click();
-					e.preventDefault();
-					break;
-					// When pressing right key, go to next word.
-				case 39:
-					document.querySelector('#nextWordButton').click();
-					e.preventDefault();
-					break;
-					// When pressing "d", play the definition sound
-				case 68:
-					document.querySelector('#definitionBolded').click();
-					e.preventDefault();
-					break;
-					// When pressing "s", play the sentence sound
-				case 83:
-					document.querySelector('#sentenceBolded').click();
-					e.preventDefault();
-					break;
-				case 65:
-					document.querySelector('#makeAutomaticPlayButtonTrue').click();
-					e.preventDefault();
-					break;
-				case 49:
-					document.querySelector('.synonym-1').click();
-					e.preventDefault();
-					break;
-				case 50:
-					document.querySelector('.synonym-2').click();
-					e.preventDefault();
-					break;
-				case 51:
-					document.querySelector('.synonym-3').click();
-					e.preventDefault();
-					break;
-				case 52:
-					document.querySelector('.synonym-4').click();
-					e.preventDefault();
-					break;
-				case 53:
-					document.querySelector('.synonym-5').click();
-					e.preventDefault();
-					break;
-				case 54:
-					document.querySelector('.synonym-6').click();
-					e.preventDefault();
-					break;
-				case 55:
-					document.querySelector('.synonym-7').click();
-					e.preventDefault();
-					break;
-				case 56:
-					document.querySelector('.synonym-8').click();
-					e.preventDefault();
-					break;
-				case 57:
-					document.querySelector('.synonym-9').click();
-					e.preventDefault();
-					break;
-				case 48:
-					document.querySelector('.synonym-10').click();
-					e.preventDefault();
-					break;
-          // Remove word for learning list by pressing delete/backspace
-        case 8:
-          document.querySelector('#removeWordButton').click();
-          e.preventDefault();
-          break;
-        case 38:
-          cycleUpDefinition();
-          e.preventDefault();
-          break;
-        case 40:
-          cycleDownDefinition();
-          e.preventDefault();
-          break;
-			}
-		}
 	}
+}
+function keyDownListener(e) {
+  switch (e.keyCode) {
+    // When pressing left key, go to previous word.
+    case 37:
+      document.querySelector('#previousWordButton').click();
+      e.preventDefault();
+      break;
+      // When pressing space, play the word sound
+    case 32:
+      document.querySelector('#volumeUp').click();
+      e.preventDefault();
+      break;
+      // When pressing right key, go to next word.
+    case 39:
+      document.querySelector('#nextWordButton').click();
+      e.preventDefault();
+      break;
+      // When pressing "d", play the definition sound
+    case 68:
+      document.querySelector('#definitionBolded').click();
+      e.preventDefault();
+      break;
+      // When pressing "s", play the sentence sound
+    case 83:
+      document.querySelector('#sentenceBolded').click();
+      e.preventDefault();
+      break;
+    case 65:
+      document.querySelector('#makeAutomaticPlayButtonTrue').click();
+      e.preventDefault();
+      break;
+    case 49:
+      document.querySelector('.synonym-1').click();
+      e.preventDefault();
+      break;
+    case 50:
+      document.querySelector('.synonym-2').click();
+      e.preventDefault();
+      break;
+    case 51:
+      document.querySelector('.synonym-3').click();
+      e.preventDefault();
+      break;
+    case 52:
+      document.querySelector('.synonym-4').click();
+      e.preventDefault();
+      break;
+    case 53:
+      document.querySelector('.synonym-5').click();
+      e.preventDefault();
+      break;
+    case 54:
+      document.querySelector('.synonym-6').click();
+      e.preventDefault();
+      break;
+    case 55:
+      document.querySelector('.synonym-7').click();
+      e.preventDefault();
+      break;
+    case 56:
+      document.querySelector('.synonym-8').click();
+      e.preventDefault();
+      break;
+    case 57:
+      document.querySelector('.synonym-9').click();
+      e.preventDefault();
+      break;
+    case 48:
+      document.querySelector('.synonym-10').click();
+      e.preventDefault();
+      break;
+      // Remove word for learning list by pressing delete/backspace
+    case 8:
+      document.querySelector('#removeWordButton').click();
+      e.preventDefault();
+      break;
+    case 38:
+      cycleUpDefinition();
+      e.preventDefault();
+      break;
+    case 40:
+      cycleDownDefinition();
+      e.preventDefault();
+      break;
+  }
+}
+function stopKeydownListener(){
+  document.removeEventListener("keydown", keyDownListener, false);
 }
 
 // Starts cycling with wordsArray and cycleSpeed
@@ -613,14 +615,23 @@ function thesaurus(word,definitonNumber) {
 				document.getElementById("wordslist").innerHTML = appendThis;
 			} else {
 				nextWord();
+        // Sometimes it skips for seemingly no reason. Need to fix that bug.
+        console.log('Skipped past ' + word + ' to the next word!!!!')
 				// Remove word with extra symbols ex.'()'. This is rarely going to be used because this has been resolved when adding synonyms list in thesaurus();
-				removeWordButton(word);
+        // The following function was somehow causing errors and deleting some words.
+        // removeWordButton(word);
 			}
 		},
 		error: function (err) {
 			console.log(err);
 		}
 	})
+}
+
+function lookupWord(){
+  var word = document.getElementById('searchWord-input').value;
+  thesaurus(word);
+  document.querySelector('.flashcard').style.display = 'block';
 }
 //
 function getDefinition(word) {

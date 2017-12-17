@@ -96,10 +96,16 @@
          <br>
          <input id="speed-input" name="speed" type="number" onchange="changeSpeed(this)" placeholder="Seconds Per Word...">
          <br>
-         <label style="cursor:pointer;" onclick="voiceCommands.inputNumber()" for="random-number-input">Add How many words?</label>
+         <label style="cursor:pointer;" onclick="voiceCommands.inputNumber()" for="random-number-input">Add How Many Random Words?</label>
          <br>
          <input  id="random-number-input" name="randomNumber" type="number" placeholder="# Words..." onchange="addRandomWordsButton(this);">
          <br>
+         <label style="cursor:pointer;" for="random-number-input">Add Specific Word From Database:</label>
+         <br>
+         <input id="specificWord-input" type="text" name="specificWord" value="" list="words-list" placeholder="cliche...">
+         <button onclick="addSpecificWordToLearningList()">Add Word</button>
+         <br>
+
          <br>
          <p>
             <strong class="numberOfCurrentLearningListStrongTag" style="cursor:pointer;" onclick="voiceCommands.currentLearningListNumber()"># Words in Learning List:</strong>  <span id="numberInList"></span>
@@ -155,6 +161,14 @@
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="word-search-error">Sorry, Word not found!</p>
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="repeat-word-error">You Already Have this word!</p>
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="begin-error">You have to add at least 1 word to begin!</p>
+         <br>
+         <label style="cursor:pointer;" for="random-number-input">Search Word From Database:</label>
+         <br>
+         <input id="searchWord-input" type="text" name="searchWord" value="" list="words-list" placeholder="cliche...">
+         <button onclick="lookupWord()">Search</button>
+         <br>
+          <hr>
+
          <div id="listOfWords">
             <div id="hideUponBegin">
                <strong style="cursor:pointer;" onclick="voiceCommands.addNewWords()">Add New Word</strong><span><br> (One Word: hello)<br> (Multiple words: hello,cliche,...)</span><br>
@@ -304,6 +318,13 @@
    <hr>
 </div>
 <script>
+
+function addSpecificWordToLearningList(){
+  var wordString = document.querySelector('#specificWord-input').value;
+  document.querySelector('#plus-'+wordString).click();
+  document.querySelector('#specificWord-input').value = '';
+}
+
    function expandWordsList(){
      if(document.getElementById('listOfWordsId').style.display === 'none'){
        document.getElementById('listOfWordsId').style.display = 'block';
@@ -686,7 +707,6 @@
    finalPointsArray.sort(function(a, b){
        return b.number-a.number
    })
-   console.log(finalPointsArray);
 
 
 
@@ -765,6 +785,38 @@
      document.querySelector('#totalPoints').innerHTML = totalPoints;
    }
    addTotalPoints();
+
+   console.log(finalPointsArray);
+  //  no 0 points array because by definition that means the word must have been wrong at some point. and for simplicity sake.
+   negativePointsArray = [];
+   onePointArray = [];
+   twoPointsArray = [];
+   threePointsArray = [];
+   fourPointsArray = [];
+   for(var i = 0; i <= finalPointsArray.length-1; i++){
+     if(finalPointsArray[i].number === 4){
+        fourPointsArray.push(finalPointsArray[i]);
+     }
+     else if(finalPointsArray[i].number === 3){
+        threePointsArray.push(finalPointsArray[i]);
+     }
+     else if(finalPointsArray[i].number === 2){
+        twoPointsArray.push(finalPointsArray[i]);
+     }
+     else if(finalPointsArray[i].number === 1){
+        onePointArray.push(finalPointsArray[i]);
+     }
+     else{
+       negativePointsArray.push(finalPointsArray[i]);
+     }
+   }
+   console.log(fourPointsArray);
+   console.log(threePointsArray);
+   console.log(twoPointsArray);
+   console.log(onePointArray);
+   console.log(negativePointsArray);
+
+
 
 
 </script>
