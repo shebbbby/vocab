@@ -6,7 +6,7 @@
       <strong class="yourTotalPoints" style="cursor:pointer;" onclick="voiceCommands.totalPoints()">Total Points:</strong>  <span id="totalPoints"></span>
    </p>
    <p>
-      <strong class="currentLearningListStrongTag" style="cursor:pointer; width:80%;" onclick="voiceCommands.currentLearningList()">Current Learning List: </strong><span style="width:800px;" id="demo"></span>
+      <strong class="currentLearningListStrongTag" style="cursor:pointer; width:80%;" onclick="voiceCommands.currentLearningList()">Current Learning List: </strong><span style="width:800px;" id="wordsInLearningListArray"></span>
       <br>
       <!-- The true in getAllSentences(true) is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle sentence and wait until the proper time to generate questions -->
       <span id="takeQuizQuttonUnderLearningList" style="border:1px solid black; display:none; width: 100px;" class="btn btn-sm" onclick="generateQuizWithoutStartingCycle();">Take Quiz</span>
@@ -108,7 +108,7 @@
 
          <br>
          <p>
-            <strong class="numberOfCurrentLearningListStrongTag" style="cursor:pointer;" onclick="voiceCommands.currentLearningListNumber()"># Words in Learning List:</strong>  <span id="numberInList"></span>
+            <strong class="numberOfCurrentLearningListStrongTag" style="cursor:pointer;" onclick="voiceCommands.currentLearningListNumber()"># Words in Learning List:</strong>  <span id="numberOfWordsInLearningList"></span>
          </p>
          <p>
             <strong style="cursor:pointer;" onclick="voiceCommands.cycleSpeed()">Cycle Speed<span id="defaultSpeed"> (Default)</span>:</strong> <span id="cycleSpeed"></span>
@@ -120,7 +120,7 @@
          <!-- <span style="float:left; margin-left:5px;" onclick="showSpeedInput()" class="fa fa-pencil edit-speed-on"> </span> </span>
             <span onclick="hideSpeedInput()" style="display: none; float:left; margin-left:5px;" class="fa fa-pencil edit-speed-off"> </span> -->
          <!-- <p id="select-random-words" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="addRandomWordsButton()">Select</p> -->
-         <p style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle(datesArray[i])">Begin</p>
+         <p id="beginTheCycle" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="startCycle(datesArray[i])">Begin</p>
          <!-- <ul class="quizQuestion">
             <li class="word">Hello</li>
             <li id="multipleChoice1" class="en_eg">This is a sentence</li>
@@ -161,8 +161,7 @@
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="word-search-error">Sorry, Word not found!</p>
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="repeat-word-error">You Already Have this word!</p>
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="begin-error">You have to add at least 1 word to begin!</p>
-         <br>
-         <label style="cursor:pointer;" for="random-number-input">Search Word From Database:</label>
+         <label style="cursor:pointer;" for="random-number-input">Search Word:</label>
          <br>
          <input id="searchWord-input" type="text" name="searchWord" value="" list="words-list" placeholder="cliche...">
          <button onclick="lookupWord()">Search</button>
@@ -247,7 +246,7 @@
                <button id="word-submitter"> Save This Word </button>
                </form>
                <hr>
-               <h4> ALL WORDS <span>(<span id="numberOfDatabaseWords"></span>)</span> <button style="display:none;" id="deleteArrayOfWordsButton" onclick="displayMinusButtons()"><i style="color:red;" id="deleteArrayOfWords" class="fa fa-minus" aria-hidden="true"></i></button> </h4>
+               <h4> ALL YOUR WORDS <span>(<span id="numberOfDatabaseWords"></span>)</span> <button style="display:none;" id="deleteArrayOfWordsButton" onclick="displayMinusButtons()"><i style="color:red;" id="deleteArrayOfWords" class="fa fa-minus" aria-hidden="true"></i></button> </h4>
                <p id="wordsToDeleteParagraph" style="display:none;">
                <strong>Words to Delete: </strong><span id="wordsToDelete"></span>
                <br><br>
@@ -260,7 +259,8 @@
                <ul id="listOfWordsId" style="display: none;">
                <% listOfWords.sort(function(a, b){if(a.word < b.word)return -1;if(a.word > b.word)return 1;return 0;}).forEach((oneWord) => { %>
                <li style="list-style: none;" class="word-list" id="li-<%= oneWord.word %>">
-               <h4 id="h3-<%= oneWord.word %>" style="display: inline;"> <a style="float:left;" href="/<%= oneWord._id %>"> <%= oneWord.word %> <span style="display:none;" id="percent-complete-<%= oneWord.word %>">(<span id="percent-complete-inner-<%= oneWord.word %>"></span><span>%</span>)</span> </a></h4>
+               <h4 id="h3-<%= oneWord.word %>" style="display: inline; cursor:pointer;"> <a style="float:left;" onclick="lookupWord('<%= oneWord.word %>',true);"> <%= oneWord.word %> <span style="display:none;" id="percent-complete-<%= oneWord.word %>">(<span id="percent-complete-inner-<%= oneWord.word %>"></span><span>%</span>)</span> </a></h4>
+                  <!-- href="/<%= oneWord._id %>" -->
                <!-- use a form with a button for delete instead of an anchor tag
                   so that it can be a (semantically correct) POST route -->
                <div style="display:block;" id="plus-and-delete-buttons">
@@ -321,8 +321,14 @@
 
 function addSpecificWordToLearningList(){
   var wordString = document.querySelector('#specificWord-input').value;
-  document.querySelector('#plus-'+wordString).click();
-  document.querySelector('#specificWord-input').value = '';
+  if(document.querySelector('#plus-'+wordString)){
+    document.querySelector('#plus-'+wordString).click();
+    document.querySelector('#specificWord-input').value = '';
+  }
+  else{
+    alert(wordString+' not in database')
+    document.querySelector('#specificWord-input').value = '';
+  }
 }
 
    function expandWordsList(){
@@ -368,8 +374,8 @@ function addSpecificWordToLearningList(){
    //       var wordsString = wordsArray[i].toString()
    //       document.querySelector('#'+wordsString + '-previous').style.color = 'blue';
    //     }
-   //     document.getElementById("demo").innerHTML = wordsArray;
-   //     document.getElementById("numberInList").innerHTML = wordsArray.length;
+   //     document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+   //     document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
    //     document.getElementById("plus-"+word).style.display = 'none';
    //     document.getElementById("checkmark-"+word).style.display = 'block';
    //     if(wordsArray.length > 5){
@@ -383,8 +389,8 @@ function addSpecificWordToLearningList(){
    //     document.querySelector('#'+wordsString + '-previous').style.color = 'black';
    //   }
    //   wordsArray = [];
-   //   document.getElementById("demo").innerHTML = wordsArray;
-   //   document.getElementById("numberInList").innerHTML = wordsArray.length;
+   //   document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+   //   document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
    //   document.getElementById("plus-"+word).style.display = 'none';
    //   document.getElementById("checkmark-"+word).style.display = 'block';
    //   if(wordsArray.length > 5){
@@ -758,7 +764,7 @@ function addSpecificWordToLearningList(){
      var toStringWord = word.toString();
      var appendUlPoints =
      `<li class="word-list">
-         <h4 style="display: inline;"> <a style="float:left;" href="/"> `+ word + ` <span style="display:none;" id="percent-complete-`+ word + `">(<span id="percent-complete-inner-`+ word + `"></span><span>%</span>)</span> </a></h4>
+         <h4 style="display: inline;"> <a style="float:left; cursor:pointer;" onclick="lookupWord('`+word+`',true);"> `+ word + ` <span style="display:none;" id="percent-complete-`+ word + `">(<span id="percent-complete-inner-`+ word + `"></span><span>%</span>)</span> </a></h4>
            <button class="delete-button delete-buttons" style="color:red; float:left; margin-left: 10px;" id="remove-`+ word + `" onclick="deleteWordWithPoints(`+ "'" + toStringWord + "'" + `)"> X </button>
            <button class="plus-buttons" style="float:left; display:block; color:green;" id="plus-`+ word + `" onclick="addWord('`+ word + `')"> + </button>
            <button class="minus-buttons" style="float:left; display:none; color:red;" id="minus-`+ word + `" onclick="addWordFromRemoveWordsArray('`+ word + `')"> - </button>

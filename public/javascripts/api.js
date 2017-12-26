@@ -1,5 +1,7 @@
+
+
 function updateCycleInformation() {
-	var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+	var cycleDurationSeconds = ((Number(document.getElementById("numberOfWordsInLearningList").innerHTML)) * (cycleSpeed / 1000));
 	var cycleDurationMinutes = cycleDurationSeconds / 60;
 	document.getElementById("cycleTime").innerHTML = cycleDurationMinutes.toFixed(2) + ' Mins / ' + cycleDurationSeconds.toFixed(0) + ' Secs';
 }
@@ -15,8 +17,8 @@ function addWord(word) {
 			console.log("Adding: " + word + ' to learning list!');
 			console.log("----------------------------------------");
 			wordsArray.push(word);
-			document.getElementById("demo").innerHTML = wordsArray;
-			document.getElementById("numberInList").innerHTML = wordsArray.length;
+			document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+			document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 			document.getElementById("plus-" + word).style.display = 'none';
 			document.getElementById("checkmark-" + word).style.display = 'block';
 			if (wordsArray.length > 5) {
@@ -36,7 +38,7 @@ function addWord(word) {
 }
 // }
 function cycleTime() {
-	document.getElementById("cycleTime").innerHTML = document.getElementById("numberInList").innerHTML;
+	document.getElementById("cycleTime").innerHTML = document.getElementById("numberOfWordsInLearningList").innerHTML;
 }
 
 function removeWordFromStudyArray(word) {
@@ -47,8 +49,8 @@ function removeWordFromStudyArray(word) {
 	if (wordsArray.length <= 5) {
 		document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
 	}
-	document.getElementById("demo").innerHTML = wordsArray;
-	document.getElementById("numberInList").innerHTML = wordsArray.length;
+	document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+	document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 	document.querySelector("#plus-" + word).style.display = 'block';
 	document.querySelector("#checkmark-" + word).style.display = 'none';
 	updateCycleInformation();
@@ -91,7 +93,7 @@ function addWordUsingInput() {
 	var x = document.getElementById("age").value;
 	wordsArray.push(x);
 	document.getElementById("age").value = '';
-	document.getElementById("demo").innerHTML = wordsArray;
+	document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
 }
 
 
@@ -152,8 +154,8 @@ function removeWordButton(word) {
 		if (wordsArray.length <= 5) {
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
 		}
-		document.getElementById("demo").innerHTML = wordsArray;
-		document.getElementById("numberInList").innerHTML = wordsArray.length;
+		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.querySelector("#plus-" + word).style.display = 'block';
 		document.querySelector("#checkmark-" + word).style.display = 'none';
 		// getAllSentences();
@@ -166,8 +168,8 @@ function removeWordButton(word) {
 		if (wordsArray.length <= 5) {
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
 		}
-		document.getElementById("demo").innerHTML = wordsArray;
-		document.getElementById("numberInList").innerHTML = wordsArray.length;
+		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.querySelector("#plus-" + word).style.display = 'block';
 		document.querySelector("#checkmark-" + word).style.display = 'none';
 		updateCycleInformation();
@@ -202,6 +204,7 @@ var intervalCycle = function () {
 
 // Starts cycling with wordsArray and cycleSpeed
 function startCycle() {
+	lookedUpWordNotCycle = false;
 	if (wordsArray.length > 0) {
 		getAllSentences();
 		document.querySelector('.flashcard').style.display = 'block';
@@ -211,13 +214,41 @@ function startCycle() {
 		document.querySelector('#begin-cycle-button').style.display = 'none';
 		document.querySelector('#hideUponBegin').style.display = 'none';
 		document.getElementById('begin-error').style.display = 'none';
+		document.getElementById('second-body').style.display = 'none';
+		document.getElementById('beginTheCycle').style.display = 'none';
 		// document.querySelector('#theRowWithLearnAndDatabase').style.display = 'none';
 		nextWord();
 		intervalCycle();
-		// LEFT AND RIGHT KEY DOWN
-		document.addEventListener('keydown', keyDownListener, false);
 	}
 }
+var hoveredOnFlashcard = false;
+  $( ".flashcard" ).hover(
+  function() {
+    console.log('Hovered over flashcard, keydown listener activated');
+    startKeydownListener();
+    hoveredOnFlashcard = true;
+  }, function() {
+    console.log('Not Hovered over flashcard, keydown listener deactivated');
+    stopKeydownListener();
+    hoveredOnFlashcard = false;
+  }
+);
+// This checks to see if mouse is on html page or not. Assists in flashcard keydown listeners
+$( "html" ).hover(
+function() {
+  // If flashcard is displayed, and not hovered over flashcard, stop keydown listeners
+  if(document.querySelector('.flashcard').style.display === 'block' && !hoveredOnFlashcard){
+    stopKeydownListener();
+  }
+}, function() {
+  // If flashcard is displayed, and you leave the page with mouse but dont yet click on anything, still allow and activate keydown listeners
+  if(document.querySelector('.flashcard').style.display === 'block' ){
+    startKeydownListener();
+    console.log('You left the page, keydown listener activated');
+  }
+}
+);
+// }
 function keyDownListener(e) {
   switch (e.keyCode) {
     // When pressing left key, go to previous word.
@@ -303,6 +334,9 @@ function keyDownListener(e) {
       e.preventDefault();
       break;
   }
+}
+function startKeydownListener(){
+  document.addEventListener('keydown', keyDownListener, false);
 }
 function stopKeydownListener(){
   document.removeEventListener("keydown", keyDownListener, false);
@@ -433,8 +467,8 @@ function addWordFromSynonyms(word) {
 		document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
 	} else if (document.getElementById("synonym-" + word).style.color === 'fuchsia') {
 		wordsArray.push(word);
-		document.getElementById("demo").innerHTML = wordsArray;
-		document.getElementById("numberInList").innerHTML = wordsArray.length;
+		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById("synonym-" + word).style.color = 'blue';
 		updateCycleInformation();
 		getSentence(word);
@@ -442,8 +476,8 @@ function addWordFromSynonyms(word) {
 		console.log($.inArray(word, wordsArray));
 		getSentence(word);
 		wordsArray.push(word);
-		document.getElementById("demo").innerHTML = wordsArray;
-		document.getElementById("numberInList").innerHTML = wordsArray.length;
+		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById("synonym-" + word).style.color = 'blue';
 		updateCycleInformation();
 		if ($.inArray(word, databaseArray) !== -1) {
@@ -464,8 +498,8 @@ function addWordFromSynonyms(word) {
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
 		}
 		getAllSentences();
-		document.getElementById("demo").innerHTML = wordsArray;
-		document.getElementById("numberInList").innerHTML = wordsArray.length;
+		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById("synonym-" + word).style.color = 'green';
 		updateCycleInformation();
 		document.getElementById("plus-" + word).style.display = 'block';
@@ -477,13 +511,13 @@ function addWordFromSynonyms(word) {
 		}
 		getAllSentences();
 		wordsToAdd.splice(indexOfWordInWordsToAddArray, 1);
-		document.getElementById("demo").innerHTML = wordsArray;
+		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
 		if (wordsToAdd.length === 0) {
 			document.getElementById("wordstoaddparagraph").style.display = 'none';
 		}
 		document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
 		document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
-		document.getElementById("numberInList").innerHTML = wordsArray.length;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById("synonym-" + word).style.color = 'red';
 		updateCycleInformation();
 	}
@@ -589,11 +623,14 @@ function thesaurus(word,definitonNumber) {
         `<span> </span>
           <span style='font-size:12px; color: black;'> (` + response.querySelector('fl').innerHTML + `)</span>
           <span style="font-size:60%; cursor:pointer;" class="fa fa-volume-up" id="volumeUp" onclick="responsiveVoice.speak('` + response.querySelector('hw').innerHTML + `')"></span>
-          <span style="font-size:60%; cursor:pointer;" id="makeAutomaticPlayButtonTrue" onclick="toggleAutomaticPlayButton()" class="fa fa-play-circle"></span>
-          <span style="font-size:60%; cursor:pointer;" class="fa fa-arrow-left" id="previousWordButton" onclick="previousWord()"></span>
-          <span style="font-size:60%; cursor:pointer;" class="fa fa-arrow-right" id="nextWordButton" onclick="nextWord()"></span>
-          <span style="font-size:60%; cursor:pointer;" class="fa fa-times" id="removeWordButton" onclick="removeWordButton(currentFlashcardWord)"></span>
         `
+				if(!lookedUpWordNotCycle){
+					appendThis +=
+						`<span style="font-size:60%; cursor:pointer;" id="makeAutomaticPlayButtonTrue" onclick="toggleAutomaticPlayButton()" class="toBeHiddenOnRegularSearch fa fa-play-circle"></span>
+	          <span style="font-size:60%; cursor:pointer;" class="toBeHiddenOnRegularSearch fa fa-arrow-left" id="previousWordButton" onclick="previousWord()"></span>
+	          <span style="font-size:60%; cursor:pointer;" class="toBeHiddenOnRegularSearch fa fa-arrow-right" id="nextWordButton" onclick="nextWord()"></span>
+	          <span style="font-size:60%; cursor:pointer;" class="toBeHiddenOnRegularSearch fa fa-times" id="removeWordButton" onclick="removeWordButton(currentFlashcardWord)"></span>`
+				}
 
         if(countSens > 1){
         appendThis += `<span style='font-size:12px; color: black;'> (V.` + (randomNumber + 1) + `) <span class="arrow-up" color: black;' onclick="cycleUpDefinition();"></span> <span class="arrow-down" color: black;' onclick="cycleDownDefinition();"></span></span>`
@@ -628,10 +665,24 @@ function thesaurus(word,definitonNumber) {
 	})
 }
 
-function lookupWord(){
-  var word = document.getElementById('searchWord-input').value;
+var lookedUpWordNotCycle = false;
+function lookupWord(theWord,hideDatabaseWordsActivater){
+	lookedUpWordNotCycle = true;
+	if(!theWord){
+		var word = document.getElementById('searchWord-input').value;
+	}
+	else{
+		var word = theWord;
+	}
   thesaurus(word);
   document.querySelector('.flashcard').style.display = 'block';
+  // Hide the buttons on the flashcard besides the play current word button.
+  setTimeout(function(){
+    $( ".toBeHiddenOnRegularSearch" ).hide();
+  },1000);
+	if(hideDatabaseWordsActivater){
+		document.getElementById('listOfWordsIdButton').click();
+	}
 }
 //
 function getDefinition(word) {
@@ -1207,8 +1258,8 @@ function addWordFromPreviousLists(word) {
 		// getAllSentences();
 		$('#' + word + '-previous').addClass('widget-selected');
 		wordsArray.push(word);
-		document.getElementById("demo").innerHTML = wordsArray;
-		document.getElementById("numberInList").innerHTML = wordsArray.length;
+		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById(word + '-previous').style.color = 'black';
 		document.getElementById(word + '-previous').style.color = 'blue';
 		updateCycleInformation();
@@ -1234,8 +1285,8 @@ function addWordFromPreviousLists(word) {
 		if (wordsArray.length <= 5) {
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
 		}
-		document.getElementById("demo").innerHTML = wordsArray;
-		document.getElementById("numberInList").innerHTML = wordsArray.length;
+		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById(word + '-previous').style.color = 'black';
 		updateCycleInformation();
 		document.getElementById("plus-" + word).style.display = 'block';
@@ -1305,7 +1356,7 @@ var voiceCommands = {
 		responsiveVoice.speak('The cycle speed is ' + cycleSpeed / 1000 + ' seconds! This means that each word will be shown for ' + cycleSpeed / 1000 + ' seconds before the next word is shown.');
 	},
 	cycleDuration: function () {
-		var cycleDurationSeconds = ((Number(document.getElementById("numberInList").innerHTML)) * (cycleSpeed / 1000));
+		var cycleDurationSeconds = ((Number(document.getElementById("numberOfWordsInLearningList").innerHTML)) * (cycleSpeed / 1000));
 		var cycleDurationMinutes = cycleDurationSeconds / 60;
 		if (cycleDurationSeconds) {
 			responsiveVoice.speak('the cycle duration is 1.8 minutes, or in other words 100 seconds. This means that it will take 100 seconds to cycle through the entire learning list.');
