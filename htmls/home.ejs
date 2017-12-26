@@ -87,11 +87,32 @@
       </li>
       <% }) %>
    </div>
+   <br>
+   <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="generateFourRandomSentences()">Play</a>
+   <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="displayLearnSection()">Auto-Learn</a>
+   <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="displayDatabaseSection()">Database</a>
+   <input id="searchWord-input" type="text" name="searchWord" value="" list="words-list" placeholder="Search Word...">
+   <button onclick="lookupWord()">Search</button>
+
+   <br>
+   <script>
+    function displayLearnSection(){
+      document.querySelector('#quiz').style.display = 'none';
+      document.querySelector('#results').style.display = 'none';
+      document.querySelector('#second-body').style.display = 'none';
+      document.querySelector('#first-body').style.display = 'block';
+    }
+    function displayDatabaseSection(){
+      document.querySelector('#quiz').style.display = 'none';
+      document.querySelector('#results').style.display = 'none';
+      document.querySelector('#first-body').style.display = 'none';
+      document.querySelector('#second-body').style.display = 'block';
+    }
+   </script>
    <hr>
    <div class="row" id="theRowWithLearnAndDatabase">
-      <div id="first-body" class="col-md-3" style="border-right:1px solid grey;">
-         <h4>LEARN</h4>
-         <hr>
+      <div id="first-body" class="col-md-3">
+         <h4>AUTO-LEARN</h4>
          <label style="cursor:pointer;" onclick="voiceCommands.inputSpeed()" for="speed-input">Seconds per word?</label>
          <br>
          <input id="speed-input" name="speed" type="number" onchange="changeSpeed(this)" placeholder="Seconds Per Word...">
@@ -152,20 +173,14 @@
             <div id="results"></div> -->
          <!-- <hr> -->
       </div>
-      <div id="second-body" class="col-md-4" style="border-right: 1px solid black;">
+      <div id="second-body" class="col-md-4">
          <h4>DATABASE</h4>
-         <hr>
          <p id="display-words-list" style="border:1px solid black; display: none; width:80px;" class="btn btn-sm" onclick="displayWordsList()">Add Words</p>
          <p style="display:none; color: green; border:1px solid green; width: 50%;" id="word-search-success">Word Added!</p>
          <p style="display:none; color: green; border:1px solid green; width: 50%;" id="words-uploading">Uploading All Words...</p>
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="word-search-error">Sorry, Word not found!</p>
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="repeat-word-error">You Already Have this word!</p>
          <p style="display:none; color: red; border:1px solid red; width: 50%;" id="begin-error">You have to add at least 1 word to begin!</p>
-         <label style="cursor:pointer;" for="random-number-input">Search Word:</label>
-         <br>
-         <input id="searchWord-input" type="text" name="searchWord" value="" list="words-list" placeholder="cliche...">
-         <button onclick="lookupWord()">Search</button>
-         <br>
           <hr>
 
          <div id="listOfWords">
@@ -182,8 +197,7 @@
                <br>
                <!-- <input id="age" type="text" name="firstname" value="" onchange="addWordUsingInput()"> -->
                <p style="border:1px solid black;" class="btn btn-sm" onclick="inputFiller()">Submit</p>
-               <br>
-               <br>
+
                <form style="display:none;" id="hidden-inputs" method="post" action="/">
                <!-- style="display:none;" -->
                <label for="word-input"> Word </label>
@@ -309,12 +323,13 @@
    <br>
    </div>
    <!-- <li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</li> -->
-   <div id="quiz"></div>
+   <div id="quiz">
+
+   </div>
    <button style="display:none;" id="submit" onclick="submitQuiz()">Submit Quiz</button>
    <!-- onclick="submitQuiz()" -->
    <div id="results"></div>
-   <br>
-   <br>
+
    <hr>
 </div>
 <script>

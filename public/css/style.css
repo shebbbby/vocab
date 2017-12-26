@@ -92,3 +92,6 @@ li {
   top: 9px;
   cursor: pointer;
 }
+#first-body,#second-body{
+  display: none;
+}
