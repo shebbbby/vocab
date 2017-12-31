@@ -99,14 +99,18 @@
     function displayLearnSection(){
       document.querySelector('#quiz').style.display = 'none';
       document.querySelector('#results').style.display = 'none';
+      document.querySelector('#roundNumberDiv').style.display = 'none';
       document.querySelector('#second-body').style.display = 'none';
       document.querySelector('#first-body').style.display = 'block';
+      stopKeydownListenerPlayGame();
     }
     function displayDatabaseSection(){
       document.querySelector('#quiz').style.display = 'none';
       document.querySelector('#results').style.display = 'none';
+      document.querySelector('#roundNumberDiv').style.display = 'none';
       document.querySelector('#first-body').style.display = 'none';
       document.querySelector('#second-body').style.display = 'block';
+      stopKeydownListenerPlayGame();
     }
    </script>
    <hr>
@@ -323,13 +327,49 @@
    <br>
    </div>
    <!-- <li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</li> -->
+<div style="padding:0px 30px 35px 30px; margin:5px;">
+  <div id="whatToHideWhenResultsAreBeingShown">
    <div id="quiz">
-
    </div>
-   <button style="display:none;" id="submit" onclick="submitQuiz()">Submit Quiz</button>
-   <!-- onclick="submitQuiz()" -->
-   <div id="results"></div>
 
+   <div id="quizPreviousQuestion">
+   </div>
+
+   <button style="display:none;" id="submit" onclick="submitQuiz()">Submit Quiz</button>
+   <button style="display:none;" id="continueWithQuizId" onclick="continueWithQuestions()">Continue</button>
+
+   <!-- onclick="submitQuiz()" -->
+   <div id="results"> </div>
+   <div style="font-weight:bold; display:none;" id="roundNumberDiv">Round <span id="roundNumberSpan">1</span><span>:</span>
+     <div id="listOfRoundResultsSpans" style="display:inline;">
+        <span onclick="fillInQuizPreviousQuestionElement(0)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-1"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(1)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-2"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(2)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-3"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(3)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-4"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(4)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-5"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(5)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-6"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(6)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-7"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(7)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-8"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(8)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-9"></span>
+        <span onclick="fillInQuizPreviousQuestionElement(9)" class="fa fa-circle-o" style="cursor:pointer;" id="question-number-10"></span>
+      </div>
+   </div>
+   <div style="font-weight:bold; display:none;" id="roundNumberDivPreviousResults">Round <span id="roundNumberSpanPreviousResults"></span><span>:</span>
+   </div>
+   </div>
+   <div id="progressThisRound" style="display:none;">
+     <p>Your Progress Round <span id="roundResultsSpan"></span>:</p>
+     <ul id="wordsThisRound" style="list-style: none;">
+     </ul>
+     <button id="continueWithQuizFromSeeingResults" onclick="continueWithQuizFromSeeingResults()">Continue</button>
+   </div>
+
+   <div id="previousRoundResults" style="display:none;">
+   </div>
+
+
+
+</div>
    <hr>
 </div>
 <script>

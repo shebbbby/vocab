@@ -1,5 +1,4 @@
 
-
 function updateCycleInformation() {
 	var cycleDurationSeconds = ((Number(document.getElementById("numberOfWordsInLearningList").innerHTML)) * (cycleSpeed / 1000));
 	var cycleDurationMinutes = cycleDurationSeconds / 60;
@@ -439,6 +438,8 @@ function downloadSynonymNewWords() {
 	}
 	document.getElementById('word-submitter').click();
 }
+
+
 
 function submitQuiz() {
 	// if(wordsToAdd.length > 0){
@@ -1046,126 +1047,6 @@ function getSentence(word, activateCheckerOfGetAllSentences) {
 	})
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Generate random number
-function mathRandomNumber(number){
-	var randomNumber = Math.floor(Math.random()*number);
-	return randomNumber;
-}
-var questionFourSentencesNumbers = [];
-var questionFourWords = [];
-var questionFourPoints = [];
-var currentPlayPoints = 0;
-function generateFourRandomSentences(){
-	document.getElementById('quiz').style.display = 'block';
-	document.querySelector('#results').style.display = 'block';
-	document.getElementById('first-body').style.display = 'none';
-	document.getElementById('second-body').style.display = 'none';
-	sentencesArray = [];
-	myQuestions = [];
-	questionFourSentencesNumbers = [];
-	questionFourWords = [];
-	questionFourPoints = [];
-	var one = mathRandomNumber(finalPointsArray.length);
-	var two = mathRandomNumber(finalPointsArray.length);
-	var three = mathRandomNumber(finalPointsArray.length);
-	var four = mathRandomNumber(finalPointsArray.length);
-	questionFourSentencesNumbers.push(one);
-	questionFourSentencesNumbers.push(two);
-	questionFourSentencesNumbers.push(three);
-	questionFourSentencesNumbers.push(four);
-	for(var i = 0; i <= questionFourSentencesNumbers.length-1; i++){
-			questionFourWords.push(finalPointsArray[questionFourSentencesNumbers[i]].word);
-			questionFourPoints.push(finalPointsArray[questionFourSentencesNumbers[i]].number);
-	}
-	for(var i = 0; i <= questionFourSentencesNumbers.length-1; i++){
-		getSentence(questionFourWords[i]);
-	}
-	var wordChosenRandomlyToBeAnswer = mathRandomNumber(questionFourWords.length);
-	var randomAnswerLetter;
-	if (wordChosenRandomlyToBeAnswer === 0) {
-		randomAnswerLetter = 'a';
-	} else if (wordChosenRandomlyToBeAnswer === 1) {
-		randomAnswerLetter = 'b';
-	} else if (wordChosenRandomlyToBeAnswer === 2) {
-		randomAnswerLetter = 'c';
-	} else {
-		randomAnswerLetter = 'd';
-	}
-	setTimeout(function(){
-		pushQuizQuestion(
-			sentencesArray[wordChosenRandomlyToBeAnswer].word,
-			sentencesArray[0].sentence,
-			sentencesArray[1].sentence,
-			sentencesArray[2].sentence,
-			sentencesArray[3].sentence,
-			randomAnswerLetter
-		);
-		document.getElementById('submit').style.display = 'none';
-		document.getElementById('submit').innerHTML = ' Next ';
-		for(var i = 0; i <= questionFourSentencesNumbers.length - 1; i++){
-			document.querySelectorAll('.answers > label')[i].onclick = function(){
-				
-				document.getElementById('submit').style.display = 'none';
-				document.querySelector('.answers').style.color = 'red';
-				currentPlayPoints -= 50;
-				showPlayPoints();
-			}
-		}
-		document.querySelectorAll('.answers > label')[wordChosenRandomlyToBeAnswer].onclick = function(){
-			document.getElementById('submit').style.display = 'block';
-			document.querySelector('.answers').style.color = 'green';
-			currentPlayPoints += 50;
-			showPlayPoints();
-		}
-		document.getElementById('submit').onclick = function(){
-			generateFourRandomSentences();
-			document.getElementById('results').style.display = 'none';
-		}
-		document.getElementById('results').style.display = 'block';
-		document.getElementById('results').style.fontWeight = 'bold';
-		document.getElementById('results').innerHTML = currentPlayPoints + ' Points';
-	},2000);
-}
-
-function showPlayPoints(){
-	document.getElementById('results').innerHTML = currentPlayPoints + ' Points';
-	if(currentPlayPoints > 0){
-		document.getElementById('results').style.color = 'green';
-	}
-	if(currentPlayPoints < 0){
-		document.getElementById('results').style.color = 'red';
-	}
-	if(currentPlayPoints === 0){
-		document.getElementById('results').style.color = 'black';
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
 function getAllSentences(activateCheckerOfGetAllSentences) {
 	sentencesArray = [];
 	// document.querySelector('#listOfWords').style.display = 'none';
@@ -1227,6 +1108,8 @@ function makeQuestions() {
 
 		// }
 	}
+	document.querySelector('#quiz').style.display = 'block';
+	document.querySelector('#results').style.display = 'block';
 }
 
 function generateQuizWithoutStartingCycle() {
@@ -1235,6 +1118,9 @@ function generateQuizWithoutStartingCycle() {
 	// The true is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle
 	// sentence and wait until the proper time to generate questions
 	getAllSentences(true);
+	document.querySelector('#quiz').style.display = 'block';
+	document.querySelector('#results').style.display = 'block';
+
 }
 
 
@@ -1514,4 +1400,15 @@ function tutorial() {
 	}, estimatedTimeTilSpeedInput);
 	responsiveVoice.speak('Next you will see the cycle duration is 1.8 minutes, or in other words 100 seconds. This means that it will take 100 seconds to cycle through the entire learning list.');
 	responsiveVoice.speak('Here you can see the “take quiz” button. If you click this button a quiz will automatically be generated with the ten words in your current learning list. Now lets begin!');
+}
+
+
+
+
+
+
+window.onbeforeunload = function(){
+	if(wordsArray.length > 0){
+   downloadSynonymNewWords();
+ }
 }
