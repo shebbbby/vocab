@@ -21,6 +21,13 @@ li {
   float: left;
   padding: 5px;
 }
+/*You need the code for the following few lines for ".synonymClusterListItem" so that it counteracts the previous few "li" lines*/
+.synonymClusterListItem,.relatedWordClusterListItem,.antonymClusterListItem{
+  float: none;
+  padding: 0px;
+  list-style-type:none;
+}
+
 .word-list {
   float: none;
 }
@@ -104,7 +111,7 @@ li {
 }
 
 .question {
-    font-size: 26px;
+    font-size: 22px;
     margin-bottom: 10px;
 }
 .answers {
@@ -133,4 +140,69 @@ input[type='radio'] {
 .roundLiWord{
   font-size: 16px;
   font-weight: bold;
+}
+
+.antonymsClass, .relatedWordsClass{
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#crossword {
+    text-align:center;
+}
+.crossword {
+    border-collapse:collapse;
+    font-family:"Courier New", Courier, monospace;
+    margin-left:auto;
+    margin-right:auto;
+    clear:both;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+.crossword td {
+    border:1px solid black;
+    padding:0;
+    margin:0;
+    vertical-align:middle;
+    padding:0;
+    text-align:center;
+    width:30px;
+    height:30px;
+}
+.crossword .no-border {
+    border:none;
+}
+#clues {
+    margin:auto;
+}
+#clues td {
+    vertical-align:top;
+}
+#across > li{
+  float: none;
+  padding: 0px;
+  list-style: none;
+}
+#down > li{
+  float: none;
+  padding: 0px;
+  list-style: none;
 }

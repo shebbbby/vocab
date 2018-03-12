@@ -7,6 +7,14 @@ function updateCycleInformation() {
 
 var copyOfDatabaseArray = databaseArray;
 
+function displayCopyListButton(){
+	if (wordsArray.length > 0) {
+		document.getElementById("copyList").style.display = 'block';
+	}else{
+		document.getElementById("copyList").style.display = 'none';
+	}
+}
+
 function addWord(word) {
 	// Make sure wordsArray doesn't already have all words in database
 	if (wordsArray.length !== databaseArray.length) {
@@ -16,12 +24,14 @@ function addWord(word) {
 			console.log("Adding: " + word + ' to learning list!');
 			console.log("----------------------------------------");
 			wordsArray.push(word);
-			document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+			turnCurrentLearningListSpanIntoClickableArray();
 			document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 			document.getElementById("plus-" + word).style.display = 'none';
 			document.getElementById("checkmark-" + word).style.display = 'block';
-			if (wordsArray.length > 5) {
+			displayCopyListButton(); if (wordsArray.length > 5) {
 				document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+				document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'block';
+				document.getElementById("playGameFromNextToAddWordButton").style.display = 'block';
 			}
 			document.getElementById('word-search-error').style.display = 'none';
 			document.getElementById('repeat-word-error').style.display = 'none';
@@ -45,10 +55,12 @@ function removeWordFromStudyArray(word) {
 	var indexOfWord = wordsArray.indexOf(word);
 	// Splice word from wordsArray
 	wordsArray.splice(indexOfWord, 1);
-	if (wordsArray.length <= 5) {
+	console.log('Removing ' + word + ' from learning list!');
+	displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
 		document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+		document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
 	}
-	document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+	turnCurrentLearningListSpanIntoClickableArray();
 	document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 	document.querySelector("#plus-" + word).style.display = 'block';
 	document.querySelector("#checkmark-" + word).style.display = 'none';
@@ -85,6 +97,7 @@ function changeSpeed(input) {
 	document.querySelector('#cycleSpeed').innerHTML = (cycleSpeed / 1000) + ' Seconds / Word';
 	document.querySelector('#defaultSpeed').innerHTML = '';
 	updateCycleInformation(); // document.getElementById("time").innerHTML = cycleSpeed;
+	document.querySelector("#speed-input").value = '';
 }
 
 // This is only if you use the input to add something
@@ -92,7 +105,7 @@ function addWordUsingInput() {
 	var x = document.getElementById("age").value;
 	wordsArray.push(x);
 	document.getElementById("age").value = '';
-	document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+	turnCurrentLearningListSpanIntoClickableArray();
 }
 
 
@@ -111,16 +124,134 @@ function cycleDownDefinition(){
   }
 }
 
+function resetWordCountIfZero(){
+	if (wordCount === wordsArray.length) {
+		console.log('Resetting the cycle to 0 and shuffling wordsArray!');
+		wordsArray = shuffle(wordsArray);
+		turnCurrentLearningListSpanIntoClickableArray();
+		wordCount = 0;
+	}
+}
+
 function cycleWordsArray(num) {
 	if (num >= 0) {
 		wordCount = num;
 	}
+// TESTING IF SHOULD SKIP WORD ----------------------------------------------
+	// var theWordToBeDisplayed = wordsArray[wordCount];
+	//
+	// for (var i = 0; i < wordsThatAreToBeSkippedNextRound.length; i++) {
+	// 	if(theWordToBeDisplayed === wordsThatAreToBeSkippedNextRound[i]){
+	// 		console.log('Skipping to next word because "' + theWordToBeDisplayed + '" is in wordsThatAreToBeSkippedNextRound array!');
+	// 		// theWordToBeDisplayed = wordsArray[wordCount+1];
+	// 		wordCount++;
+	// 		resetWordCountIfZero();
+	// 		wordsThatAreToBeSkippedNextRound.splice(i,1);
+	// 	}
+	// }
+	// for (var i = 0; i < wordsThatAreToBeSkippedEveryRound.length; i++) {
+	// 	if(theWordToBeDisplayed === wordsThatAreToBeSkippedEveryRound[i]){
+	// 		console.log('Skipping to next word because "' + theWordToBeDisplayed + '" is in wordsThatAreToBeSkippedEveryRound array!');
+	// 		// theWordToBeDisplayed = wordsArray[wordCount+1];
+	// 		wordCount++;
+	// 		spliceFromArray(wordsArray,theWordToBeDisplayed);
+	// 		resetWordCountIfZero();
+	// 	}
+	// }
+	//  -------------------------------------------------------------------------
 	thesaurus(wordsArray[wordCount]);
 	wordCount++;
-	if (wordCount === wordsArray.length) {
-		wordCount = 0;
+	resetWordCountIfZero();
+}
+
+
+
+
+
+
+// CODE THAT HAS TO WITH SKIPPING WORDS -------------------------------------------------------------------
+
+var wordsThatAreToBeSkippedNextRound = [];
+var wordsThatAreToBeSkippedEveryRound= [];
+
+function addWordToWordsThatAreToBeSkippedNextRoundArray(word){
+	wordsThatAreToBeSkippedNextRound.push(word);
+}
+
+function removeWordFromWordsThatAreToBeSkippedNextRoundArray(word){
+	spliceFromArray(wordsThatAreToBeSkippedNextRound, word);
+}
+
+function skipWordIfWordIsInWordsThatAreToBeSkippedNextRoundArray(word){
+	for (var i = 0; i < wordsThatAreToBeSkippedNextRound.length; i++) {
+		if(word === wordsThatAreToBeSkippedNextRound[i]){
+			console.log('Skipping/Going to next word because ' + word + ' is in wordsThatAreToBeSkippedNextRound array!');
+			nextWord();
+			wordsThatAreToBeSkippedNextRound.splice(i,1);
+		}
 	}
 }
+
+function skipWordIfWordIsInWordsThatAreToBeSkippedEveryRoundArray(word){
+	for (var i = 0; i < wordsThatAreToBeSkippedEveryRound.length; i++) {
+		if(word === wordsThatAreToBeSkippedEveryRound[i]){
+			console.log('Skipping/Going to next word because ' + word + ' is in wordsThatAreToBeSkippedEveryRound array!');
+			nextWord();
+		}
+	}
+}
+
+
+function addWordToWordsThatAreToBeSkippedEveryRoundArray(word){
+	document.querySelector('#startSkippingWordButtonOnFlashcard').style.display = 'none';
+	wordsThatAreToBeSkippedEveryRound.push(word);
+	document.querySelector('.wordsThatAreBeingSkipped').style.display = 'block';
+	// document.querySelector('#wordsBeingSkippedArray').innerHTML = wordsThatAreToBeSkippedEveryRound;
+	removeWordClickableSpanInCurrentLearningList(word);
+	getAllSentences();
+	console.log('Adding '+word+' to wordsThatAreToBeSkippedEveryRound Array!!!');
+	updateWordsBeingSkippedArrayInnerHtml();
+}
+
+// function addAllWordsBackToLearningListFromSkippedEveryRoundArray(){
+// 	for (var i = 0; i < wordsThatAreToBeSkippedEveryRound.length; i++) {
+// 		addWordToWordsThatAreToBeSkippedEveryRoundArray(wordsThatAreToBeSkippedEveryRound[i]);
+// 	}
+// }
+
+function removeWordFromWordsThatAreToBeSkippedEveryRoundArray(word){
+	spliceFromArray(wordsThatAreToBeSkippedEveryRound, word);
+	if(wordsThatAreToBeSkippedEveryRound.length === 0){
+		document.querySelector('.wordsThatAreBeingSkipped').style.display = 'none';
+	}
+}
+
+function addWordToLearningListAndRemoveFromSkippingList(word){
+	document.querySelector('#specificWord-input').value= word;
+	document.querySelector('#addSpecificWordButton').click();
+	removeWordFromWordsThatAreToBeSkippedEveryRoundArray(word);
+	updateWordsBeingSkippedArrayInnerHtml();
+}
+
+function updateWordsBeingSkippedArrayInnerHtml(){
+	var newInnerHTMLSpan = '';
+	for (var i = 0; i < wordsThatAreToBeSkippedEveryRound.length; i++) {
+		if(i === wordsThatAreToBeSkippedEveryRound.length - 1){
+			newInnerHTMLSpan += '<span style="cursor:pointer;" class="wordInCurrentLearningList" id="'+wordsThatAreToBeSkippedEveryRound[i]+'-currentLearningList'+'" onclick="addWordToLearningListAndRemoveFromSkippingList(`'+wordsThatAreToBeSkippedEveryRound[i]+'`)">'+wordsThatAreToBeSkippedEveryRound[i]+'</span>';
+		}else{
+			newInnerHTMLSpan += '<span style="cursor:pointer;" class="wordInCurrentLearningList" id="'+wordsThatAreToBeSkippedEveryRound[i]+'-currentLearningList'+'" onclick="addWordToLearningListAndRemoveFromSkippingList(`'+wordsThatAreToBeSkippedEveryRound[i]+'`)">'+wordsThatAreToBeSkippedEveryRound[i]+',</span>';
+		}
+	}
+	document.querySelector('#wordsBeingSkippedArray').innerHTML = newInnerHTMLSpan;
+}
+
+// -------------------------------------------------------------------
+
+
+
+
+
+
 
 function previousWord() {
 	if (wordCount >= 2) {
@@ -134,6 +265,26 @@ function previousWord() {
 
 function nextWord() {
 	cycleWordsArray(wordCount)
+}
+
+// Use this function to shuffle the wordsArray evey time it goes through cycle
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
 
 
@@ -150,27 +301,31 @@ function removeWordButton(word) {
 	if (currentFlashcardWordIndexInStudyArray !== wordsArray.length - 1) {
 		console.log('Removing ' + word + ' from learning list!');
 		wordsArray.splice(indexOfWord, 1);
-		if (wordsArray.length <= 5) {
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
 		}
-		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		turnCurrentLearningListSpanIntoClickableArray();
 		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.querySelector("#plus-" + word).style.display = 'block';
 		document.querySelector("#checkmark-" + word).style.display = 'none';
 		// getAllSentences();
 		updateCycleInformation();
+		turnCurrentLearningListSpanIntoClickableArray();
 		cycleWordsArray(currentFlashcardWordIndexInStudyArray);
 	}
 	// If you are removing the last word, skip to the first word in array.
 	else if (currentFlashcardWordIndexInStudyArray === wordsArray.length - 1) {
 		wordsArray.splice(indexOfWord, 1);
-		if (wordsArray.length <= 5) {
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
 		}
-		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		turnCurrentLearningListSpanIntoClickableArray();
 		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.querySelector("#plus-" + word).style.display = 'block';
 		document.querySelector("#checkmark-" + word).style.display = 'none';
+		turnCurrentLearningListSpanIntoClickableArray();
 		updateCycleInformation();
 		cycleWordsArray(wordsArray[1]);
 	}
@@ -348,6 +503,9 @@ function displayWordsList() {
 	document.querySelector('#begin-cycle-button').innerHTML = 'Continue';
 	document.querySelector('#display-words-list').style.display = 'none';
 }
+
+var wordsNotFoundByApiArray = [];
+
 // startCycle();
 function inputFiller() {
 	document.querySelector('#wordsInLearningList-input').value = wordsArray;
@@ -401,6 +559,7 @@ function inputFiller() {
 				}
 				if (!response.querySelector('hw')) {
 					document.getElementById('word-search-error').innerHTML = 'Sorry, ' + capitalizeFirstLetter(newWord) + ' not Found';
+					wordsNotFoundByApiArray.push(newWord);
 					document.getElementById('word-search-error').style.display = 'block';
 					document.getElementById('repeat-word-error').style.display = 'none';
 				}
@@ -453,6 +612,48 @@ function submitQuiz() {
 	// }
 }
 
+function addWordEvenIfNotInDatabaseIfItPassedAjaxTest(word, arrayToAddWordInto) {
+	var indexOfWord = arrayToAddWordInto.indexOf(word);
+	$.ajax({
+		url: 'https://www.dictionaryapi.com/api/v1/references/thesaurus/xml/' + word + '?key=86ea0d7a-789f-4a53-ba9d-1303f3cbf6ae',
+		method: "GET",
+		success: function (response) {
+			// If database already has that word then display error message
+			// Convert value to have no upper case or spaces
+			if (response.querySelector('hw')) {
+				console.log(word + ' was successfully found and will be ADDED WORD TO BOTH arrayToAddWordInto and wordsToAdd');
+
+				if ($.inArray(word.toLowerCase().replace(/\s/g, ''), wordsToAdd) === -1){
+          wordsToAdd.push(word);
+          document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+          document.getElementById("wordstoaddparagraph").style.display = 'block';
+          document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+          document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+				}else{console.log(word + ' is already in the wordsToAdd Array!');}
+				if ($.inArray(word.toLowerCase().replace(/\s/g, ''), arrayToAddWordInto) === -1){
+          arrayToAddWordInto.push(word);
+          turnCurrentLearningListSpanIntoClickableArray();
+
+					// If you are using this code during synonym cluster game
+					if(arrayToAddWordInto === synonymClusterArray){
+						updateSynonymClusterNumberHtml();
+					}
+
+          document.getElementById("numberOfWordsInLearningList").innerHTML = arrayToAddWordInto.length;
+          updateCycleInformation();
+				}else{console.log(word + ' is already in the arrayToAddWordInto Array!');}
+        return true;
+		}else{
+      console.log(word + ' was NOT successfully found');
+			wordsNotFoundByApiArray.push(word);
+    }
+  },
+		error: function (err) {
+			console.log(err);
+		}
+	})
+}
+
 function addWordFromSynonyms(word) {
 	// if($.inArray(word, wordsArray) === -1){
 	// If the plus sign button is 'style: block' then add the word
@@ -468,7 +669,7 @@ function addWordFromSynonyms(word) {
 		document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
 	} else if (document.getElementById("synonym-" + word).style.color === 'fuchsia') {
 		wordsArray.push(word);
-		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		turnCurrentLearningListSpanIntoClickableArray();
 		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById("synonym-" + word).style.color = 'blue';
 		updateCycleInformation();
@@ -477,7 +678,7 @@ function addWordFromSynonyms(word) {
 		console.log($.inArray(word, wordsArray));
 		getSentence(word);
 		wordsArray.push(word);
-		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		turnCurrentLearningListSpanIntoClickableArray();
 		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById("synonym-" + word).style.color = 'blue';
 		updateCycleInformation();
@@ -495,11 +696,12 @@ function addWordFromSynonyms(word) {
 	// if color is blue and word is not in database:
 	else if (document.getElementById("synonym-" + word).style.color === 'blue' && $.inArray(word, databaseArray) !== -1) {
 		wordsArray.splice(indexOfWord, 1);
-		if (wordsArray.length <= 5) {
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
 		}
 		getAllSentences();
-		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		turnCurrentLearningListSpanIntoClickableArray();
 		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById("synonym-" + word).style.color = 'green';
 		updateCycleInformation();
@@ -507,12 +709,13 @@ function addWordFromSynonyms(word) {
 		document.getElementById("checkmark-" + word).style.display = 'none';
 	} else if (document.getElementById("synonym-" + word).style.color === 'blue' && $.inArray(word, databaseArray) === -1) {
 		wordsArray.splice(indexOfWord, 1);
-		if (wordsArray.length <= 5) {
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
 		}
 		getAllSentences();
 		wordsToAdd.splice(indexOfWordInWordsToAddArray, 1);
-		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		turnCurrentLearningListSpanIntoClickableArray();
 		if (wordsToAdd.length === 0) {
 			document.getElementById("wordstoaddparagraph").style.display = 'none';
 		}
@@ -520,6 +723,151 @@ function addWordFromSynonyms(word) {
 		document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
 		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById("synonym-" + word).style.color = 'red';
+		updateCycleInformation();
+	}
+}
+
+function addWordFromAntonyms(word) {
+	// if($.inArray(word, wordsArray) === -1){
+	// If the plus sign button is 'style: block' then add the word
+	var indexOfWord = wordsArray.indexOf(word);
+	var indexOfWordInWordsToAddArray = wordsToAdd.indexOf(word);
+
+	if (document.getElementById("antonym-" + word).style.color === 'red') {
+		wordsToAdd.push(word);
+		document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+		document.getElementById("antonym-" + word).style.color = 'fuchsia';
+		document.getElementById("wordstoaddparagraph").style.display = 'block';
+		document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+		document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+	} else if (document.getElementById("antonym-" + word).style.color === 'fuchsia') {
+		wordsArray.push(word);
+		turnCurrentLearningListSpanIntoClickableArray();
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
+		document.getElementById("antonym-" + word).style.color = 'blue';
+		updateCycleInformation();
+		getSentence(word);
+	} else if ($.inArray(word, wordsArray) === -1 && document.getElementById("antonym-" + word).style.color === 'green') {
+		console.log($.inArray(word, wordsArray));
+		getSentence(word);
+		wordsArray.push(word);
+		turnCurrentLearningListSpanIntoClickableArray();
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
+		document.getElementById("antonym-" + word).style.color = 'blue';
+		updateCycleInformation();
+		if ($.inArray(word, databaseArray) !== -1) {
+			document.getElementById("plus-" + word).style.display = 'none';
+			document.getElementById("checkmark-" + word).style.display = 'block';
+		}
+		if ($.inArray(word, databaseArray) === -1 && $.inArray(word, wordsToAdd) === -1) {
+			wordsToAdd.push(word);
+			document.getElementById("wordstoaddparagraph").style.display = 'block';
+			document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+			document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+		}
+	}
+	// if color is blue and word is not in database:
+	else if (document.getElementById("antonym-" + word).style.color === 'blue' && $.inArray(word, databaseArray) !== -1) {
+		wordsArray.splice(indexOfWord, 1);
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
+			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
+		}
+		getAllSentences();
+		turnCurrentLearningListSpanIntoClickableArray();
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
+		document.getElementById("antonym-" + word).style.color = 'green';
+		updateCycleInformation();
+		document.getElementById("plus-" + word).style.display = 'block';
+		document.getElementById("checkmark-" + word).style.display = 'none';
+	} else if (document.getElementById("antonym-" + word).style.color === 'blue' && $.inArray(word, databaseArray) === -1) {
+		wordsArray.splice(indexOfWord, 1);
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
+			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
+		}
+		getAllSentences();
+		wordsToAdd.splice(indexOfWordInWordsToAddArray, 1);
+		turnCurrentLearningListSpanIntoClickableArray();
+		if (wordsToAdd.length === 0) {
+			document.getElementById("wordstoaddparagraph").style.display = 'none';
+		}
+		document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+		document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
+		document.getElementById("antonym-" + word).style.color = 'red';
+		updateCycleInformation();
+	}
+}
+function addWordFromRelatedWords(word) {
+	// if($.inArray(word, wordsArray) === -1){
+	// If the plus sign button is 'style: block' then add the word
+	var indexOfWord = wordsArray.indexOf(word);
+	var indexOfWordInWordsToAddArray = wordsToAdd.indexOf(word);
+
+	if (document.getElementById("relatedWord-" + word).style.color === 'red') {
+		wordsToAdd.push(word);
+		document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+		document.getElementById("relatedWord-" + word).style.color = 'fuchsia';
+		document.getElementById("wordstoaddparagraph").style.display = 'block';
+		document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+		document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+	} else if (document.getElementById("relatedWord-" + word).style.color === 'fuchsia') {
+		wordsArray.push(word);
+		turnCurrentLearningListSpanIntoClickableArray();
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
+		document.getElementById("relatedWord-" + word).style.color = 'blue';
+		updateCycleInformation();
+		getSentence(word);
+	} else if ($.inArray(word, wordsArray) === -1 && document.getElementById("relatedWord-" + word).style.color === 'green') {
+		console.log($.inArray(word, wordsArray));
+		getSentence(word);
+		wordsArray.push(word);
+		turnCurrentLearningListSpanIntoClickableArray();
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
+		document.getElementById("relatedWord-" + word).style.color = 'blue';
+		updateCycleInformation();
+		if ($.inArray(word, databaseArray) !== -1) {
+			document.getElementById("plus-" + word).style.display = 'none';
+			document.getElementById("checkmark-" + word).style.display = 'block';
+		}
+		if ($.inArray(word, databaseArray) === -1 && $.inArray(word, wordsToAdd) === -1) {
+			wordsToAdd.push(word);
+			document.getElementById("wordstoaddparagraph").style.display = 'block';
+			document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+			document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+		}
+	}
+	// if color is blue and word is not in database:
+	else if (document.getElementById("relatedWord-" + word).style.color === 'blue' && $.inArray(word, databaseArray) !== -1) {
+		wordsArray.splice(indexOfWord, 1);
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
+			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
+		}
+		getAllSentences();
+		turnCurrentLearningListSpanIntoClickableArray();
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
+		document.getElementById("relatedWord-" + word).style.color = 'green';
+		updateCycleInformation();
+		document.getElementById("plus-" + word).style.display = 'block';
+		document.getElementById("checkmark-" + word).style.display = 'none';
+	} else if (document.getElementById("relatedWord-" + word).style.color === 'blue' && $.inArray(word, databaseArray) === -1) {
+		wordsArray.splice(indexOfWord, 1);
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
+			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
+		}
+		getAllSentences();
+		wordsToAdd.splice(indexOfWordInWordsToAddArray, 1);
+		turnCurrentLearningListSpanIntoClickableArray();
+		if (wordsToAdd.length === 0) {
+			document.getElementById("wordstoaddparagraph").style.display = 'none';
+		}
+		document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
+		document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
+		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
+		document.getElementById("relatedWord-" + word).style.color = 'red';
 		updateCycleInformation();
 	}
 }
@@ -571,6 +919,7 @@ function thesaurus(word,definitonNumber) {
 
 				// CODE THAT HAS TO DO WITH SYNONYMS--------------------------------------------------
 
+			if(response.getElementsByTagName('syn')[randomNumber]){
         var synonyms = response.getElementsByTagName('syn')[randomNumber].innerHTML;
 				var synonymsArray = synonyms.split(",");
 
@@ -613,11 +962,110 @@ function thesaurus(word,definitonNumber) {
 					return synonymsHtml;
 				}
 				var synonymsHtml = addSynonymsHtml();
+			}
+				// -------------------------------------------------------------------------------------------------------------------
+
+				// CODE THAT HAS TO DO WITH Antonyms--------------------------------------------------
+
+				if(response.getElementsByTagName('ant')[randomNumber]){
+					var antonyms = response.getElementsByTagName('ant')[randomNumber].innerHTML;
+					var antonymsArray = antonyms.split(",");
+
+					function isInArray(value, array) {
+						return array.indexOf(value) > -1;
+					}
+
+					function addAntonymsHtml() {
+						var antonymsHtml = '';
+						var plusOner = 1;
+						for (var i = 0; i <= antonymsArray.length - 1; i++) {
+							var iString = (i + plusOner).toString();
+							var comma = ', ';
+							if (i === antonymsArray.length - 1) {
+								comma = '';
+							}
+							var noSpacesWord = antonymsArray[i].replace(" ", "");
+							if (noSpacesWord === response.querySelector('hw').innerHTML) {
+								plusOner = 0;
+								antonymsHtml += '';
+							}
+							// If a synonym has symbols incombatible with the api search, make it black.
+							else if (noSpacesWord.includes("(") || noSpacesWord.includes(")") || noSpacesWord.includes("[") || noSpacesWord.includes("]")) {
+								// noSpacesWord = noSpacesWord.replace(/(.*)/, '');
+								antonymsHtml += '<span style="color: black; cursor: auto;">' + noSpacesWord + comma + '</span>';
+							} else if (isInArray(noSpacesWord, wordsArray)) {
+								// If word is in learning list, make it blue
+								antonymsHtml += '<span class="antonym-' + iString + '" id="antonym-' + noSpacesWord + '" style="color: blue; cursor: pointer;" onclick="addWordFromAntonyms(' + "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+							} else if (isInArray(noSpacesWord, databaseArray)) {
+								// If word is in database, make it green
+								antonymsHtml += '<span class="antonym-' + iString + '" id="antonym-' + noSpacesWord + '" style="color: green; cursor: pointer;" onclick="addWordFromAntonyms(' + "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+							} else if (isInArray(noSpacesWord, wordsToAdd)) {
+								// If word is in learning list, make it blue
+								antonymsHtml += '<span class="antonym-' + iString + '" id="antonym-' + noSpacesWord + '" style="color: fuchsia; cursor: pointer;" onclick="addWordFromAntonyms(' + "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+							} else {
+								// If word is not in database, make it red
+								antonymsHtml += '<span class="antonym-' + iString + '" id="antonym-' + noSpacesWord + '" style="color: red; cursor: pointer;"onclick="addWordFromAntonyms(' + "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+							}
+						}
+						return antonymsHtml;
+					}
+					var antonymsHtml = addAntonymsHtml();
+				}
+
+				// -------------------------------------------------------------------------------------------------------------------
+				// CODE THAT HAS TO DO WITH Related Words--------------------------------------------------
+
+				if(response.getElementsByTagName('rel')[randomNumber]){
+					var relatedWords = response.getElementsByTagName('rel')[randomNumber].innerHTML;
+					var relatedWordsArray = relatedWords.split(",");
+
+					function isInArray(value, array) {
+						return array.indexOf(value) > -1;
+					}
+
+					function addRelatedWordsHtml() {
+						var relatedWordsHtml = '';
+						var plusOner = 1;
+						for (var i = 0; i <= relatedWordsArray.length - 1; i++) {
+							var iString = (i + plusOner).toString();
+							var comma = ', ';
+							if (i === relatedWordsArray.length - 1) {
+								comma = '';
+							}
+							var noSpacesWord = relatedWordsArray[i].replace(" ", "");
+							if (noSpacesWord === response.querySelector('hw').innerHTML) {
+								plusOner = 0;
+								relatedWordsHtml += '';
+							}
+							// If a synonym has symbols incombatible with the api search, make it black.
+							else if (noSpacesWord.includes("(") || noSpacesWord.includes(")") || noSpacesWord.includes("[") || noSpacesWord.includes("]")|| noSpacesWord.includes(";")) {
+								// noSpacesWord = noSpacesWord.replace(/(.*)/, '');
+								relatedWordsHtml += '<span style="color: black; cursor: auto;">' + noSpacesWord + comma + '</span>';
+							} else if (isInArray(noSpacesWord, wordsArray)) {
+								// If word is in learning list, make it blue
+								relatedWordsHtml += '<span class="relatedWord-' + iString + '" id="relatedWord-' + noSpacesWord + '" style="color: blue; cursor: pointer;" onclick="addWordFromRelatedWords(' + "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+							} else if (isInArray(noSpacesWord, databaseArray)) {
+								// If word is in database, make it green
+								relatedWordsHtml += '<span class="relatedWord-' + iString + '" id="relatedWord-' + noSpacesWord + '" style="color: green; cursor: pointer;" onclick="addWordFromRelatedWords(' + "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+							} else if (isInArray(noSpacesWord, wordsToAdd)) {
+								// If word is in learning list, make it blue
+								relatedWordsHtml += '<span class="relatedWord-' + iString + '" id="relatedWord-' + noSpacesWord + '" style="color: fuchsia; cursor: pointer;" onclick="addWordFromRelatedWords(' + "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+							} else {
+								// If word is not in database, make it red
+								relatedWordsHtml += '<span class="relatedWord-' + iString + '" id="relatedWord-' + noSpacesWord + '" style="color: red; cursor: pointer;"onclick="addWordFromRelatedWords(' + "'" + noSpacesWord + "'" + ')">' + noSpacesWord + comma + '</span>';
+							}
+						}
+						return relatedWordsHtml;
+					}
+					var relatedWordsHtml = addRelatedWordsHtml();
+				}
+
 				// -------------------------------------------------------------------------------------------------------------------
 
 				// CODE THAT HAS TO DO WITH THE SENTENCE----------------------------------------------------------------------------------
 				var sentence = response.getElementsByTagName('vi')[randomNumber].innerHTML;
-				var boldedWordSentence = sentence.replace("<it>", "<it id='theCurrentItWord' style='font-weight:bold; cursor:pointer;' onclick='responsiveVoice.speak(`" + response.querySelector('hw').innerHTML + "`)'>");
+				var wordHowItWasUsedInSentence = sentence.match("<it>(.*)</it>")[1];
+				var boldedWordSentence = sentence.replace("<it>", "<it id='theCurrentItWord' style='font-weight:bold; cursor:pointer;' onclick='responsiveVoice.speak(`" + wordHowItWasUsedInSentence + "`)'>");
 				// -----------------------------------------------------------------------------------------------------------------------
 
 				appendThis = `<li class="word">` + response.querySelector('hw').innerHTML +
@@ -647,8 +1095,26 @@ function thesaurus(word,definitonNumber) {
 				if (response.getElementsByTagName('syn')[randomNumber]) {
 					appendThis += `<li class="en_eg"> <strong>Synonyms:</strong> ` + synonymsHtml + ` </li>`;
 				}
-				if (wordsArray.length > 5) {
-					appendThis += '<li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Take Quiz</li>';
+				if (response.getElementsByTagName('ant')[randomNumber]) {
+					appendThis += `<li class="en_eg antonymsClass"> <strong>Antonyms:</strong> ` + antonymsHtml + ` </li>`;
+				}
+				if (response.getElementsByTagName('rel')[randomNumber]) {
+					appendThis += `<li class="en_eg relatedWordsClass"> <strong>Related Words:</strong> ` + relatedWordsHtml + ` </li>`;
+				}
+				if (response.getElementsByTagName('ant')[randomNumber]) {
+					appendThis += '<li id="antonymButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="displayAntonyms()">Antonyms</li>';
+				}
+				if (response.getElementsByTagName('rel')[randomNumber]) {
+					appendThis += '<li id="relatedWordsButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="displayRelatedWords()">Related Words</li>';
+				}
+				displayCopyListButton(); if (wordsArray.length > 5) {
+					document.getElementById("playGameFromNextToAddWordButton").style.display = 'block';
+					appendThis +=
+					`
+						<li id="takeQuizButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Take Quiz</li>
+						<li id="playGameButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="playGameFromDuringAutoLearn()">Play Game</li>
+						<li id="startSkippingWordButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="addWordToWordsThatAreToBeSkippedEveryRoundArray(currentFlashcardWord)">Start Skipping</li>
+					`;
 				}
 				document.getElementById("wordslist").innerHTML = appendThis;
 			} else {
@@ -666,8 +1132,17 @@ function thesaurus(word,definitonNumber) {
 	})
 }
 
+function displayAntonyms(){
+	document.querySelector('.antonymsClass').style.display = "block";
+	document.querySelector('#antonymButtonOnFlashcard').style.display = "none";
+}
+function displayRelatedWords(){
+	document.querySelector('.relatedWordsClass').style.display = "block";
+	document.querySelector('#relatedWordsButtonOnFlashcard').style.display = "none";
+}
+
 var lookedUpWordNotCycle = false;
-function lookupWord(theWord,hideDatabaseWordsActivater){
+function lookupWord(theWord,hideDatabaseWordsActivater,definitonNumber){
 	lookedUpWordNotCycle = true;
 	if(!theWord){
 		var word = document.getElementById('searchWord-input').value;
@@ -675,7 +1150,7 @@ function lookupWord(theWord,hideDatabaseWordsActivater){
 	else{
 		var word = theWord;
 	}
-  thesaurus(word);
+  thesaurus(word,definitonNumber);
   document.querySelector('.flashcard').style.display = 'block';
   // Hide the buttons on the flashcard besides the play current word button.
   setTimeout(function(){
@@ -883,7 +1358,7 @@ function generateQuiz() {
 				for (letter in currentQuestion.answers) {
 					// ...add an HTML radio button
 					answers.push(
-						`<label>
+						`<label style="cursor:pointer;">
               <input type="radio" name="question${questionNumber}" value="${letter}">
 
               ${currentQuestion.answers[letter]}
@@ -971,7 +1446,8 @@ function generateQuiz() {
 var myQuestions = [];
 
 function pushQuizQuestion(word, mc1, mc2, mc3, mc4, answer, correctAnswerString) {
-	myQuestions.push({
+
+	var newQuestion = {
 		question: word,
 		answers: {
 			a: mc1,
@@ -980,7 +1456,10 @@ function pushQuizQuestion(word, mc1, mc2, mc3, mc4, answer, correctAnswerString)
 			d: mc4
 		},
 		correctAnswer: answer,
-	})
+	}
+	newQuestion.word = word;
+
+	myQuestions.push(newQuestion);
 	generateQuiz();
 }
 
@@ -997,7 +1476,10 @@ function pushQuizQuestionUsingInputs() {
 }
 var sentencesArray = [];
 
+var definitionNumber;
+
 function getSentence(word, activateCheckerOfGetAllSentences) {
+	console.log(word);
 	function checkIfGetAllSentencesHasFinished() {
 		if (sentencesArray.length === wordsArray.length - 5 && wordsArray.length >= 6) {
 			console.log('getAllSentences() has almost finished! You may begin generating questions!');
@@ -1020,7 +1502,41 @@ function getSentence(word, activateCheckerOfGetAllSentences) {
 			}
 			// Select a random sentence
 			var randomSentenceNumber = Math.floor(Math.random() * sentenceCount);
+			definitionNumber = randomSentenceNumber;
 			var randomSentence = response.getElementsByTagName('mc')[randomSentenceNumber].innerHTML;
+			var randomSentenceExample = response.getElementsByTagName('vi')[randomSentenceNumber].innerHTML;
+			var randomSentenceExampleUnderlinedWord = response.getElementsByTagName('vi')[randomSentenceNumber].innerHTML.replace(/<it.*it>/, '_____');
+			var partOfSpeech = response.getElementsByTagName('fl').innerHTML;
+			var wordHowItWasUsedInSentence = randomSentenceExample.match("<it>(.*)</it>")[1];
+
+			if(response.getElementsByTagName('syn')[randomSentenceNumber]){
+				var synonyms = response.getElementsByTagName('syn')[randomSentenceNumber].innerHTML;
+				var synonymsArray = synonyms.split(",");
+				var synonymsArrayWithoutSpaces = [];
+				for (var i = 0; i < synonymsArray.length; i++) {
+						if(synonymsArray[i] !== word){
+						synonymsArrayWithoutSpaces.push(synonymsArray[i].replace(" ", "").replace(/ *\([^)]*\) */g, "").replace(/ *\[[^)]*\] */g, ""));
+					}
+				}
+		}
+		if(response.getElementsByTagName('ant')[randomSentenceNumber]){
+			var antonyms = response.getElementsByTagName('ant')[randomSentenceNumber].innerHTML;
+			var antonymsArray = antonyms.split(",");
+			var antonymsArrayWithoutSpaces = [];
+			for (var i = 0; i < antonymsArray.length; i++) {
+				antonymsArrayWithoutSpaces.push(antonymsArray[i].replace(" ", "").replace(/ *\([^)]*\) */g, "").replace(/ *\[[^)]*\] */g, ""));
+			}
+		}
+		if(response.getElementsByTagName('rel')[randomSentenceNumber]){
+			var relatedWords = response.getElementsByTagName('rel')[randomSentenceNumber].innerHTML;
+			var relatedWordsArray = relatedWords.split(",");
+			var relatedWordsArrayWithoutSpaces = [];
+			for (var i = 0; i < relatedWordsArray.length; i++) {
+				relatedWordsArrayWithoutSpaces.push(relatedWordsArray[i].replace(" ", "").replace(/ *\([^)]*\) */g, "").replace(/ *\[[^)]*\] */g, ""));
+			}
+		}
+
+
 			correctAnswersArray.push('((' + word + ')):' + randomSentence + '|');
 			document.querySelector('#definitionsCorrectAnswer-input').value = correctAnswersArray;
 
@@ -1032,7 +1548,15 @@ function getSentence(word, activateCheckerOfGetAllSentences) {
 
 			var wordForFlashcard = {
 				word: word,
-				sentence: randomSentence
+				sentence: randomSentence,
+				sentenceExample: randomSentenceExample,
+				sentenceExampleUnderlinedWord: randomSentenceExampleUnderlinedWord,
+				synonyms: synonymsArrayWithoutSpaces,
+				antonyms: antonymsArrayWithoutSpaces,
+				relatedWords: relatedWordsArrayWithoutSpaces,
+				partOfSpeech: partOfSpeech,
+				wordHowItWasUsedInSentence: wordHowItWasUsedInSentence,
+				randomSentenceNumber: randomSentenceNumber
 			};
 			sentencesArray.push(wordForFlashcard);
 			if (activateCheckerOfGetAllSentences === true) {
@@ -1055,7 +1579,55 @@ function getAllSentences(activateCheckerOfGetAllSentences) {
 	}
 }
 
+function squash(arr){
+    var tmp = [];
+    for(var i = 0; i < arr.length; i++){
+        if(tmp.indexOf(arr[i]) == -1){
+        tmp.push(arr[i]);
+        }
+    }
+    return tmp;
+}
+
+
+function removeDuplicatesInSentencesArray(){
+	var sentencesArrayOnlyWords = [];
+	var sentencesArrayRepeatIndexesArray = [];
+	var duplicateWordsArrayInMakeQuestions = [];
+
+// Make an array of only the words in the sentencesArray
+	for (var i = 0; i < sentencesArray.length; i++) {
+		sentencesArrayOnlyWords.push(sentencesArray[i].word);
+	}
+// Make an array that indexes each repeat word and creates array of duplicated words in sentencesArray
+	for (var i = 0; i < sentencesArrayOnlyWords.length; i++) {
+		for (var y = 0; y < sentencesArrayOnlyWords.length; y++) {
+			if(i !== y && sentencesArrayOnlyWords[i] === sentencesArrayOnlyWords[y]){
+				sentencesArrayRepeatIndexesArray.push(i);
+				// Will create two of each duplicated word, which will then need to be squashed to only one of each duplicated word.
+				duplicateWordsArrayInMakeQuestions.push(sentencesArrayOnlyWords[i]);
+			}
+		}
+	}
+	// Squash is used to remove duplicate strings in an array. E.X: squash(['a','a'] => ['a'])
+	duplicateWordsArrayInMakeQuestions = squash(duplicateWordsArrayInMakeQuestions);
+
+	for (var i = sentencesArrayRepeatIndexesArray.length - 1; i >= 0; i--) {
+			sentencesArray.splice(sentencesArrayRepeatIndexesArray[i],1);
+			sentencesArrayRepeatIndexesArray.splice(sentencesArrayRepeatIndexesArray[i],1);
+	    sentencesArrayOnlyWords.splice(sentencesArrayRepeatIndexesArray[i],1);
+	}
+
+	for (var i = 0; i < duplicateWordsArrayInMakeQuestions.length; i++) {
+		getSentence(duplicateWordsArrayInMakeQuestions[i]);
+	}
+	console.log('The Following words were duplicates and has to be reconciled: ' + duplicateWordsArrayInMakeQuestions);
+}
+
 function makeQuestions() {
+
+// This function is to ensure that there are no duplicate questions or duplicate words being tested
+	// removeDuplicatesInSentencesArray();
 
 	myQuestions = [];
 	// console.log(randomWordNumber);
@@ -1264,7 +1836,7 @@ function addWordFromPreviousLists(word) {
 		// getAllSentences();
 		$('#' + word + '-previous').addClass('widget-selected');
 		wordsArray.push(word);
-		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		turnCurrentLearningListSpanIntoClickableArray();
 		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById(word + '-previous').style.color = 'black';
 		document.getElementById(word + '-previous').style.color = 'blue';
@@ -1280,25 +1852,30 @@ function addWordFromPreviousLists(word) {
 			document.getElementById("wordsToAdd").innerHTML = wordsToAdd;
 			document.getElementById("wordsToAddNumber").innerHTML = wordsToAdd.length;
 		}
+		displayCopyListButton();
 		if (wordsArray.length >= 5) {
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'block';
+			document.getElementById("playGameFromNextToAddWordButton").style.display = 'block';
 		}
 	}
 	// if color is blue and word is not in database:
 	else if (document.getElementById(word + '-previous').style.color === 'blue') {
 		wordsArray.splice(indexOfWord, 1);
 		$('#' + word + '-previous').removeClass('widget-selected');
-		if (wordsArray.length <= 5) {
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
 		}
-		document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+		turnCurrentLearningListSpanIntoClickableArray();
 		document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
 		document.getElementById(word + '-previous').style.color = 'black';
 		updateCycleInformation();
 		document.getElementById("plus-" + word).style.display = 'block';
 		document.getElementById("checkmark-" + word).style.display = 'none';
-		if (wordsArray.length <= 5) {
+		displayCopyListButton(); if (wordsArray.length <= 5) { document.getElementById("playGameFromNextToAddWordButton").style.display = 'none';
 			document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'none';
+			document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = 'none';
 		}
 	}
 }
@@ -1403,6 +1980,28 @@ function tutorial() {
 }
 
 
+function turnCurrentLearningListSpanIntoClickableArray(){
+	var newInnerHTMLSpan = '';
+	for (var i = 0; i < wordsArray.length; i++) {
+		if(i === wordsArray.length - 1){
+			newInnerHTMLSpan += '<span style="cursor:pointer;" class="wordInCurrentLearningList" id="'+wordsArray[i]+'-currentLearningList'+'" onclick="removeWordClickableSpanInCurrentLearningList(`'+wordsArray[i]+'`)">'+wordsArray[i]+'</span>';
+		}else{
+			newInnerHTMLSpan += '<span style="cursor:pointer;" class="wordInCurrentLearningList" id="'+wordsArray[i]+'-currentLearningList'+'" onclick="removeWordClickableSpanInCurrentLearningList(`'+wordsArray[i]+'`)">'+wordsArray[i]+',</span>';
+		}
+	}
+	document.querySelector('#wordsInLearningListArray').innerHTML = newInnerHTMLSpan;
+}
+
+function removeWordClickableSpanInCurrentLearningList(word){
+	// spliceFromArray(wordsArray, word.replace(/\s/g, ''));
+	removeWordFromStudyArray(word.replace(/\s/g, ''));
+	turnCurrentLearningListSpanIntoClickableArray();
+}
+
+function spliceFromArray(array, whatToSplice){
+	var index = array.indexOf(whatToSplice);
+	array.splice(index,1);
+}
 
 
 

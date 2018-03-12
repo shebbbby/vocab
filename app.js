@@ -119,6 +119,40 @@ app.get('/', (request, response, next) => {
   });
 });
 
+// app.get('/crossword', (request, response, next) => {
+//   WordModel.find((err, allWords) => {
+//     // if there's a database error...
+//     if (err) {
+//         // skip to the error handler middleware
+//         next(err);
+//         // return to avoid showing the view
+//         return;
+//           // early return instead of "else"
+//     }
+//
+//
+//     // send the results to the view
+//     response.locals.listOfWords = allWords;
+//     // Send the contents of the "views/home.ejs" file to the browser
+//     response.render('home.ejs');
+//   });
+//   // Show dates with list of words in them
+//   DateModel.find((err, allDates) => {
+//     // if there's a database error...
+//     if (err) {
+//         // skip to the error handler middleware
+//         next(err);
+//         // return to avoid showing the view
+//         return;
+//           // early return instead of "else"
+//     }
+//
+//
+//     // send the results to the view
+//     response.locals.listOfDates = allDates;
+//   });
+// });
+
 // app.get('/quiz', (req, res, next) => {
 //     res.render('quiz.ejs');
 // });

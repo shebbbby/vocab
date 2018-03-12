@@ -8,9 +8,26 @@
    <p>
       <strong class="currentLearningListStrongTag" style="cursor:pointer; width:80%;" onclick="voiceCommands.currentLearningList()">Current Learning List: </strong><span style="width:800px;" id="wordsInLearningListArray"></span>
       <br>
+
       <!-- The true in getAllSentences(true) is used to activateCheckerOfGetAllSentences. This will allow for the getAllSentences() to generateQuizWithoutStartingCycle sentence and wait until the proper time to generate questions -->
+      <p id="copyList" style="display:none;">
+        <button class="js-textareacopybtn" style="vertical-align:top;">Copy List</button>
+        <textarea style="height: 0px; width: 0px;" class="js-copytextarea">Hello I'm some text</textarea>
+      </p>
+      <p class="wordsThatAreBeingSkipped" style="display:none;">
+         <strong style="cursor:pointer; width:80%;">Words Being Skipped: </strong><span style="width:800px;" id="wordsBeingSkippedArray"></span>
+         <!-- <button class="addAllWordsBackFromWordsBeingSkippedArray" style="vertical-align:top;" onclick="addAllWordsBackToLearningListFromSkippedEveryRoundArray()">Add All</button> -->
+         <br>
+      </p>
       <span id="takeQuizQuttonUnderLearningList" style="border:1px solid black; display:none; width: 100px;" class="btn btn-sm" onclick="generateQuizWithoutStartingCycle();">Take Quiz</span>
+      <span id="playGameFromNextToAddWordButton" style="border:1px solid black; width: 100px; display:none;" onclick="playGameFromNextToAddWordButton()" class="btn btn-sm">Play Game</span>
+      <span id="playSynonymClusterGameFromNextToAddWordButton" style="border:1px solid black; width: 100px; display:none;" onclick="playSynonymClustersGameWithCurrentLearningList()" class="btn btn-sm">Synonym Game</span>
+
+      <!-- <span id="PlayGameQuttonUnderLearningList" style="border:1px solid black; display:none; width: 100px;" class="btn btn-sm" onclick="playGameFromDuringAutoLearn();">Play Game</span> -->
    </p>
+
+
+
    <p id="wordstoaddparagraph" style="display:none;">
       <strong class="wordstoaddstrong" style="cursor:pointer;" onclick="voiceCommands.wordsToAdd()">Words to add to database (<span id="wordsToAddNumber"></span>):</strong>  <span id="wordsToAdd"></span>
       <br>
@@ -83,33 +100,86 @@
             <span style="border:1px solid black; width:130px;" class="btn btn-sm" onclick="addAllFromPreviousListsToCurrentList(incorrectArray2[<%= countOfArrays %>])">Select All Incorrect</span>
             <% } %>
             <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="takeQuiz(datesArrayMultiple[<%= countOfArrays %>])">Take Quiz</span>
+            <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="playGameFromPreviousQuizLists(true, datesArrayMultiple[<%= countOfArrays %>])">Play Game</span>
+            <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="playSynonymClustersGameWithPreviousLearningList(datesArrayMultiple[<%= countOfArrays %>])">Syn-Clusters</span>
+            <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="playHangmanWithPreviousLearningList(datesArrayMultiple[<%= countOfArrays %>])">Hangman</span>
+            <span style="border:1px solid black; width:100px;" class="btn btn-sm" onclick="generateCrosswordPuzzleUsingPreviousList(datesArrayMultiple[<%= countOfArrays %>])">Crossword</span>
          </div>
       </li>
       <% }) %>
    </div>
    <br>
-   <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="generateFourRandomSentences()">Play</a>
+   <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="playGameAllWords()">Play</a>
+   <!-- <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="playGameAllWordsCustom()">Play Custom</a> -->
    <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="displayLearnSection()">Auto-Learn</a>
    <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="displayDatabaseSection()">Database</a>
+   <a id="displaySynonymClusters" style="cursor:pointer; margin-right:10px;" onclick="displaySynonymClustersHtml()">Synonym-Clusters</a>
+   <a id="displaySynonymClusters" style="cursor:pointer; margin-right:10px;" onclick="displayHangmanHtml()">Hangman</a>
+   <a id="displayCrosswordSection" style="cursor:pointer; margin-right:10px;" onclick="displayCrosswordHtml()">Crossword</a>
+   <!-- <a id="playRandomQuestionGenerator" style="cursor:pointer; margin-right:10px;" onclick="displayLists()">Lists</a> -->
    <input id="searchWord-input" type="text" name="searchWord" value="" list="words-list" placeholder="Search Word...">
    <button onclick="lookupWord()">Search</button>
 
    <br>
    <script>
+
+    function playGameAllWordsCustom(){
+      document.querySelector('#favicon').href = "/images/vocab.png";
+      document.querySelector('#titleNextToFavicon').innerHTML = "Generating Questions!";
+
+      document.querySelector('#third-body').style.display = 'block';
+      document.querySelector('#synonym-clusters-body').style.display = 'none';
+      document.querySelector('#synonym-clusters-game').style.display = 'none';
+      document.querySelector('#hangman-body').style.display = 'none';
+      document.querySelector('#hangman-game').style.display = 'none';
+      document.querySelector('#percentageCompleted').style.display = 'block';
+
+      document.querySelector('#crossword-body').style.display = 'none';
+      document.querySelector('#crossword-game').style.display = 'none';
+
+
+    }
+
     function displayLearnSection(){
+      document.querySelector('#favicon').href = "/images/vocab.png";
+      document.querySelector('#titleNextToFavicon').innerHTML = "Vocab Auto Builder";
+
+
       document.querySelector('#quiz').style.display = 'none';
       document.querySelector('#results').style.display = 'none';
       document.querySelector('#roundNumberDiv').style.display = 'none';
       document.querySelector('#second-body').style.display = 'none';
+      document.querySelector('#synonym-clusters-body').style.display = 'none';
+      document.querySelector('#synonym-clusters-game').style.display = 'none';
+      document.querySelector('#hangman-body').style.display = 'none';
+      document.querySelector('#hangman-game').style.display = 'none';
       document.querySelector('#first-body').style.display = 'block';
+      document.querySelector('#percentageCompleted').style.display = 'none';
+
+      document.querySelector('#crossword-body').style.display = 'none';
+      document.querySelector('#crossword-game').style.display = 'none';
+
       stopKeydownListenerPlayGame();
     }
     function displayDatabaseSection(){
+      document.querySelector('#favicon').href = "/images/vocab.png";
+      document.querySelector('#titleNextToFavicon').innerHTML = "Vocab Auto Builder";
+
+
       document.querySelector('#quiz').style.display = 'none';
       document.querySelector('#results').style.display = 'none';
       document.querySelector('#roundNumberDiv').style.display = 'none';
       document.querySelector('#first-body').style.display = 'none';
+      document.querySelector('#synonym-clusters-body').style.display = 'none';
+      document.querySelector('#synonym-clusters-game').style.display = 'none';
+      document.querySelector('#hangman-body').style.display = 'none';
+      document.querySelector('#hangman-game').style.display = 'none';
       document.querySelector('#second-body').style.display = 'block';
+      document.querySelector('#percentageCompleted').style.display = 'none';
+
+      document.querySelector('#crossword-body').style.display = 'none';
+      document.querySelector('#crossword-game').style.display = 'none';
+
       stopKeydownListenerPlayGame();
     }
    </script>
@@ -126,16 +196,30 @@
          <input  id="random-number-input" name="randomNumber" type="number" placeholder="# Words..." onchange="addRandomWordsButton(this);">
          <br>
          <label style="cursor:pointer;" for="random-number-input">Add Specific Word From Database:</label>
-         <br>
          <input id="specificWord-input" type="text" name="specificWord" value="" list="words-list" placeholder="cliche...">
-         <button onclick="addSpecificWordToLearningList()">Add Word</button>
+         <button id="addSpecificWordButton" onclick="addSpecificWordToLearningList()">Add Word</button>
+         <!-- <button id="playGameFromNextToAddWordButton" style="display:none;" onclick="playGameFromNextToAddWordButton()">Play Game</button> -->
          <br>
 
          <br>
+         <!-- <p>
+            <span id="wordsCurrentlyBeingAddedMessage" style="color:green;"></span>
+         </p> -->
          <p>
             <strong class="numberOfCurrentLearningListStrongTag" style="cursor:pointer;" onclick="voiceCommands.currentLearningListNumber()"># Words in Learning List:</strong>  <span id="numberOfWordsInLearningList"></span>
          </p>
+           <!-- <button onclick="emptyLearningListArray()">Empty Array</button>
+           <script>
+              function emptyLearningListArray(){
+                  wordsArray = [];
+                  updateCycleInformation();
+                  changeSpeed();
+                  turnCurrentLearningListSpanIntoClickableArray();
+
+              }
+           </script> -->
          <p>
+
             <strong style="cursor:pointer;" onclick="voiceCommands.cycleSpeed()">Cycle Speed<span id="defaultSpeed"> (Default)</span>:</strong> <span id="cycleSpeed"></span>
          </p>
          <p>
@@ -295,6 +379,281 @@
             </div>
          </div>
       </div>
+
+
+
+      <!-- <div style="display:none;" id="third-body" class="col-md-3">
+         <h4>Play Game</h4>
+         <label style="cursor:pointer;" onclick="voiceCommands.inputNumber()" for="random-number-playGame-input">Add How Many Random Words?</label>
+         <br>
+         <input  id="random-number-playGame-input" name="randomNumber" type="number" placeholder="# Words..." onchange="addMultipleRandomWordsToFinalPointsArray(this);">
+         <br>
+         <label style="cursor:pointer;" for="random-number-input">Add Specific Word From Database:</label>
+         <input id="specificWordForPlayGame-input" type="text" name="specificWord" value="" list="words-list" placeholder="cliche...">
+         <button onclick="addSingleWordToFinalPointsArrayInputVersion()">Add Word</button>
+         <br>
+
+         <br>
+         <p>
+            <strong style="cursor:pointer;"># Final Points Array:</strong>  <span id="numberOfWordsInLearningList"></span>
+         </p>
+        <p id="beginTheCycle" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="playGameFromCurrentFinalPointsArray()">Play Game</p>
+      </div> -->
+
+      <!-- <div id="fourth-body" class="col-md-4">
+        <button>
+          Create New List
+        </button>
+      </div> -->
+
+      <div style="display:none;" id="synonym-clusters-body" class="col-md-3">
+         <h4>Synonym Clusters Game</h4>
+         <label style="cursor:pointer;" for="random-number-synonymClustersPlayGame-input">Add How Many Random Words?</label>
+         <br>
+         <input  id="random-number-synonymClustersPlayGame-input" type="number" placeholder="# Words..." onchange="addMultipleRandomWordsToSynoymsClusterArray(this);">
+         <br>
+         <label style="cursor:pointer;" for="secondsPerWord-synonymClustersPlayGame-input">How Many Seconds Per Word?</label>
+         <br>
+         <input  id="secondsPerWord-synonymClustersPlayGame-input" type="number" placeholder="Seconds Per Words..." onchange="changeTimePerWordSynonymClusters();">
+         <br>
+
+
+         <label style="cursor:pointer;" for="random-number-input">Add Specific Word From Database:</label>
+         <input id="specificWordForSynonymClustersPlayGame-input" type="text" name="specificWord" value="" list="words-list" placeholder="cliche...">
+         <button onclick="addWordOrWordsToSynonymClusterArray()">Add Word</button>
+         <br>
+
+         <hr>
+
+         <p>
+            <strong style="cursor:pointer;">Synoynym Clusters Array<span id="numberOfWordsInSynonymClustersArray"></span>:</strong>  <span id="wordsInSynonymClustersArray"></span>
+         </p>
+         <p>
+            <strong style="cursor:pointer;">Time Per Word<span id="defaultTimePerWordForSynonymClusters"> (Default)</span>:</strong> <span id="timePerWordForSynonymClusters"></span>
+         </p>
+         <button onclick="emptySynonymClustersArray()">Empty Array</button>
+         <br>
+         <br>
+
+        <p id="beginSynonymClustersGame" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="beginSynonymClustersGame()">Play Game</p>
+      </div>
+
+      <div style="display:none;" id="synonym-clusters-game" class="col-md-3">
+        <h4 id="timeIntervalDuringSynonymClusterWord"></h4>
+        <h3 id="individualSynonymClusterWord"></h3>
+        <h5 id="individualSynonymClusterWordDefinition"></h5>
+
+        <!-- <label style="cursor:pointer;" for="individualSynonymCluster-input">Synonyms:</label>
+        <br> -->
+        <div id="enterTheWordDuringSynonymClusterGame">
+          <input id="individualSynonymCluster-input" type="text" placeholder="word...">
+          <button onclick="checkIfWordIsSynonymOrAntonymOrRelatedWord()">Enter</button>
+        </div>
+        <br>
+        <div style="display:none;" id="synonymsDivDuringClusterGame">
+          <h5>Synonyms:</h5>
+          <ul id="listOfSynonymsDuringGame">
+
+          </ul>
+        </div>
+
+        <div style="display:none;" id="antonymsDivDuringClusterGame">
+          <h5>Antonyms:</h5>
+          <ul id="listOfAntonymsDuringGame">
+
+          </ul>
+        </div>
+
+        <div style="display:none;" id="relatedWordsDivDuringClusterGame">
+          <h5>Related Words:</h5>
+          <ul id="listOfRelatedWordsDuringGame">
+
+          </ul>
+        </div>
+        <button id="giveUpOnSynonymClusterGame" onclick="timeIsUpOrPlayerHasGivenUpOnSynonymClusterGame()">Give Up</button>
+        <button style="display:none;" id="nextWordDuringSynonymClusterGame" onclick="beginSynonymClustersGame(true)">Next Word</button>
+
+        <br>
+        <p id="totalPossiblePointsParagraphForSpecificWordDuringSynonymClustersGame">
+          Total Possible Points For This Word: <span id="totalPossiblePointsForSpecificWordDuringSynonymClustersGame">0</span>
+        </p>
+        <p id="currentPointsParagraphForSpecificWordDuringSynonymClustersGame">
+          Current Points For This Word: <span id="currentPointsForSpecificWordDuringSynonymClustersGame">0</span>
+        </p>
+        <p id="pointsParagraphForSpecificWordDuringSynonymClustersGame" style="display:none;">
+          Previous Points For This Word: <span id="pointsForSpecificWordDuringSynonymClustersGame">0</span>
+        </p>
+        <p id="highScoreParagraphForSpecificWordDuringSynonymClustersGame" style="display:none;">
+          High Score For This Word: <span id="highScoreForSpecificWordDuringSynonymClustersGame">0</span>
+        </p>
+        <p>
+          Total Points: <span id="pointsDuringSynonymClustersGame">0</span>
+        </p>
+      </div>
+
+
+
+
+
+
+<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+<div id="hangmanDiv">
+      <div style="display:none;" id="hangman-body" class="col-md-3">
+         <h4>Hangman</h4>
+         <label style="cursor:pointer;" for="random-number-hangmanPlayGame-input">Add How Many Random Words?</label>
+         <br>
+         <input  id="random-number-hangmanPlayGame-input" type="number" placeholder="# Words..." onchange="addMultipleRandomWordsToHangmanArray(this);">
+         <br>
+
+         <label style="cursor:pointer;" for="random-number-input">Add Specific Word From Database:</label>
+         <input id="specificWordForHangmanPlayGame-input" type="text" name="specificWord" value="" list="words-list" placeholder="cliche...">
+         <button onclick="addWordOrWordsToHangmanArray()">Add Word</button>
+         <br>
+
+         <hr>
+
+         <p>
+            <strong style="cursor:pointer;">Hangman Array<span id="numberOfWordsInHangmanArray"></span>:</strong>  <span id="wordsInHangmanArray"></span>
+         </p>
+         <button onclick="emptyHangmanArray()">Empty Array</button>
+         <br>
+         <br>
+
+        <p id="beginHangmanGame" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="beginHangmanGame()">Play Game</p>
+      </div>
+
+      <div style="display:none;" id="hangman-game" class="col-md-6">
+        <img style="height:150px;width:150px;" id="hangmanImage" src="/images/hang_1.gif">
+        <br>
+        <br>
+
+        <p id="wordThatIsBeingTestHangman" style="font-size:34px;">
+
+        </p>
+        <p id="wordThatIsBeingTestHangmanDefinition" style="font-size:16px;overflow-wrap:break-word;word-wrap:break-word;hyphens:auto;">
+
+        </p>
+        <p id="winOrLoseIndicator" style="font-size:16px;" style="color:red;font-weight:bold;display:none;">
+
+        </p>
+        <button style="display:none;" id="nextWordDuringHangman" onclick="beginHangmanGame()">Next Word</button>
+
+
+
+        <br>
+        <div class="container">
+          <div class="btn-toolbar">
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">A</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">B</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">C</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">D</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">E</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">F</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">G</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">H</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">I</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">J</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">K</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">L</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">M</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">N</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">O</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">P</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">Q</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">R</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">S</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">T</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">U</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">V</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">W</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">X</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">Y</button>
+              <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">Z</button>
+              <!-- <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)">-</button> -->
+              <!-- <button class="btn btn-default hangman-letter" onclick="changeHangmanState(this)"> </button> -->
+            </div>
+          </div>
+        </div>
+        <br>
+        <input id="multipleLettersInHangman-input" type="text" value="" placeholder="Multiple..." onchange="enterMultipleLettersInHangman();">
+        <hr>
+        <p>
+          Total Words Found: <span id="totalWordsSuccessfullyCompletedInHangman">0</span>
+        </p>
+      </div>
+</div>
+
+  <!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+
+
+
+
+
+
+
+
+
+<!-- CROSSWORD \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+
+<div style="display:none;" id="crossword-body" class="col-md-3">
+   <h4>Crossword</h4>
+   <label style="cursor:pointer;" for="random-number-crosswordPlayGame-input">Add How Many Random Words?</label>
+   <br>
+   <input  id="random-number-crosswordPlayGame-input" type="number" placeholder="# Words..." onchange="addMultipleRandomWordsToCrosswordArray(this);">
+   <br>
+
+   <label style="cursor:pointer;" for="random-number-input">Add Specific Word From Database:</label>
+   <input id="specificWordForCrosswordPlayGame-input" type="text" name="specificWord" value="" list="words-list" placeholder="cliche...">
+   <button onclick="addWordOrWordsToCrosswordArray()">Add Word</button>
+   <br>
+
+   <hr>
+
+   <p>
+      <strong style="cursor:pointer;">Crossword Array<span id="numberOfWordsInCrosswordArray"></span>:</strong>  <span id="wordsInCrosswordArray"></span>
+   </p>
+   <button onclick="emptyCrosswordArray()">Empty Array</button>
+   <br>
+   <br>
+
+  <p id="beginCrosswordGame" style="border:1px solid black; width:80px;" class="btn btn-sm" onclick="generateCrosswordPuzzle(fullWordObjectsArrayForCrossword.words,fullWordObjectsArrayForCrossword.hints)">Play Game</p>
+</div>
+
+<div id="crossword-game">
+  <div style="display:none;" id="crossword"></div>
+  <button id="revealOrHideAllAnswersCrosswordButton" style="display:none;" onclick="toggleHideOrRevealAnswersCrossword(); " class="answersHidden">Reveal All Answers</button>
+  <table style="display:none;" id="clues">
+      <thead>
+          <tr>
+              <th>Across</th>
+              <th>Down</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td><ul id="across"></ul></td>
+              <td><ul id="down"></ul></td>
+          </tr>
+      </tbody>
+  </table>
+  </div>
+  <!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+
+
+
+
+
+
+
+
+
+      <!-- <div id="fourth-body" class="col-md-4">
+        <button>
+          Create New List
+        </button>
+      </div> -->
+
    </div>
    <div>
    <p id="colorLabelInforation" style="display:none; position: relative; top:20px; left:10px;">
@@ -303,6 +662,9 @@
    <span style="color:fuchsia;">In Words To Add</span> -
    <span style="color:red;">Not In Either</span> -
    <span style="color:black;">Not Addable</span>
+
+   <span id="antonymsButton" style="border:1px solid black;" class="btn btn-sm" onclick="alwaysDisplayAntonyms()">Antonyms</span>
+   <span id="relatedWordsButton" style="border:1px solid black;" class="btn btn-sm" onclick="alwaysDisplayRelatedWords()">Related Words</span>
    <br>
    <!-- <span>Key Down Shortcuts:</span>
       <br>
@@ -322,12 +684,12 @@
    <button class="fa fa-arrow-right" id="nextWordButton" onclick="nextWord()"></button>
    <button class="fa fa-times" id="removeWordButton" onclick="removeWordButton(currentFlashcardWord)"></button>
    </div>
-   <ul style="display: none; margin-top: 30px;" class="flashcard" id="wordslist">
-   </ul>
+   <!-- <ul style="display: none; margin-top: 30px;" class="flashcard" id="wordslist">
+   </ul> -->
    <br>
    </div>
    <!-- <li style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Make Quiz</li> -->
-<div style="padding:0px 30px 35px 30px; margin:5px;">
+<div style="margin:5px;">
   <div id="whatToHideWhenResultsAreBeingShown">
    <div id="quiz">
    </div>
@@ -339,6 +701,7 @@
    <button style="display:none;" id="continueWithQuizId" onclick="continueWithQuestions()">Continue</button>
 
    <!-- onclick="submitQuiz()" -->
+   <div id="percentageCompleted"> </div>
    <div id="results"> </div>
    <div style="font-weight:bold; display:none;" id="roundNumberDiv">Round <span id="roundNumberSpan">1</span><span>:</span>
      <div id="listOfRoundResultsSpans" style="display:inline;">
@@ -356,11 +719,15 @@
    </div>
    <div style="font-weight:bold; display:none;" id="roundNumberDivPreviousResults">Round <span id="roundNumberSpanPreviousResults"></span><span>:</span>
    </div>
+   <!-- <span style="cursor:pointer;display:none;" id="playCurrentQuestionAudio" class="fa fa-volume-up"></span> -->
    </div>
    <div id="progressThisRound" style="display:none;">
      <p>Your Progress Round <span id="roundResultsSpan"></span>:</p>
      <ul id="wordsThisRound" style="list-style: none;">
      </ul>
+     <span id="words-correct-this-round"></span><span> out of </span><span id="total-words-this-round"></span>
+     <br>
+     <br>
      <button id="continueWithQuizFromSeeingResults" onclick="continueWithQuizFromSeeingResults()">Continue</button>
    </div>
 
@@ -369,21 +736,61 @@
 
 
 
+
 </div>
+<ul style="display: none; margin-top: 30px;" class="flashcard" id="wordslist">
+</ul>
    <hr>
 </div>
+
+
+
+
+<!-- <p>
+  <textarea style="display:none;" class="js-copytextarea">Hello I'm some text</textarea>
+</p> -->
 <script>
 
+
+
 function addSpecificWordToLearningList(){
+  // If the input box contains more than one word...
+  if (document.querySelector('#specificWord-input').value.indexOf(',') > -1) {
+    var addSpecificWordsArray = document.querySelector('#specificWord-input').value.replace(/\s/g, '').split(',');
+    for (var i = 0; i < addSpecificWordsArray.length; i++) {
+      var wordStringInArray = addSpecificWordsArray[i];
+      if(document.querySelector('#plus-'+wordStringInArray)){
+        document.querySelector('#plus-'+wordStringInArray).click();
+        getSentence(wordStringInArray);
+      }
+      else{
+        console.log(wordStringInArray+' not in database but will check if it is found through ajax test.');
+        // NOT SURE IF THIS WILL CAUSE PROBLEMS SO BE CAUTIOUS OF THE NEXT LINE
+        addWordEvenIfNotInDatabaseIfItPassedAjaxTest(wordStringInArray,wordsArray);
+      }
+    }
+      document.querySelector('#specificWord-input').value = '';
+      console.log('sentencesArray:');
+      console.log(sentencesArray);
+    }
+
+// If the input box contains ONLY one word...
+else{
   var wordString = document.querySelector('#specificWord-input').value;
   if(document.querySelector('#plus-'+wordString)){
     document.querySelector('#plus-'+wordString).click();
     document.querySelector('#specificWord-input').value = '';
+    // getSentence(wordString) will add word to sentencesArray, hence making the word part of the quiz
+    getSentence(wordString);
+    console.log('sentencesArray:');
+    console.log(sentencesArray);
   }
   else{
-    alert(wordString+' not in database')
+    alert(wordString+' not in database but will check if it is found through ajax test.');
+    addWordEvenIfNotInDatabaseIfItPassedAjaxTest(wordString,wordsArray);
     document.querySelector('#specificWord-input').value = '';
   }
+}
 }
 
    function expandWordsList(){
@@ -429,12 +836,12 @@ function addSpecificWordToLearningList(){
    //       var wordsString = wordsArray[i].toString()
    //       document.querySelector('#'+wordsString + '-previous').style.color = 'blue';
    //     }
-   //     document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+   //     turnCurrentLearningListSpanIntoClickableArray();
    //     document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
    //     document.getElementById("plus-"+word).style.display = 'none';
    //     document.getElementById("checkmark-"+word).style.display = 'block';
    //     if(wordsArray.length > 5){
-   //       document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+   //       document.getElementById("takeQuizQuttonUnderLearningList").style.display = ‘block’; document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = ‘block';document.getElementById(“PlayGameQuttonUnderLearningList").style.display = 'block';
    //     }
    //     updateCycleInformation();
    // }
@@ -444,12 +851,12 @@ function addSpecificWordToLearningList(){
    //     document.querySelector('#'+wordsString + '-previous').style.color = 'black';
    //   }
    //   wordsArray = [];
-   //   document.getElementById("wordsInLearningListArray").innerHTML = wordsArray;
+   //   turnCurrentLearningListSpanIntoClickableArray();
    //   document.getElementById("numberOfWordsInLearningList").innerHTML = wordsArray.length;
    //   document.getElementById("plus-"+word).style.display = 'none';
    //   document.getElementById("checkmark-"+word).style.display = 'block';
    //   if(wordsArray.length > 5){
-   //     document.getElementById("takeQuizQuttonUnderLearningList").style.display = 'block';
+   //     document.getElementById("takeQuizQuttonUnderLearningList").style.display = ‘block’; document.getElementById("playSynonymClusterGameFromNextToAddWordButton").style.display = ‘block';document.getElementById(“PlayGameQuttonUnderLearningList").style.display = 'block';
    //   }
    //   updateCycleInformation();
    // }
@@ -765,10 +1172,13 @@ function addSpecificWordToLearningList(){
 
    var finalPointsArray = allCorrectWordsAndNumbers.concat(allIncorrectWordsAndNumbers);
 
-   finalPointsArray.sort(function(a, b){
-       return b.number-a.number
-   })
 
+   function sortFinalPointsArray(){
+     finalPointsArray.sort(function(a, b){
+         return b.number-a.number
+     })
+   }
+sortFinalPointsArray();
 
 
 
@@ -847,8 +1257,8 @@ function addSpecificWordToLearningList(){
    }
    addTotalPoints();
 
-   console.log(finalPointsArray);
-  //  no 0 points array because by definition that means the word must have been wrong at some point. and for simplicity sake.
+
+  //  no 0 points array because by definition that means the word must have been wrong at some point. and for simplicity sake 0 pointers will be included as negatives.
    negativePointsArray = [];
    onePointArray = [];
    twoPointsArray = [];
@@ -871,12 +1281,26 @@ function addSpecificWordToLearningList(){
        negativePointsArray.push(finalPointsArray[i]);
      }
    }
-   console.log(fourPointsArray);
-   console.log(threePointsArray);
-   console.log(twoPointsArray);
-   console.log(onePointArray);
-   console.log(negativePointsArray);
 
+// wordsThatHave100PercentOrMore is an array of all completed words with 100%
+var wordsThatHave100PercentOrMore = [];
+function spliceAllWordsAbove100Percent(){
+// This will splice all completed words from finalPointsArray, this will make it so that you will not select these words
+   for(var i = finalPointsArray.length-1; i >= 0; i--){
+     if(finalPointsArray[i].number >= 5){
+      //  .push() has to come before splice so that it pushes at the right time
+      console.log('Spliced ' + finalPointsArray[i].word + ' from finalPointsArray because word has 100% completion');
+       wordsThatHave100PercentOrMore.push(finalPointsArray[i]);
+       finalPointsArray.splice(i,1);
+     }
+   }
+ }
+spliceAllWordsAbove100Percent();
+  console.log('finalPointsArray');
+  console.log(finalPointsArray);
+  console.log('-------------------------------');
+  console.log('wordsThatHave100PercentOrMore');
+  console.log(wordsThatHave100PercentOrMore);
 
 
 
