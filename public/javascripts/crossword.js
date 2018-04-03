@@ -426,16 +426,17 @@ var CrosswordUtils = {
 }
 
 function colorInWordWhenClickingOnCoordinateOnCrosswordBoard(string){
-  var array = string.split(',');
-  if (theCrosswordGridWithPositions[array[0]][array[1]]) {
-    var thePosition = theCrosswordGridWithPositions[array[0]][array[1]];
-    console.log(thePosition);
-    colorInWordDuringGuessUsingCoordinatesUsingPosition(thePosition);
+  var arrayOfCoordinates = string.split(',');
+  if (theCrosswordGridWithPositions[arrayOfCoordinates[0]][arrayOfCoordinates[1]]) {
+    var thePosition = theCrosswordGridWithPositions[arrayOfCoordinates[0]][arrayOfCoordinates[1]];
+    console.log('Clicked Word With Position: ' + thePosition);
     if (document.querySelector('#wordAcrossHintId-'+thePosition)) {
       document.querySelector('#wordAcrossHintId-'+thePosition).click();
     }else if(document.querySelector('#wordDownHintId-'+thePosition)){
       document.querySelector('#wordDownHintId-'+thePosition).click();
     }
+    colorInBeginningCoordinatesWithRegularColors(thePosition);
+    document.querySelector('#coordinate-'+arrayOfCoordinates[0]+'-'+arrayOfCoordinates[1]).style.backgroundColor = '#E9DEFF';
   }
 }
 
@@ -672,7 +673,7 @@ function generateCrosswordPuzzle(words, hints){
     // Create crossword object with the words and clues
     var cw = new Crossword(words, clues);
     // create the crossword grid (try to make it have a 1:1 width to height ratio in 10 tries)
-    var tries = 10;
+    var tries = 15;
     var grid = cw.getSquareGrid(tries);
     // report a problem with the words in the crossword
     if(grid == null){
@@ -827,11 +828,12 @@ function clickLiOnCrossword(element){
   console.log(numberOfHint);
   // uncolorAllWordsDuringGuessPeriod();
   colorInWordDuringGuessUsingCoordinatesUsingPosition(numberOfHint);
+  colorInBeginningCoordinates(numberOfHint);
   hideAllInputSpanHints();
 
   if (!$( element ).hasClass( "clickedOnElementLi")) {
     element.classList.add('clickedOnElementLi');
-    element.innerHTML += '<span class="inputSpanCrossword" id="inputSpan-'+numberOfHint+'"><br class="breakInputCrossword"><input id="inputInput'+numberOfHint+'"></input><button id="inputButtonCrossword-'+numberOfHint+'">Enter</button></span>';
+    element.innerHTML += '<span class="inputSpanCrossword" id="inputSpan-'+numberOfHint+'"><br class="breakInputCrossword"><input id="inputInput'+numberOfHint+'"></input><button style="margin-left:5px;" id="inputButtonCrossword-'+numberOfHint+'">Enter</button><button style="margin-left:5px;" id="fillInAnswer-'+numberOfHint+'">Give Up</button></span>';
     document.querySelector('#inputInput'+numberOfHint).focus();
     // element.style.fontWeight = 'bold';
     document.querySelector('#inputButtonCrossword-'+numberOfHint).onclick = function(){
@@ -846,6 +848,12 @@ function clickLiOnCrossword(element){
           document.querySelector('#inputInput'+numberOfHint).value = '';
         }
       }
+      document.querySelector('#fillInAnswer-'+numberOfHint).onclick = function(){
+          var word = getWordWithPosition(numberOfHint);
+          guessWordCrossword(numberOfHint, word);
+          document.querySelector('#inputSpan-'+numberOfHint).style.display = 'none';
+          element.style.color = 'green';
+        }
   }else if(element.style.color !== 'green' && document.querySelector('#inputSpan-'+numberOfHint)){
     document.querySelector('#inputSpan-'+numberOfHint).style.display = 'block';
     hideAllBreaksOnInputHints();
@@ -1029,7 +1037,7 @@ function getAllCoordinatesCrosswordUsingPosition(position){
 function colorInWordDuringGuessUsingCoordinates(word){
   var allCoordinates = getAllCoordinatesCrossword(word);
   for (var i = 0; i < word.length; i++) {
-    document.querySelector('#coordinate-'+allCoordinates[i][0]+'-'+allCoordinates[i][1]).style.backgroundColor = '#E0FFFF'
+    document.querySelector('#coordinate-'+allCoordinates[i][0]+'-'+allCoordinates[i][1]).style.backgroundColor = '#E0FFFF';
   }
 }
 
@@ -1040,6 +1048,18 @@ function colorInWordDuringGuessUsingCoordinatesUsingPosition(position){
     document.querySelector('#coordinate-'+allCoordinates[i][0]+'-'+allCoordinates[i][1]).style.backgroundColor = '#E0FFFF'
   }
 }
+
+function colorInBeginningCoordinates(position){
+  var word = getWordWithPosition(position);
+  var beginningCoordinates = getBeginningCoordinatesCrossword(word);
+  document.querySelector('#coordinate-'+beginningCoordinates[0]+'-'+beginningCoordinates[1]).style.backgroundColor = 'rgb(233, 222, 255)';
+}
+function colorInBeginningCoordinatesWithRegularColors(position){
+  var word = getWordWithPosition(position);
+  var beginningCoordinates = getBeginningCoordinatesCrossword(word);
+  document.querySelector('#coordinate-'+beginningCoordinates[0]+'-'+beginningCoordinates[1]).style.backgroundColor = '#E0FFFF';
+}
+
 function uncolorAllWordsDuringGuessPeriod(){
   for (var i = 0; i < theCrosswordGridWithLetters.length; i++) {
     for (var y = 0; y < theCrosswordGridWithLetters[i].length; y++) {
@@ -1055,6 +1075,8 @@ function makeAllCoordinatesStyleCursorPointer(){
     for (var y = 0; y < theCrosswordGridWithLetters[i].length; y++) {
       if (theCrosswordGridWithLetters[i] && theCrosswordGridWithLetters[i][y]) {
         document.querySelector('#coordinate-'+i+'-'+y).style.cursor = 'pointer';
+      }else{
+        document.querySelector('#coordinate-'+i+'-'+y).style.backgroundColor = 'gainsboro';
       }
     }
   }
@@ -1084,6 +1106,18 @@ function getPositionOfWordWithWord(word){
   for (var i = 0; i < theCrosswordLegend.down.length; i++) {
     if (theCrosswordLegend.down[i].word === word) {
       return theCrosswordLegend.down[i].position;
+    }
+  }
+}
+function getWordWithPosition(position){
+  for (var i = 0; i < theCrosswordLegend.across.length; i++) {
+    if (theCrosswordLegend.across[i].position === position) {
+      return theCrosswordLegend.across[i].word;
+    }
+  }
+  for (var i = 0; i < theCrosswordLegend.down.length; i++) {
+    if (theCrosswordLegend.down[i].position === position) {
+      return theCrosswordLegend.down[i].word;
     }
   }
 }

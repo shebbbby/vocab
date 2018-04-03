@@ -9,7 +9,7 @@ function displaySynonymClustersHtml(){
   document.querySelector('#hangman-game').style.display = 'none';
   document.querySelector('#crossword-body').style.display = 'none';
   document.querySelector('#crossword-game').style.display = 'none';
-  
+
   document.querySelector('#quiz').style.display = 'none';
   document.querySelector('#results').style.display = 'none';
   document.querySelector('#roundNumberDiv').style.display = 'none';
@@ -361,6 +361,7 @@ document.getElementById("listOfRelatedWordsDuringGame").innerHTML = '';
     document.querySelector('#relatedWordsDivDuringClusterGame').style.display = "none";
   }
   updateTotalPossiblePointsForSynonymClusters();
+  document.querySelector('#individualSynonymCluster-input').focus();
 }
 
 var totalPointsSynonymClusterGame = 0;
@@ -475,6 +476,7 @@ function checkIfWordIsSynonymOrAntonymOrRelatedWord(){
   }
 
   document.querySelector('#individualSynonymCluster-input').value = '';
+  document.querySelector('#individualSynonymCluster-input').focus();
 }
 
 function updateSynonymClustersPoints(){

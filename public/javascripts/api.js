@@ -1101,6 +1101,27 @@ function thesaurus(word,definitonNumber) {
 				if (response.getElementsByTagName('rel')[randomNumber]) {
 					appendThis += `<li class="en_eg relatedWordsClass"> <strong>Related Words:</strong> ` + relatedWordsHtml + ` </li>`;
 				}
+				appendThis +=
+				`
+				<li class="wordMemeClass" style="display:none;">
+					<img id="word-meme" src="http://wordinfo.info/webroot/words/images/`+word+`.jpg">
+				</li>
+				<li class="wordMemeClass1" style="display:none;">
+					<img id="word-meme" src="http://wordinfo.info/webroot/words/images/`+word+`-1.jpg">
+				</li>
+				<li class="wordMemeClass2" style="display:none;">
+					<img id="word-meme" src="http://wordinfo.info/webroot/words/images/`+word+`-2.jpg">
+				</li>
+				<li class="wordMemeClass3" style="display:none;">
+					<img id="word-meme" src="http://wordinfo.info/webroot/words/images/`+word+`-3.jpg">
+				</li>
+				<li class="wordMemeClass4" style="display:none;">
+					<img id="word-meme" src="http://wordinfo.info/webroot/words/images/`+word+`-4.jpg">
+				</li>
+				<li class="wordMemeClass5" style="display:none;">
+					<img id="word-meme" src="http://wordinfo.info/webroot/words/images/`+word+`-5.jpg">
+				</li>
+				`;
 				if (response.getElementsByTagName('ant')[randomNumber]) {
 					appendThis += '<li id="antonymButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="displayAntonyms()">Antonyms</li>';
 				}
@@ -1113,9 +1134,21 @@ function thesaurus(word,definitonNumber) {
 					`
 						<li id="takeQuizButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Take Quiz</li>
 						<li id="playGameButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="playGameFromDuringAutoLearn()">Play Game</li>
+						<li id="displayWordMeme0" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(0)">Meme0</li>
+						<li id="displayWordMeme1" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(1)">Meme</li>
+						<li id="displayWordMeme2" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(2)">Meme2</li>
+						<li id="displayWordMeme3" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(3)">Meme3</li>
+						<li id="displayWordMeme4" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(4)">Meme4</li>
+						<li id="displayWordMeme5" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(5)">Meme5</li>
 						<li id="startSkippingWordButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="addWordToWordsThatAreToBeSkippedEveryRoundArray(currentFlashcardWord)">Start Skipping</li>
 					`;
 				}
+
+				// IN 2 Seconds, make #displayWordMeme => display:block;
+				setTimeout(function(){
+					showWordMemeButtonIfImageDoesntExist(word);
+				},2000);
+
 				document.getElementById("wordslist").innerHTML = appendThis;
 			} else {
 				nextWord();
@@ -1132,6 +1165,8 @@ function thesaurus(word,definitonNumber) {
 	})
 }
 
+
+
 function displayAntonyms(){
 	document.querySelector('.antonymsClass').style.display = "block";
 	document.querySelector('#antonymButtonOnFlashcard').style.display = "none";
@@ -1140,6 +1175,66 @@ function displayRelatedWords(){
 	document.querySelector('.relatedWordsClass').style.display = "block";
 	document.querySelector('#relatedWordsButtonOnFlashcard').style.display = "none";
 }
+
+
+
+
+
+// http://wordinfo.info/webroot/words/images/
+function returnTrueIfWordMeme(word,num){
+	var numString = num.toString();
+	var obj = new Image();
+	// ONLY LOOKS FOR FIRST IMAGE '-1'
+	if(num === 0){
+		obj.src = "http://wordinfo.info/webroot/words/images/"+word+".jpg";
+	}else{
+		obj.src = "http://wordinfo.info/webroot/words/images/"+word+"-"+numString+".jpg";
+	}
+	if(obj.complete){
+		return true;
+	}else{
+		return false;
+	}
+}
+// function returnHowManyMemesWordHas(word){
+// 	var count = 0;
+// 	for (var i = 1; i < 5; i++) {
+// 		var obj = new Image();
+// 		obj.src = "http://wordinfo.info/webroot/words/images/"+word+"-"+i+".jpg";
+// 		if(obj.complete){
+// 			count ++;
+// 		}
+// 	}
+// 	setTimeout(function(){
+// 		console.log(count);
+// 	},4000)
+// }
+function hideWordMemeButtonIfImageDoesntExist(word){
+	for (var i = 0; i < 6; i++) {
+		if(!returnTrueIfWordMeme(word,i)){
+			document.querySelector('#displayWordMeme'+i).style.display = 'none';
+		}
+	}
+}
+function showWordMemeButtonIfImageDoesntExist(word){
+	for (var i = 0; i < 6; i++) {
+		if(returnTrueIfWordMeme(word,i)){
+			document.querySelector('#displayWordMeme'+i).style.display = 'block';
+		}
+	}
+
+}
+function displayWordMeme(num){
+	if(num === 0){
+		document.querySelector('.wordMemeClass').style.display = 'block';
+		document.querySelector('#displayWordMeme0').style.display = 'none';
+	}else{
+		var numString = num.toString();
+		document.querySelector('.wordMemeClass'+numString).style.display = 'block';
+		document.querySelector('#displayWordMeme'+numString).style.display = 'none';
+	}
+}
+
 
 var lookedUpWordNotCycle = false;
 function lookupWord(theWord,hideDatabaseWordsActivater,definitonNumber){
@@ -1382,8 +1477,8 @@ function generateQuiz() {
 			const answerContainers = quizContainer.querySelectorAll(".answers");
 
 			// keep track of user's answers
-			let numCorrect = 0;
-			let questionNum = 0;
+			var numCorrect = 0;
+			var questionNum = 0;
 
 			// for each question...
 			myQuestions.forEach((currentQuestion, questionNumber) => {

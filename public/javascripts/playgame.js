@@ -931,6 +931,7 @@ function playGameFromDuringAutoLearn(){
   document.querySelector('#colorLabelInforation').style.display = 'none';
 }
 
+
 var finalPointsArrayOnlyWords = [];
 for (var i = 0; i < finalPointsArray.length; i++) {
   finalPointsArrayOnlyWords.push(finalPointsArray[i].word);

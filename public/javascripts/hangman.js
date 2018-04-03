@@ -252,6 +252,7 @@ function beginHangmanGame(){
   enableAllLettersInHangman();
   document.querySelector('#winOrLoseIndicator').style.display = 'none';
   document.querySelector('#nextWordDuringHangman').style.display = 'none';
+  document.querySelector('#multipleLettersInHangman-input').focus();
 }
 
 
@@ -320,6 +321,8 @@ function changeHangmanState(element){
   }
   testIfPlayerHasSpelledOutTheHangmanWord();
   currentWordProgressObject.html = document.querySelector('#hangmanDiv').innerHTML;
+
+  document.querySelector('#multipleLettersInHangman-input').focus();
 }
 
 function disableAllLettersInHangman(){
@@ -520,11 +523,15 @@ function viewPreviousHangmanResults(questionNumber){
   document.querySelector('#nextWordDuringHangman').style.display = 'none';
   disableAllLettersInHangman();
 }
+
 function enterMultipleLettersInHangman(){
   var inputText = document.querySelector('#multipleLettersInHangman-input').value;
   for (var i = 0; i < inputText.length; i++) {
     var letter = inputText[i];
-    document.querySelector('#'+letter+'-buttonForHangman').click();
+    // Check if letter is anything other than a letter a-z
+    if (!/[^a-zA-Z]/.test(letter)){
+      document.querySelector('#'+letter+'-buttonForHangman').click();
+    }
   }
   document.querySelector('#multipleLettersInHangman-input').value = '';
 }

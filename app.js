@@ -565,15 +565,14 @@ app.listen(process.env.PORT || 3000, function(err){
 });
 
 // Cheerio example from youtube girl
-// request('http://www.majortests.com/sat/wordlist-01',function(err,resp,body){
+// request('http://wordinfo.info/webroot/words/images/augury-1.jpg',function(err,resp,body){
 //   if(err && resp.statusCode == 200){
 //     var $ = cheerio.load(body);
-//     $('th').each(function(){
-//       var url = this.attr('href');
+//     $('img').each(function(){
+//       var url = this.attr('src');
 //       urls.push(url);
-//       console.log(urls);
+//       console.log(url);
 //     });
-//
 //   }
 // });
 // var number;
