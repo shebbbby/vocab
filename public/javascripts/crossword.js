@@ -1,3 +1,9 @@
+// var shit = '';
+// $.getJSON('http://allorigins.me/get?url=http%3A//mnemonicdictionary.com/word/abate&callback=?', function(data){
+// 	// $('#output').html(data.contents);
+//   shit += data.contents;
+//   // $(html).filter('.span9');
+// });
 
 // Each cell on the crossword grid is null or one of these
 function CrosswordCell(letter,word,index_of_word_in_input_list,index_of_char,r,c,direction){

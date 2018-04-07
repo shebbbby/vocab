@@ -1,4 +1,6 @@
 
+
+
 function updateCycleInformation() {
 	var cycleDurationSeconds = ((Number(document.getElementById("numberOfWordsInLearningList").innerHTML)) * (cycleSpeed / 1000));
 	var cycleDurationMinutes = cycleDurationSeconds / 60;
@@ -373,6 +375,10 @@ function startCycle() {
 		// document.querySelector('#theRowWithLearnAndDatabase').style.display = 'none';
 		nextWord();
 		intervalCycle();
+
+		// Scroll to flashcard
+		realignFlashcard();
+
 	}
 }
 var hoveredOnFlashcard = false;
@@ -403,6 +409,15 @@ function() {
 }
 );
 // }
+
+function realignFlashcard(){
+	// Scroll to flashcard
+	$('html, body').stop(true,true).animate({
+	scrollTop: $(".flashcard").offset().top + 23
+}, 2000)
+	$('body, html').scrollLeft(28);
+}
+
 function keyDownListener(e) {
   switch (e.keyCode) {
     // When pressing left key, go to previous word.
@@ -434,6 +449,10 @@ function keyDownListener(e) {
       document.querySelector('#makeAutomaticPlayButtonTrue').click();
       e.preventDefault();
       break;
+		case 82:
+			realignFlashcard();
+			e.preventDefault();
+			break;
     case 49:
       document.querySelector('.synonym-1').click();
       e.preventDefault();
@@ -1128,19 +1147,26 @@ function thesaurus(word,definitonNumber) {
 				if (response.getElementsByTagName('rel')[randomNumber]) {
 					appendThis += '<li id="relatedWordsButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="displayRelatedWords()">Related Words</li>';
 				}
-				displayCopyListButton(); if (wordsArray.length > 5) {
+					appendThis +=
+					`
+					<li id="displayWordMeme0" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(0)">Meme0</li>
+					<li id="displayWordMeme1" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(1)">Meme</li>
+					<li id="displayWordMeme2" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(2)">Meme2</li>
+					<li id="displayWordMeme3" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(3)">Meme3</li>
+					<li id="displayWordMeme4" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(4)">Meme4</li>
+					<li id="displayWordMeme5" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(5)">Meme5</li>
+					<li id="realignFlashcardButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="realignFlashcard()">Re-Align</li>
+					`
+				displayCopyListButton();
+				
+				// If learning list has more than 5 words
+				if (wordsArray.length > 5) {
 					document.getElementById("playGameFromNextToAddWordButton").style.display = 'block';
 					appendThis +=
 					`
-						<li id="takeQuizButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Take Quiz</li>
-						<li id="playGameButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="playGameFromDuringAutoLearn()">Play Game</li>
-						<li id="displayWordMeme0" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(0)">Meme0</li>
-						<li id="displayWordMeme1" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(1)">Meme</li>
-						<li id="displayWordMeme2" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(2)">Meme2</li>
-						<li id="displayWordMeme3" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(3)">Meme3</li>
-						<li id="displayWordMeme4" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(4)">Meme4</li>
-						<li id="displayWordMeme5" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(5)">Meme5</li>
-						<li id="startSkippingWordButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="addWordToWordsThatAreToBeSkippedEveryRoundArray(currentFlashcardWord)">Start Skipping</li>
+					<li id="takeQuizButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Take Quiz</li>
+					<li id="playGameButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="playGameFromDuringAutoLearn()">Play Game</li>
+					<li id="startSkippingWordButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="addWordToWordsThatAreToBeSkippedEveryRoundArray(currentFlashcardWord)">Start Skipping</li>
 					`;
 				}
 
@@ -1169,11 +1195,15 @@ function thesaurus(word,definitonNumber) {
 
 function displayAntonyms(){
 	document.querySelector('.antonymsClass').style.display = "block";
+	document.querySelector('.antonymsClass').scrollIntoView();
 	document.querySelector('#antonymButtonOnFlashcard').style.display = "none";
+	$('body, html').scrollLeft(28);
 }
 function displayRelatedWords(){
 	document.querySelector('.relatedWordsClass').style.display = "block";
+	document.querySelector('.relatedWordsClass').scrollIntoView();
 	document.querySelector('#relatedWordsButtonOnFlashcard').style.display = "none";
+	$('body, html').scrollLeft(28);
 }
 
 
@@ -1228,9 +1258,13 @@ function displayWordMeme(num){
 	if(num === 0){
 		document.querySelector('.wordMemeClass').style.display = 'block';
 		document.querySelector('#displayWordMeme0').style.display = 'none';
+		document.querySelector('.wordMemeClass').scrollIntoView();
+		$('body, html').scrollLeft(28);
 	}else{
 		var numString = num.toString();
 		document.querySelector('.wordMemeClass'+numString).style.display = 'block';
+		document.querySelector('.wordMemeClass'+numString).scrollIntoView();
+		$('body, html').scrollLeft(28);
 		document.querySelector('#displayWordMeme'+numString).style.display = 'none';
 	}
 }
@@ -1777,6 +1811,10 @@ function makeQuestions() {
 	}
 	document.querySelector('#quiz').style.display = 'block';
 	document.querySelector('#results').style.display = 'block';
+	// Scroll to top of quiz
+	$('html, body').stop(true,true).animate({
+    scrollTop: $("#quiz").offset().top - 10
+}, 2000)
 }
 
 function generateQuizWithoutStartingCycle() {
