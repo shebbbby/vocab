@@ -508,7 +508,10 @@ function addWordOrWordsToCrosswordArray(){
 function addMultipleRandomWordsToCrosswordArray(){
 
   var randomNumber = document.querySelector('#random-number-crosswordPlayGame-input').value;
-  limiter(randomNumber);
+  if(randomNumber > datesArray.length){
+    randomNumber = limiter(randomNumber);
+  }
+  console.log('Number of random words being selected: '+randomNumber);
   var theRandomDatabaseArray = _arrayRandom(randomNumber, 0, databaseArray.length, true);
   for (var i = 0; i < theRandomDatabaseArray.length; i++) {
     addSingleWordToCrosswordArray(databaseArray[theRandomDatabaseArray[i]],crosswordArray);

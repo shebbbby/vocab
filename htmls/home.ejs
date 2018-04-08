@@ -981,8 +981,20 @@ else{
 
    // Limits the "Add How Many Words" Input to: (0-the max amount of words in database)
    function limiter(input) {
-    if (input.value < 0) input.value = 0;
-    if (input.value > <%= listOfWords.length %>) input.value = <%= listOfWords.length %>;
+    if(typeof input === 'string'){
+      input = Number(input);
+      if (input < 0) input = 0;
+      if (input > <%= listOfWords.length %>) input = <%= listOfWords.length %>;
+      console.log(input);
+      console.log(typeof input);
+      return input;
+    }
+    else if(typeof input === 'object'){
+      if (input.value < 0) input.value = 0;
+      if (input.value > <%= listOfWords.length %>) input.value = <%= listOfWords.length %>;
+      console.log(input);
+      console.log(typeof input);
+    }
    }
 
    function addRandomWordsButton(input){

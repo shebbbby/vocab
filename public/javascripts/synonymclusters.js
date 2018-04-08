@@ -155,7 +155,10 @@ function addWordOrWordsToSynonymClusterArray(){
 
 function addMultipleRandomWordsToSynoymsClusterArray(){
   var randomNumber = document.querySelector('#random-number-synonymClustersPlayGame-input').value;
-  limiter(randomNumber);
+  if(randomNumber > datesArray.length){
+    randomNumber = limiter(randomNumber);
+  }
+  console.log('Number of random words being selected: '+randomNumber);
   var theRandomDatabaseArray = _arrayRandom(randomNumber, 0, databaseArray.length, true);
   for (var i = 0; i < theRandomDatabaseArray.length; i++) {
     addSingleWordToSynonymClusterArray(databaseArray[theRandomDatabaseArray[i]],synonymClusterArray);
