@@ -158,6 +158,7 @@ function addWordOrWordsToHangmanArray(){
 
 function addMultipleRandomWordsToHangmanArray(){
   var randomNumber = document.querySelector('#random-number-hangmanPlayGame-input').value;
+  limiter(randomNumber);
   var theRandomDatabaseArray = _arrayRandom(randomNumber, 0, databaseArray.length, true);
   for (var i = 0; i < theRandomDatabaseArray.length; i++) {
     addSingleWordToHangmanArray(databaseArray[theRandomDatabaseArray[i]],hangmanArray);

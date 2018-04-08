@@ -506,7 +506,9 @@ function addWordOrWordsToCrosswordArray(){
 }
 
 function addMultipleRandomWordsToCrosswordArray(){
+
   var randomNumber = document.querySelector('#random-number-crosswordPlayGame-input').value;
+  limiter(randomNumber);
   var theRandomDatabaseArray = _arrayRandom(randomNumber, 0, databaseArray.length, true);
   for (var i = 0; i < theRandomDatabaseArray.length; i++) {
     addSingleWordToCrosswordArray(databaseArray[theRandomDatabaseArray[i]],crosswordArray);

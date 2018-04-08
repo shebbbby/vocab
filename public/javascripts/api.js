@@ -101,7 +101,6 @@ document.querySelector('#cycleSpeed').innerHTML = (cycleSpeed / 1000) + ' Second
 document.getElementById("cycleTime").innerHTML = '0 Seconds';
 
 function changeSpeed(input) {
-	limiter(input);
 	var x = document.querySelector("#speed-input").value;
 	cycleSpeed = Number(x) * 1000;
 	console.log(cycleSpeed / 1000 + ' Seconds Per Word');

@@ -990,6 +990,7 @@ function addSingleWordToFinalPointsArray(word){
 }
 
 function addMultipleRandomWordsToFinalPointsArray(number){
+  limiter(number);
   var theRandomDatabaseArray = _arrayRandom(number, 0, databaseArray.length, true);
   for (var i = 0; i < theRandomDatabaseArray.length; i++) {
     addSingleWordToFinalPointsArray(databaseArray[theRandomDatabaseArray[i]]);
