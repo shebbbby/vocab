@@ -1,5 +1,14 @@
 
-
+function checkIfOnlineOrOffline(){
+	if(navigator.onLine){
+		document.querySelector('#offlineIndicator').style.display = 'none';
+	}else{
+		document.querySelector('#offlineIndicator').style.display = 'block';
+		$('html, body').stop(true,true).animate({
+		scrollTop: $("#offlineIndicator").offset().top
+	}, 2000)
+	}
+}
 
 function updateCycleInformation() {
 	var cycleDurationSeconds = ((Number(document.getElementById("numberOfWordsInLearningList").innerHTML)) * (cycleSpeed / 1000));
@@ -164,6 +173,7 @@ function cycleWordsArray(num) {
 	thesaurus(wordsArray[wordCount]);
 	wordCount++;
 	resetWordCountIfZero();
+	checkIfOnlineOrOffline();
 }
 
 
@@ -1158,7 +1168,7 @@ function thesaurus(word,definitonNumber) {
 					<li id="realignFlashcardButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="realignFlashcard()">Re-Align</li>
 					`
 				displayCopyListButton();
-				
+
 				// If learning list has more than 5 words
 				if (wordsArray.length > 5) {
 					document.getElementById("playGameFromNextToAddWordButton").style.display = 'block';
