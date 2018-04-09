@@ -1,6 +1,10 @@
 <!-- <a href="/quiz">quiz</a> -->
 <div class="container">
-   <br>
+  <br>
+  <button id="reduceZoomLevel" class="btn btn-sm" onclick="reduceZoomLevelBy10()">-</button>
+    <button id="addZoomLevel" class="btn btn-sm" onclick="addZoomLevelBy10()">+</button>
+  <input style="width:60px" id="setZoomLevel" type="number" onchange="setZoomLevel(this.value)">
+   <hr>
    <br>
    <p>
       <strong class="yourTotalPoints" style="cursor:pointer;" onclick="voiceCommands.totalPoints()">Total Points:</strong>  <span id="totalPoints"></span>

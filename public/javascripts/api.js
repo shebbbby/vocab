@@ -1,4 +1,21 @@
 
+var zoomLevel = 1.0;
+function addZoomLevelBy10(){
+	zoomLevel += 0.1;
+	document.body.style.zoom=zoomLevel;this.blur();
+}
+function reduceZoomLevelBy10(){
+	zoomLevel -= 0.1;
+	document.body.style.zoom=zoomLevel;this.blur();
+}
+
+function setZoomLevel(num){
+	document.body.style.zoom=num;this.blur();
+	document.querySelector('#setZoomLevel').value = '';
+}
+
+
+
 function checkIfOnlineOrOffline(){
 	if(navigator.onLine){
 		document.querySelector('#offlineIndicator').style.display = 'none';

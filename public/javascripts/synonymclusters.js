@@ -222,6 +222,11 @@ function emptySynonymClustersArray(){
 
 // CODE THAT HAS TO DO WITH ACTUAL GAMEPLAY-------------------------
 
+function scrollToSynonymClusters(){
+    $('html, body').stop(true,true).animate({
+    scrollTop: $("#synonym-clusters-game").offset().top
+  }, 2000)
+}
 
 
 var secondsPerWordDuringSynonymClusterGame = 'unlimited';
@@ -365,6 +370,7 @@ document.getElementById("listOfRelatedWordsDuringGame").innerHTML = '';
     document.querySelector('#relatedWordsDivDuringClusterGame').style.display = "none";
   }
   updateTotalPossiblePointsForSynonymClusters();
+  scrollToSynonymClusters();
   document.querySelector('#individualSynonymCluster-input').focus();
 }
 

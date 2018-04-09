@@ -223,6 +223,11 @@ function emptyHangmanArray(){
 
 // CODE THAT HAS TO DO WITH ACTUAL GAMEPLAY-------------------------
 
+function scrollToHangmanGame(){
+    $('html, body').stop(true,true).animate({
+    scrollTop: $("#hangmanDiv").offset().top
+  }, 2000)
+}
 
 function beginHangmanGame(){
 
@@ -254,6 +259,7 @@ function beginHangmanGame(){
   createWordToBeTestedDashes();
   resetHangmanState();
   enableAllLettersInHangman();
+  scrollToHangmanGame();
   document.querySelector('#winOrLoseIndicator').style.display = 'none';
   document.querySelector('#nextWordDuringHangman').style.display = 'none';
   document.querySelector('#multipleLettersInHangman-input').focus();

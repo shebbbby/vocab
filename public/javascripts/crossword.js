@@ -452,6 +452,12 @@ function colorInWordWhenClickingOnCoordinateOnCrosswordBoard(string){
 // YOUR ADDITIONAL LOGIC --------------------------------------------------------------------------
 var crosswordArray = [];
 
+function scrollToCrossword(){
+    $('html, body').stop(true,true).animate({
+    scrollTop: $("#crossword-game").offset().top
+  }, 2000)
+}
+
 function addSingleWordToCrosswordArray(word){
   for (var i = 0; i < crosswordArray.length; i++) {
     if (word === crosswordArray[i]) {
@@ -662,6 +668,7 @@ function generateCrosswordPuzzleUsingPreviousList(array){
   setTimeout(function(){
     generateCrosswordPuzzle(fullWordObjectsArrayForCrossword.words, fullWordObjectsArrayForCrossword.hints);
 
+
   },8000);
 }
 
@@ -746,7 +753,7 @@ function generateCrosswordPuzzle(words, hints){
         }
       }
     }
-
+    scrollToCrossword();
 };
 function addLegendToPage(groups){
     for(var k in groups){
