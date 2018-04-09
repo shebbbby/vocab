@@ -1,6 +1,6 @@
 
 // SYNONYM CLUSTERS ------------------------------------------------------
-function displaySynonymClustersHtml(){
+function displaySynonymClustersHtml () {
   document.querySelector('#favicon').href = "/images/thesaurus.png";
   document.querySelector('#titleNextToFavicon').innerHTML = "Synonym-Clusters!";
   document.querySelector('#synonym-clusters-body').style.display = 'block';

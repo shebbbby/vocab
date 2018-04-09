@@ -1165,6 +1165,7 @@ function thesaurus(word,definitonNumber) {
 					<li id="displayWordMeme4" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(4)">Meme4</li>
 					<li id="displayWordMeme5" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(5)">Meme5</li>
 					<li id="realignFlashcardButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="realignFlashcard()">Re-Align</li>
+					<li id="copyLearningListButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="copyLearningList()">Copy List</li>
 					`
 				displayCopyListButton();
 
@@ -1198,6 +1199,10 @@ function thesaurus(word,definitonNumber) {
 			console.log(err);
 		}
 	})
+}
+
+function copyLearningList(){
+	document.querySelector('.js-textareacopybtn').click();
 }
 
 
