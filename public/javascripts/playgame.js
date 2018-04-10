@@ -784,6 +784,7 @@ if(lastCharacterOfCurrentWordThatIsBeingTestedSentenceExampleUnderlinedWordLengt
 		document.getElementById('results').innerHTML = currentPlayPoints + ' Points';
 
     showPercentageCompleted();
+    scrollToQuiz();
 	},2000);
 }
 

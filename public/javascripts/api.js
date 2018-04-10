@@ -643,7 +643,11 @@ function downloadSynonymNewWords() {
 	document.getElementById('word-submitter').click();
 }
 
-
+function scrollToQuiz(){
+	$('html, body').stop(true,true).animate({
+scrollTop: $("#quiz").offset().top
+}, 2000);
+}
 
 function submitQuiz() {
 	// if(wordsToAdd.length > 0){

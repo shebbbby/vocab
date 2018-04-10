@@ -4,8 +4,12 @@ const Schema = mongoose.Schema;
 
 const wordSchema = new Schema({
     word: {
-      type: String
+      type: String,
+      required: true
     },
+    found: {
+      type: Boolean
+  },
     definition: {
       type: String
     },
