@@ -1188,17 +1188,19 @@ function thesaurus(word,definitonNumber) {
 					<li id="displayWordMeme5" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="displayWordMeme(5)">Meme5</li>
 					<li id="realignFlashcardButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="realignFlashcard()">Re-Align</li>
 					<li id="copyLearningListButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="copyLearningList()">Copy List</li>
+					<li id="startSkippingWordButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="addWordToWordsThatAreToBeSkippedEveryRoundArray(currentFlashcardWord)">Start Skipping</li>
 					`
+
+					appendThis += `<li id="scrollBackToQuizButtonOnFlashcard" style="border:1px solid black;display:none;" class="btn btn-sm" onclick="scrollToQuiz()">Scroll Quiz</li>`;
 				displayCopyListButton();
 
 				// If learning list has more than 5 words
-				if (wordsArray.length > 5) {
+				if (wordsArray.length > 5 && document.querySelector('#submit').style.display !== 'block') {
 					document.getElementById("playGameFromNextToAddWordButton").style.display = 'block';
 					appendThis +=
 					`
 					<li id="takeQuizButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="makeQuestions()">Take Quiz</li>
 					<li id="playGameButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="playGameFromDuringAutoLearn()">Play Game</li>
-					<li id="startSkippingWordButtonOnFlashcard" style="border:1px solid black;" class="btn btn-sm" onclick="addWordToWordsThatAreToBeSkippedEveryRoundArray(currentFlashcardWord)">Start Skipping</li>
 					`;
 				}
 

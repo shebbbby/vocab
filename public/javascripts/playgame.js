@@ -738,6 +738,7 @@ if(lastCharacterOfCurrentWordThatIsBeingTestedSentenceExampleUnderlinedWordLengt
       stopKeydownListener();
       startKeydownListenerPlayGame();
       realignFlashcard();
+      hideButtonsOnFlashcardThatAreNotRelevantToPlayGame();
 		}
 
 		console.log('correctAnswerLabelElement');
@@ -787,6 +788,14 @@ if(lastCharacterOfCurrentWordThatIsBeingTestedSentenceExampleUnderlinedWordLengt
     showPercentageCompleted();
     scrollToQuiz();
 	},2000);
+}
+
+function hideButtonsOnFlashcardThatAreNotRelevantToPlayGame(){
+  document.querySelector('#scrollBackToQuizButtonOnFlashcard').style.display = 'block';
+  document.querySelector('#takeQuizButtonOnFlashcard').style.display = 'none';
+  document.querySelector('#playGameButtonOnFlashcard').style.display = 'none';
+  document.querySelector('#copyLearningListButtonOnFlashcard').style.display = 'none';
+  document.querySelector('#startSkippingWordButtonOnFlashcard').style.display = 'none';
 }
 
 function showPlayPoints(){
