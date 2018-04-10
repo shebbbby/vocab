@@ -737,6 +737,7 @@ if(lastCharacterOfCurrentWordThatIsBeingTestedSentenceExampleUnderlinedWordLengt
       document.querySelector('.flashcard').style.display = 'block';
       stopKeydownListener();
       startKeydownListenerPlayGame();
+      realignFlashcard();
 		}
 
 		console.log('correctAnswerLabelElement');

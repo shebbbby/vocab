@@ -647,6 +647,7 @@ function scrollToQuiz(){
 	$('html, body').stop(true,true).animate({
 scrollTop: $("#quiz").offset().top
 }, 2000);
+$('body, html').scrollLeft(0);
 }
 
 function submitQuiz() {
