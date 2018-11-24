@@ -556,11 +556,11 @@ app.get('/logout', (req, res, next) => {
     res.redirect('/login');
 });
 // Tells Express that we want to start accepting connections
-app.listen(process.env.PORT || 3000, function(err){
+app.listen(process.env.PORT || 5000, function(err){
     if (err) {
         console.log(err);
     } else {
-        console.log("Listening on port on 3000");
+        console.log("Listening on port on 5000");
     }
 });
 
